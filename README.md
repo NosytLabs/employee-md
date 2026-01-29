@@ -52,6 +52,24 @@ AI agents read this file to understand:
 
 ## How It Works
 
+```mermaid
+graph TD
+    A[employee.md Spec] -->|Load & Validate| B(Agent Loader)
+    B -->|Initialize| C{Agent Runtime}
+    C -->|Configure| D[Identity & Role]
+    C -->|Set Limits| E[Guardrails & Scope]
+    C -->|Connect| F[Integrations & Tools]
+    
+    G[Task Request] -->|Intake| C
+    C -->|Check Permissions| H{Authorized?}
+    H -->|No| I[Reject Task]
+    H -->|Yes| J[Execute Task]
+    
+    J -->|Verify| K[Quality Check]
+    K -->|Pass| L[Deliver & Report]
+    K -->|Fail| J
+```
+
 - Load the YAML at startup and treat it as the agent’s employment contract
 - Enforce guardrails and operating policy before executing tasks
 - Use mission and scope to accept or decline requests
