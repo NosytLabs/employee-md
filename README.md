@@ -13,7 +13,7 @@ spec:
   version: "1.0"
   kind: "agent-employment"
   status: "stable"
-  schema: "https://example.com/employee.schema.json"
+  schema: "https://raw.githubusercontent.com/NosytLabs/employee-md/main/tooling/schema.json"
   license: "MIT"
   homepage: "https://github.com/NosytLabs/employee-md"
 
@@ -46,7 +46,27 @@ AI agents read this file to understand:
 
 ---
 
+## How It Works
+
+- Load the YAML at startup and treat it as the agent’s employment contract
+- Enforce guardrails and operating policy before executing tasks
+- Apply role, delegation, and lifecycle limits when planning or delegating work
+- Use AI settings and knowledge base pointers to select tools and context
+- Track outputs and performance metrics for audits and reviews
+
+---
+
+## How to Use
+
+1. Create an employee.md in your project or agent workspace
+2. Fill required fields: role.title, role.level, lifecycle.status
+3. Add operating policy, guardrails, and workflows to match your org rules
+4. Load and validate the file at startup
+5. Enforce it in task planning and execution
+
+
 ## Use Cases
+
 
 - Standardize AI agent roles across teams and vendors
 - Automate onboarding with consistent operational constraints
@@ -63,6 +83,27 @@ employee.md is designed to complement other agent standards like agents.md or sk
 
 ---
 
+## Related Standards
+
+- AGENTS.md is a repository-level instruction file for coding agents: https://agents.md/
+- worker.md defines runtime execution limits and permissions for agent workers
+- skills.md captures skill inventories and proficiency levels for agents or teams
+- employee.md is an employment contract for agent behavior, constraints, and economics
+
+---
+
+## Related Reading
+
+- Claude 4.5 Opus Soul Document: https://gist.github.com/Richard-Weiss/efe157692991535403bd7e7fb20b6695
+
+
+## Schema
+
+
+JSON Schema: https://raw.githubusercontent.com/NosytLabs/employee-md/main/tooling/schema.json
+
+---
+
 ## Structure
 
 ### Spec
@@ -74,6 +115,10 @@ Specification metadata:
 - `schema` - URL to JSON Schema
 - `license` - SPDX license identifier
 - `homepage` - Spec homepage URL
+- `namespace` - Spec namespace or organization
+- `compatibility` - Compatible standards
+- `supersedes` - Superseded standards
+- `extends` - Extended standards
 
 ### Identity
 Agent identification and metadata:
@@ -91,6 +136,26 @@ Job definition and skills:
 - `skills` - Detailed skills with levels
 - `work_location` - remote | office | hybrid
 - `employment_type` - full_time | part_time | contract
+
+### Principles
+- `principles` - Values and priorities that guide decisions
+
+### Operating Policy
+- `always` - Actions the agent must always do
+- `avoid` - Actions the agent must avoid
+- `ask_first` - Actions requiring explicit approval
+- `evidence_required` - Proof or artifacts required before completion
+
+### Workflows
+- `intake` - Steps for accepting and scoping tasks
+- `execution` - Steps for delivering work
+- `review` - Steps for quality checks
+- `handoff` - Steps for reporting and transfer
+
+### Outputs
+- `deliverables` - Required outputs (files, diffs, reports)
+- `artifacts` - Evidence or logs to attach
+- `reporting` - Status updates or summaries expected
 
 ### Economy
 Payment and billing:
@@ -195,7 +260,7 @@ spec:
   version: "1.0"
   kind: "agent-employment"
   status: "stable"
-  schema: "https://example.com/employee.schema.json"
+  schema: "https://raw.githubusercontent.com/NosytLabs/employee-md/main/tooling/schema.json"
   license: "MIT"
   homepage: "https://github.com/NosytLabs/employee-md"
 
@@ -448,10 +513,10 @@ A: Use `python tooling/validate.py employee.md` or JSON Schema validation.
 | [tooling/schema.json](tooling/schema.json) | 300+ | 1,000+ | JSON Schema |
 | [examples/minimal.md](examples/minimal.md) | 12+ | 50 | Minimal example |
 | [examples/ai-assistant.md](examples/ai-assistant.md) | 160+ | 800+ | AI assistant |
-| [examples/data-analyst.md](examples/data-analyst.md) | 125+ | 500+ | Data analyst |
-| [examples/security-auditor.md](examples/security-auditor.md) | 180+ | 700+ | Security auditor |
-| [examples/senior-dev.md](examples/senior-dev.md) | 90+ | 600+ | Senior dev |
-| [examples/freelancer.md](examples/freelancer.md) | 55+ | 300+ | Freelancer |
+| [examples/data-analyst.md](examples/data-analyst.md) | 125+ | 500 | Data analyst |
+| [examples/security-auditor.md](examples/security-auditor.md) | 180+ | 700 | Security auditor |
+| [examples/senior-dev.md](examples/senior-dev.md) | 90+ | 600 | Senior dev |
+| [examples/freelancer.md](examples/freelancer.md) | 55+ | 300 | Freelancer |
 
 ---
 
