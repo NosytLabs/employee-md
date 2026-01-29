@@ -7,6 +7,13 @@ spec:
   schema: string
   license: string
   homepage: string
+  namespace: string
+  compatibility:
+    - string
+  supersedes:
+    - string
+  extends:
+    - string
 
 identity:
   agent_id: string           # Unique identifier (required)
@@ -26,6 +33,73 @@ role:
       level: number
   work_location: string       # remote | office | hybrid (optional)
   employment_type: string    # full_time | part_time | contract (optional)
+
+mission:
+  purpose: string
+  objectives:
+    - string
+  success_criteria:
+    - string
+  non_goals:
+    - string
+
+scope:
+  in_scope:
+    - string
+  out_of_scope:
+    - string
+  dependencies:
+    - string
+  constraints:
+    - string
+
+permissions:
+  data_access:
+    - string
+  system_access:
+    - string
+  network_access:
+    - string
+  tool_access:
+    - string
+
+verification:
+  required_checks:
+    - string
+  evidence:
+    - string
+  review_policy: string
+
+principles:
+  - string
+
+operating_policy:
+  always:
+    - string
+  avoid:
+    - string
+  ask_first:
+    - string
+  evidence_required:
+    - string
+
+workflows:
+  intake:
+    - string
+  execution:
+    - string
+  review:
+    - string
+  handoff:
+    - string
+
+outputs:
+  deliverables:
+    - string
+  artifacts:
+    - string
+  reporting:
+    - string
 
 economy:
   rate: number              # Hourly/project rate (optional)

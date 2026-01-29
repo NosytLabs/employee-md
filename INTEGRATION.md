@@ -81,6 +81,29 @@ interface Employee {
     wallet?: string;
     created_at?: string;
   };
+  mission?: {
+    purpose?: string;
+    objectives?: string[];
+    success_criteria?: string[];
+    non_goals?: string[];
+  };
+  scope?: {
+    in_scope?: string[];
+    out_of_scope?: string[];
+    dependencies?: string[];
+    constraints?: string[];
+  };
+  permissions?: {
+    data_access?: string[];
+    system_access?: string[];
+    network_access?: string[];
+    tool_access?: string[];
+  };
+  verification?: {
+    required_checks?: string[];
+    evidence?: string[];
+    review_policy?: string;
+  };
   role: {
     title: string;
     level: 'junior' | 'mid' | 'senior' | 'lead';
@@ -118,6 +141,29 @@ const EmployeeSchema = z.object({
     agent_id: z.string(),
     version: z.string(),
     wallet: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
+  }).optional(),
+  mission: z.object({
+    purpose: z.string().optional(),
+    objectives: z.array(z.string()).optional(),
+    success_criteria: z.array(z.string()).optional(),
+    non_goals: z.array(z.string()).optional(),
+  }).optional(),
+  scope: z.object({
+    in_scope: z.array(z.string()).optional(),
+    out_of_scope: z.array(z.string()).optional(),
+    dependencies: z.array(z.string()).optional(),
+    constraints: z.array(z.string()).optional(),
+  }).optional(),
+  permissions: z.object({
+    data_access: z.array(z.string()).optional(),
+    system_access: z.array(z.string()).optional(),
+    network_access: z.array(z.string()).optional(),
+    tool_access: z.array(z.string()).optional(),
+  }).optional(),
+  verification: z.object({
+    required_checks: z.array(z.string()).optional(),
+    evidence: z.array(z.string()).optional(),
+    review_policy: z.string().optional(),
   }).optional(),
   role: z.object({
     title: z.string(),

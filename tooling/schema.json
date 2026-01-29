@@ -15,7 +15,11 @@
         "status": { "type": "string", "enum": ["draft", "stable", "deprecated"] },
         "schema": { "type": "string", "format": "uri" },
         "license": { "type": "string" },
-        "homepage": { "type": "string", "format": "uri" }
+        "homepage": { "type": "string", "format": "uri" },
+        "namespace": { "type": "string" },
+        "compatibility": { "type": "array", "items": { "type": "string" } },
+        "supersedes": { "type": "array", "items": { "type": "string" } },
+        "extends": { "type": "array", "items": { "type": "string" } }
       }
     },
     "identity": {
@@ -49,6 +53,68 @@
         },
         "work_location": { "type": "string", "enum": ["remote", "office", "hybrid"] },
         "employment_type": { "type": "string", "enum": ["full_time", "part_time", "contract"] }
+      }
+    },
+    "mission": {
+      "type": "object",
+      "properties": {
+        "purpose": { "type": "string" },
+        "objectives": { "type": "array", "items": { "type": "string" } },
+        "success_criteria": { "type": "array", "items": { "type": "string" } },
+        "non_goals": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "in_scope": { "type": "array", "items": { "type": "string" } },
+        "out_of_scope": { "type": "array", "items": { "type": "string" } },
+        "dependencies": { "type": "array", "items": { "type": "string" } },
+        "constraints": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "properties": {
+        "data_access": { "type": "array", "items": { "type": "string" } },
+        "system_access": { "type": "array", "items": { "type": "string" } },
+        "network_access": { "type": "array", "items": { "type": "string" } },
+        "tool_access": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "properties": {
+        "required_checks": { "type": "array", "items": { "type": "string" } },
+        "evidence": { "type": "array", "items": { "type": "string" } },
+        "review_policy": { "type": "string" }
+      }
+    },
+    "principles": { "type": "array", "items": { "type": "string" } },
+    "operating_policy": {
+      "type": "object",
+      "properties": {
+        "always": { "type": "array", "items": { "type": "string" } },
+        "avoid": { "type": "array", "items": { "type": "string" } },
+        "ask_first": { "type": "array", "items": { "type": "string" } },
+        "evidence_required": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "workflows": {
+      "type": "object",
+      "properties": {
+        "intake": { "type": "array", "items": { "type": "string" } },
+        "execution": { "type": "array", "items": { "type": "string" } },
+        "review": { "type": "array", "items": { "type": "string" } },
+        "handoff": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "properties": {
+        "deliverables": { "type": "array", "items": { "type": "string" } },
+        "artifacts": { "type": "array", "items": { "type": "string" } },
+        "reporting": { "type": "array", "items": { "type": "string" } }
       }
     },
     "economy": {

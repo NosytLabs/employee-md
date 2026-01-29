@@ -34,8 +34,11 @@ lifecycle:
 
 AI agents read this file to understand:
 - **Who they are** (identity, role, level)
+- **Why they exist** (mission, objectives, success criteria)
 - **What they can do** (capabilities, skills)
+- **What is in or out of scope** (scope, constraints)
 - **How to get paid** (rate, payment method, budget)
+- **What access they have** (permissions)
 - **Rules to follow** (delegation limits, guardrails)
 - **Their status** (active, suspended, terminated)
 - **AI settings** (model preference, token limits, tools)
@@ -43,6 +46,7 @@ AI agents read this file to understand:
 - **Integrations** (APIs, webhooks, services)
 - **Performance metrics** (KPIs, SLAs, benchmarks)
 - **Protocols** (A2A, x402, human review)
+- **Quality expectations** (verification and evidence)
 
 ---
 
@@ -50,9 +54,12 @@ AI agents read this file to understand:
 
 - Load the YAML at startup and treat it as the agent’s employment contract
 - Enforce guardrails and operating policy before executing tasks
+- Use mission and scope to accept or decline requests
+- Check permissions and lifecycle status before performing actions
 - Apply role, delegation, and lifecycle limits when planning or delegating work
 - Use AI settings and knowledge base pointers to select tools and context
 - Track outputs and performance metrics for audits and reviews
+- Run verification checks and attach evidence to required outputs
 
 ---
 
@@ -60,9 +67,11 @@ AI agents read this file to understand:
 
 1. Create an employee.md in your project or agent workspace
 2. Fill required fields: role.title, role.level, lifecycle.status
-3. Add operating policy, guardrails, and workflows to match your org rules
-4. Load and validate the file at startup
-5. Enforce it in task planning and execution
+3. Define mission, scope, and permissions so the agent can self-filter tasks
+4. Add operating policy, guardrails, and workflows to match your org rules
+5. Add verification requirements and expected evidence
+6. Load and validate the file at startup
+7. Enforce it in task planning and execution
 
 
 ## Use Cases
@@ -79,15 +88,15 @@ AI agents read this file to understand:
 
 ## Compatibility
 
-employee.md is designed to complement other agent standards like agents.md or skills.md. The spec metadata fields help tooling identify, validate, and link related specifications.
+employee.md complements other agent standards like AGENTS.md or skills.md by focusing on employment constraints, scope, and economics. Use AGENTS.md for repository-level instructions and employee.md for the agent’s contract.
 
 ---
 
 ## Related Standards
 
 - AGENTS.md is a repository-level instruction file for coding agents: https://agents.md/
-- worker.md defines runtime execution limits and permissions for agent workers
 - skills.md captures skill inventories and proficiency levels for agents or teams
+- worker.md is commonly used to describe runtime limits and execution constraints in some stacks
 - employee.md is an employment contract for agent behavior, constraints, and economics
 
 ---
@@ -136,6 +145,33 @@ Job definition and skills:
 - `skills` - Detailed skills with levels
 - `work_location` - remote | office | hybrid
 - `employment_type` - full_time | part_time | contract
+
+### Mission
+Purpose and objectives:
+- `purpose` - Primary mission statement
+- `objectives` - Key goals
+- `success_criteria` - Measurable outcomes
+- `non_goals` - Explicit exclusions
+
+### Scope
+Task boundaries:
+- `in_scope` - Work the agent should accept
+- `out_of_scope` - Work the agent must decline
+- `dependencies` - Required systems or approvals
+- `constraints` - Hard limitations (time, budget, policy)
+
+### Permissions
+Access boundaries:
+- `data_access` - Allowed data classifications or sources
+- `system_access` - Systems or environments allowed
+- `network_access` - Network destinations or restrictions
+- `tool_access` - Approved tools and services
+
+### Verification
+Quality gates:
+- `required_checks` - Lint, tests, security checks
+- `evidence` - Artifacts required for completion
+- `review_policy` - Review routing rules
 
 ### Principles
 - `principles` - Values and priorities that guide decisions
@@ -466,7 +502,7 @@ See [INTEGRATION.md](INTEGRATION.md) for complete integration guides:
 
 **Q: Is this like worker.md?**
 
-A: Different. worker.md = execution constraints (time limits, permissions). employee.md = employment (who you are, what you do, how you get paid). They complement each other.
+A: Different. employee.md is an employment contract (role, scope, economics, guardrails). If you use worker.md in your stack, keep it focused on runtime execution constraints and let employee.md define the broader contract.
 
 **Q: Do I need agents.md, soul.md, worker.md?**
 
@@ -513,10 +549,10 @@ A: Use `python tooling/validate.py employee.md` or JSON Schema validation.
 | [tooling/schema.json](tooling/schema.json) | 300+ | 1,000+ | JSON Schema |
 | [examples/minimal.md](examples/minimal.md) | 12+ | 50 | Minimal example |
 | [examples/ai-assistant.md](examples/ai-assistant.md) | 160+ | 800+ | AI assistant |
-| [examples/data-analyst.md](examples/data-analyst.md) | 125+ | 500 | Data analyst |
-| [examples/security-auditor.md](examples/security-auditor.md) | 180+ | 700 | Security auditor |
-| [examples/senior-dev.md](examples/senior-dev.md) | 90+ | 600 | Senior dev |
-| [examples/freelancer.md](examples/freelancer.md) | 55+ | 300 | Freelancer |
+| [examples/data-analyst.md](examples/data-analyst.md) | 125+ | 500+ | Data analyst |
+| [examples/security-auditor.md](examples/security-auditor.md) | 180+ | 700+ | Security auditor |
+| [examples/senior-dev.md](examples/senior-dev.md) | 90+ | 600+ | Senior dev |
+| [examples/freelancer.md](examples/freelancer.md) | 55+ | 300+ | Freelancer |
 
 ---
 
