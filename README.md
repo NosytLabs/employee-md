@@ -195,34 +195,37 @@ Use our **[PROMPT.md](PROMPT.md)** template. Copy-paste it into ChatGPT/Claude t
 
 ## 📂 Structure Reference
 
+A complete breakdown of the schema.
+
 ### Spec Metadata
 | Field | Type | Description |
 |-------|------|-------------|
-| `name` | string | "employee.md" |
-| `version` | string | Spec version (e.g., "1.0") |
-| `kind` | string | "agent-employment" |
+| `name` | string | **Required**. Must be "employee.md" |
+| `version` | string | **Required**. Spec version (e.g., "1.0") |
+| `kind` | string | **Required**. Must be "agent-employment" |
 
 ### Mission & Context
 | Field | Type | Description |
 |-------|------|-------------|
 | `purpose` | string | High-level mission statement. |
-| `constitution` | url | Link to Soul Document (values/ethics). |
+| `constitution` | url | Link to **Soul Document** (values/ethics). |
 | `project` | string | Project name. |
 | `repo` | url | Repository URL. |
 
 ### Role & Identity
 | Field | Type | Description |
 |-------|------|-------------|
-| `title` | string | Job Title (e.g., "Data Analyst"). |
-| `level` | enum | `junior`, `mid`, `senior`, `lead`. |
-| `wallet` | string | Crypto wallet address for x402. |
+| `title` | string | **Required**. Job Title (e.g., "Data Analyst"). |
+| `level` | enum | **Required**. `junior`, `mid`, `senior`, `lead`. |
+| `wallet` | string | Crypto wallet address for **x402**. |
 
-### Economy
+### Economy & Guardrails
 | Field | Type | Description |
 |-------|------|-------------|
 | `rate` | number | Hourly or per-task rate. |
 | `currency` | enum | `USD`, `EUR`, `BTC`, `ETH`. |
 | `budget_limit` | number | Max spend per month. |
+| `prohibited_actions` | list | Actions the agent MUST NOT take. |
 
 *(See [tooling/schema.json](tooling/schema.json) for the full JSON Schema)*
 
