@@ -92,6 +92,10 @@ class EmployeeValidator:
                 'schema': str,
                 'license': str,
                 'homepage': str,
+                'namespace': str,
+                'compatibility': list,
+                'supersedes': list,
+                'extends': list,
             },
             'identity': {
                 'agent_id': str,
@@ -107,6 +111,10 @@ class EmployeeValidator:
                 'work_location': str,
                 'employment_type': str,
             },
+            'principles': list,
+            'operating_policy': dict,
+            'workflows': dict,
+            'outputs': dict,
             'economy': {
                 'rate': (int, float),
                 'currency': str,
@@ -174,16 +182,23 @@ class EmployeeValidator:
 
         for section, fields in type_rules.items():
             if section in self.config:
-                for field, expected_type in fields.items():
-                    if field in self.config[section]:
-                        value = self.config[section][field]
-                        if is_placeholder(value):
-                            continue
-                        if not isinstance(value, expected_type):
-                            self.errors.append(
-                                f"Invalid type for {section}.{field}: "
-                                f"expected {expected_type}, got {type(value)}"
-                            )
+                if isinstance(fields, dict):
+                    for field, expected_type in fields.items():
+                        if field in self.config[section]:
+                            value = self.config[section][field]
+                            if is_placeholder(value):
+                                continue
+                            if not isinstance(value, expected_type):
+                                self.errors.append(
+                                    f"Invalid type for {section}.{field}: "
+                                    f"expected {expected_type}, got {type(value)}"
+                                )
+                else:
+                    value = self.config[section]
+                    if not is_placeholder(value) and not isinstance(value, fields):
+                        self.errors.append(
+                            f"Invalid type for {section}: expected {fields}, got {type(value)}"
+                        )
 
     def validate_formats(self):
         """Validate field formats."""
