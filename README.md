@@ -16,23 +16,24 @@
 
 **The Open Standard for AI Employment Contracts.**
 
-`employee.md` is a YAML-based specification that defines the **Identity**, **Mission**, **Context**, **Economy**, and **Guardrails** for AI Agents. It serves as the "Employment Contract" that governs how an AI agent operates, gets paid, and interacts with the world.
+`employee.md` is the definitive YAML-based specification for the **Agentic Workforce**. It defines the **Identity**, **Mission**, **Context**, **Economy**, and **Guardrails** for AI Agents, serving as the "Employment Contract" that governs how an autonomous agent operates, gets paid, and interacts with the world.
 
 ---
 
 ## 🚀 Why employee.md?
 
-As the **Agentic Web** emerges, AI agents are transitioning from simple chatbots to autonomous employees. However, they lack a standardized way to understand their role, boundaries, and compensation. 
+As the **Agentic Web** emerges, AI agents are transitioning from simple chatbots to autonomous employees. To operate safely and effectively at scale, they need a standardized way to understand their role, boundaries, and compensation. 
 
 **employee.md solves this by providing:**
 
-1.  **Context Awareness**: Agents know *where* they are working (Repo, Project, Team).
+1.  **Context Awareness**: Agents know *where* they are working (Repo, Project, Team) and *who* they are.
 2.  **Ethical Grounding**: Agents link to a "Constitution" or "Soul Document" for alignment.
-3.  **Economic Autonomy**: Agents have wallets and payment protocols (x402) to earn and spend.
-4.  **Operational Safety**: Explicit guardrails, permissions, and scope definitions.
-5.  **Interoperability**: A standard format that any Agent Runtime (LangChain, AutoGen, etc.) can parse.
+3.  **Economic Autonomy**: Agents have wallets and payment protocols (**x402**) to earn and spend.
+4.  **Operational Safety**: Explicit guardrails, permissions, and scope definitions preventing rogue actions.
+5.  **Interoperability**: A standard format that any Agent Runtime (LangChain, AutoGen, CrewAI, etc.) can parse.
+6.  **Compliance & Governance**: Built-in support for audit logs, SOC2/GDPR frameworks, and access controls.
 
-> "If `agents.md` is the README for the code, `employee.md` is the Contract for the Agent."
+> "If `AGENTS.md` is the README for the code, `employee.md` is the Contract for the Agent."
 
 ---
 
@@ -42,11 +43,11 @@ Understanding the vocabulary of the Agentic Workforce:
 
 | Term | Definition |
 |------|------------|
-| **Soul / Constitution** | The ethical core and personality of the agent. Often a link to a "Soul Document" (e.g., Claude's Soul) that defines values and behavioral nuances. |
+| **Soul / Constitution** | The ethical core and personality of the agent. Often a link to a **Soul Document** (e.g., `SOUL.md`) that defines values and behavioral nuances. |
 | **Mission** | The high-level purpose. Unlike specific tasks, the Mission guides the agent's long-term decision making and prioritization. |
-| **Context** | The operational environment. Includes the specific Project, Repository, Team, and Deployment Environment (Dev/Prod) the agent is active in. |
+| **Context** | The operational environment. Includes the specific Project, Repository, Team, and Deployment Environment (Dev/Prod). |
 | **Scope** | The "Job Description". Defines what is `in_scope` (do this) and `out_of_scope` (never do this). |
-| **Guardrails** | Hard constraints. `prohibited_actions` and `confidence_thresholds` that preventing the agent from going rogue or hallucinating. |
+| **Guardrails** | Hard constraints. `prohibited_actions` and `confidence_thresholds` that prevent the agent from hallucinating or taking dangerous actions. |
 | **Economy (x402)** | The payment layer. Defines how the agent is billed (hourly/task), its crypto wallet, and budget limits. |
 | **A2A (Agent-to-Agent)** | Protocols for how this agent talks to *other* agents. Includes discovery, message formats, and delegation rules. |
 
@@ -87,75 +88,87 @@ graph TD
 
 ## ⚡ Quick Start
 
-1.  **Create the file** in your agent's root directory:
+### 1. Create the file
 
-    ```bash
-    touch employee.md
-    ```
+In your agent's root directory:
 
-2.  **Paste the template**:
+```bash
+touch employee.md
+```
 
-    ```yaml
-    ---
-    spec:
-      name: employee.md
-      version: "1.0"
-      kind: agent-employment
-    
-    identity:
-      agent_id: "dev-agent-001"
-      version: "1.0.0"
-    
-    role:
-      title: "Senior Engineer"
-      level: "senior"
-    
-    mission:
-      purpose: "Write clean, secure code."
-      constitution: "https://gist.github.com/Richard-Weiss/efe157692991535403bd7e7fb20b6695"
-    
-    context:
-      environment: "production"
-      team: "Core Infra"
-    
-    lifecycle:
-      status: "active"
-    ---
-    ```
+### 2. Paste the template
 
-3.  **Validate**:
+```yaml
+---
+spec:
+  name: employee.md
+  version: "1.0"
+  kind: agent-employment
 
-    ```bash
-    python tooling/validate.py employee.md
-    ```
+identity:
+  agent_id: "dev-agent-001"
+  version: "1.0.0"
+
+role:
+  title: "Senior Engineer"
+  level: "senior"
+
+mission:
+  purpose: "Write clean, secure code."
+  constitution: "https://gist.github.com/Richard-Weiss/efe157692991535403bd7e7fb20b6695"
+
+context:
+  environment: "production"
+  team: "Core Infra"
+
+lifecycle:
+  status: "active"
+---
+```
+
+### 3. Validate
+
+Ensure your file adheres to the schema:
+
+```bash
+pip install pyyaml jsonschema
+python tooling/validate.py employee.md
+```
 
 ---
 
-## 🤖 Molt.bot Integration
+## 💻 Usage & Integration
 
-**Using [Molt.bot](https://github.com/moltbot/moltbot)?** 
+### Python Integration
 
-`employee.md` is designed to work alongside `AGENTS.md` and `SOUL.md` in your Molt workspace.
+Load and use `employee.md` in your Python-based agent:
 
-1.  **Place** `employee.md` in your workspace root.
-2.  **Reference** it in your `AGENTS.md`:
-    > "You must adhere to the role, permissions, and budget defined in `employee.md`."
-3.  **See full guide**: [examples/molt-bot-integration.md](examples/molt-bot-integration.md)
+```python
+import yaml
+from pathlib import Path
 
----
+def load_employee_spec(path="employee.md"):
+    with open(path, "r") as f:
+        spec = yaml.safe_load(f)
+    return spec
 
-## 🔮 How AIs Understand This
+agent_spec = load_employee_spec()
 
-AI models don't "know" `employee.md` by magic. They understand it via **Context Injection**:
+print(f"Initializing Agent: {agent_spec['role']['title']}")
+print(f"Mission: {agent_spec['mission']['purpose']}")
 
-1.  **The Runtime** (Molt, LangChain, etc.) reads `employee.md`.
-2.  **It Injects** the data into the System Prompt:
-    > "You are a Senior Engineer (Role). Your budget is $50 (Economy). You must NEVER delete production DBs (Guardrails)."
-3.  **The Model** follows these instructions as if they were innate personality traits.
+# Example: Check Guardrails before action
+def can_perform_action(action, spec):
+    if action in spec.get('guardrails', {}).get('prohibited_actions', []):
+        raise PermissionError(f"Action '{action}' is PROHIBITED by employee.md contract.")
+    return True
+```
 
-### 🧠 System Prompt Example
+### 🔮 Context Injection (System Prompts)
 
-Here is what the AI *actually sees* when `employee.md` is loaded:
+AI models understand `employee.md` when it's injected into their System Prompt.
+
+**The Runtime** (Molt, LangChain, etc.) reads `employee.md` and generates a prompt like this:
 
 ```text
 SYSTEM PROMPT:
@@ -174,22 +187,21 @@ Your personality is defined by: https://gist.github.com/... (Soul).
 
 ---
 
-## 🪄 Generate with AI
+## 🤖 Molt.bot & Ecosystem Integration
 
-Don't want to write YAML? 
-
-Use our **[PROMPT.md](PROMPT.md)** template. Copy-paste it into ChatGPT/Claude to generate a valid `employee.md` in seconds.
-
----
-
-## 🌍 The Agentic Web Ecosystem
-
-`employee.md` is designed to work seamlessly with other open standards:
+`employee.md` is designed to work seamlessly with the broader Agentic Web ecosystem.
 
 *   **[AGENTS.md](https://agents.md/)**: Repository-level instructions. *Use `AGENTS.md` to tell the agent about the **codebase**, and `employee.md` to tell the agent about **itself**.*
-*   **[MCP (Model Context Protocol)](https://modelcontextprotocol.io/)**: `employee.md` supports defining `mcp_servers` directly in the `integration` section.
+*   **[Model Context Protocol (MCP)](https://modelcontextprotocol.io/)**: `employee.md` supports defining `mcp_servers` directly in the `integration` section to load tools dynamically.
+*   **[SOUL.md](https://github.com/NosytLabs/soul-md)** (Concept): A dedicated file for defining the agent's personality, values, and ethical alignment.
+*   **[TASKS.md](https://github.com/snarktank/ai-dev-tasks)**: Standard for tracking agent work items.
 *   **[Skills.sh](https://skills.sh)**: Vercel's standard for agent skills. Link them in `capabilities`.
-*   **[TASKS.md](https://github.com/snarktank/ai-dev-tasks)**: Standard for tracking agent work.
+
+### Molt.bot Example
+
+1.  **Place** `employee.md` in your workspace root.
+2.  **Reference** it in your `AGENTS.md`:
+    > "You must adhere to the role, permissions, and budget defined in `employee.md`."
 
 ---
 

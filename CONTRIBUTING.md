@@ -2,6 +2,8 @@
 
 Thank you for your interest in contributing to the **employee.md** open standard! We welcome contributions from the community to help define the future of AI agent employment.
 
+`employee.md` is part of a broader ecosystem of open standards for the Agentic Web. We aim to ensure interoperability with standards like **[AGENTS.md](https://agents.md)** and **[MCP](https://modelcontextprotocol.io/)**.
+
 ## How to Contribute
 
 ### 1. Propose Changes
