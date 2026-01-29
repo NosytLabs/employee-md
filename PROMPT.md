@@ -2,6 +2,8 @@
 
 Copy and paste the prompt below into any AI model (Claude, ChatGPT, DeepSeek) to generate a valid `employee.md` file for your agent.
 
+This prompt is optimized to produce a **v1.0 compliant** specification that integrates with `AGENTS.md` and other standard protocols.
+
 ---
 
 ## 📋 The Prompt
@@ -26,14 +28,16 @@ Ensure you include:
 - `guardrails` and `permissions` based on the constraints
 - `economy` section (default to x402/crypto if unsure, or standard rates)
 - `context` section for the environment
+- `integration` section if tools like MCP are needed
 
 Output ONLY the YAML code block.
 ```
 
 ---
 
-## 💡 What to do next?
+## 💡 Next Steps
 
-1.  Save the output as `employee.md` in your agent's root directory.
-2.  Commit it to your repository.
-3.  Point your Agent Runtime (Molt.bot, LangChain, etc.) to this file.
+1.  **Save** the output as `employee.md` in your agent's root directory.
+2.  **Validate** it using the provided python tool: `python tooling/validate.py employee.md`.
+3.  **Commit** it to your repository alongside your `AGENTS.md`.
+4.  **Point** your Agent Runtime (Molt.bot, LangChain, etc.) to this file.
