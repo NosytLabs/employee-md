@@ -1,2 +1,475 @@
-# employee-md
-The agentic employment specification for AI employees in internet-native economy. Complete specification with examples, best practices, and integration guides.
+# employee.md
+
+**AI agent employment specification.**
+
+---
+
+## Quick Start
+
+```yaml
+---
+spec:
+  name: "employee.md"
+  version: "1.0"
+  kind: "agent-employment"
+  status: "stable"
+  schema: "https://example.com/employee.schema.json"
+  license: "MIT"
+  homepage: "https://github.com/NosytLabs/employee-md"
+
+role:
+  title: "Worker"
+  level: "senior"
+
+lifecycle:
+  status: "active"
+---
+```
+
+---
+
+## What is employee.md?
+
+**employee.md** = Open YAML specification for AI agent employment.
+
+AI agents read this file to understand:
+- **Who they are** (identity, role, level)
+- **What they can do** (capabilities, skills)
+- **How to get paid** (rate, payment method, budget)
+- **Rules to follow** (delegation limits, guardrails)
+- **Their status** (active, suspended, terminated)
+- **AI settings** (model preference, token limits, tools)
+- **Knowledge base** (documentation, training data)
+- **Integrations** (APIs, webhooks, services)
+- **Performance metrics** (KPIs, SLAs, benchmarks)
+- **Protocols** (A2A, x402, human review)
+
+---
+
+## Use Cases
+
+- Standardize AI agent roles across teams and vendors
+- Automate onboarding with consistent operational constraints
+- Enforce compliance and audit readiness for sensitive workflows
+- Drive multi-agent coordination with delegation and A2A protocols
+- Tie compensation, budgets, and payment rails to agent work
+- Track KPIs, SLAs, and benchmarks across deployed agents
+
+---
+
+## Compatibility
+
+employee.md is designed to complement other agent standards like agents.md or skills.md. The spec metadata fields help tooling identify, validate, and link related specifications.
+
+---
+
+## Structure
+
+### Spec
+Specification metadata:
+- `name` - Spec name
+- `version` - Spec version
+- `kind` - Spec kind
+- `status` - draft | stable | deprecated
+- `schema` - URL to JSON Schema
+- `license` - SPDX license identifier
+- `homepage` - Spec homepage URL
+
+### Identity
+Agent identification and metadata:
+- `agent_id` - Unique identifier (required)
+- `version` - Config version
+- `wallet` - Crypto wallet address
+- `created_at` - ISO date
+
+### Role
+Job definition and skills:
+- `title` - Job title (required)
+- `level` - junior | mid | senior | lead (required)
+- `department` - Team/department
+- `capabilities` - List of skills
+- `skills` - Detailed skills with levels
+- `work_location` - remote | office | hybrid
+- `employment_type` - full_time | part_time | contract
+
+### Economy
+Payment and billing:
+- `rate` - Hourly/project rate
+- `currency` - USD | EUR | BTC | ETH (default: USD)
+- `payment_method` - x402 | crypto | fiat | none
+- `billing_schedule` - weekly | monthly | milestone
+- `budget_limit` - Monthly spend limit
+- `cost_center` - Department code
+
+### Delegation
+Task management:
+- `max_tasks` - Concurrent task limit (default: 5)
+- `protocol` - A2A | human_review | auto (default: auto)
+- `task_timeout` - Seconds before timeout (default: 3600)
+- `sub_delegation` - Allow delegating to other agents (default: false)
+- `escalation_path` - List of agent IDs to escalate to
+
+### Lifecycle
+Employment status:
+- `status` - onboarding | active | suspended | terminated (required)
+- `start_date` - ISO date
+- `end_date` - ISO date
+- `probation_end` - ISO date
+- `performance_rating` - exceeds | meets | needs_improvement
+- `next_review` - ISO date
+
+### Compliance
+Regulatory requirements:
+- `frameworks` - SOC2, GDPR, HIPAA, etc.
+- `data_classification` - public | confidential | restricted
+- `audit_required` - Enable logging for compliance (default: false)
+- `security_clearance` - none | basic | secret | top_secret (default: none)
+
+### Communication
+Contact preferences:
+- `channels` - Slack, Email, Discord, etc.
+- `timezone` - IANA timezone (default: UTC)
+- `availability` - 9:00-18:00 UTC or "24/7"
+- `response_time` - Expected response time
+
+### Guardrails
+Safety constraints:
+- `prohibited_actions` - Actions agent must never take
+- `required_approval` - Actions requiring human approval
+- `max_spend_per_task` - Per-task spending limit
+- `confidence_threshold` - Min confidence to act (0.0-1.0, optional)
+
+### AI Settings
+AI model configuration:
+- `model_preference` - gpt-4, claude-3, llama-3, etc.
+- `token_limits` - Input, output, context window sizes
+- `generation_params` - Temperature, top_p, penalties
+- `tools_enabled` - function_calling, code_execution, web_browsing
+- `memory_settings` - Context retention, history, vector store
+- `reasoning_effort` - low | medium | high
+
+### Knowledge Base
+Documentation and training:
+- `documentation_urls` - Internal documentation URLs
+- `training_data` - Sources, corpora, datasets
+- `faq_links` - FAQ or help documentation
+- `best_practices` - Best practice guidelines
+- `version_control` - VCS URL for knowledge sync
+
+### Integration
+External system connections:
+- `apis` - External API integrations
+- `webhooks` - Webhook endpoints for events
+- `services` - Connected services (database, storage, queue, cache)
+- `mcp_servers` - MCP server connections
+
+### Performance
+Metrics and monitoring:
+- `metrics` - Performance metrics to track
+- `kpis` - Key Performance Indicators
+- `slas` - Service Level Agreements
+- `benchmarks` - Test benchmarks
+
+### Protocols
+Communication and payment standards:
+- `a2a` - Agent-to-agent communication
+- `x402` - Payment protocol
+- `human_review` - Human review workflow
+- `delegation` - Task delegation protocol
+
+### Custom Fields
+- `custom_fields` - Any additional data (optional)
+
+---
+
+## Examples
+
+### Minimal
+
+**File:** [examples/minimal.md](examples/minimal.md)
+
+```yaml
+---
+spec:
+  name: "employee.md"
+  version: "1.0"
+  kind: "agent-employment"
+  status: "stable"
+  schema: "https://example.com/employee.schema.json"
+  license: "MIT"
+  homepage: "https://github.com/NosytLabs/employee-md"
+
+role:
+  title: "Worker"
+  level: "senior"
+
+lifecycle:
+  status: "active"
+---
+```
+
+### AI Assistant
+
+**File:** [examples/ai-assistant.md](examples/ai-assistant.md)
+
+Full-featured AI assistant with:
+- AI settings (model, tokens, tools, memory)
+- Knowledge base (documentation, training data)
+- Integration (APIs, webhooks, services, MCP)
+- Performance metrics, KPIs, SLAs
+- Protocols (A2A, human review, delegation)
+- Guardrails
+
+### Data Analyst
+
+**File:** [examples/data-analyst.md](examples/data-analyst.md)
+
+Data analyst configuration with:
+- AI settings for data processing
+- Knowledge base with data sources
+- Integration with Snowflake and S3
+- Performance metrics for accuracy and speed
+
+### Security Auditor
+
+**File:** [examples/security-auditor.md](examples/security-auditor.md)
+
+Security auditor configuration with:
+- Compliance frameworks (SOC2, GDPR, HIPAA, PCI-DSS)
+- Security clearance
+- AI settings for security scanning
+- Integration with security tools
+- x402 payment protocol
+- Performance benchmarks
+
+### Senior Developer
+
+**File:** [examples/senior-dev.md](examples/senior-dev.md)
+
+Full-featured senior developer with:
+- Identity and wallet
+- Capabilities and skills
+- Economy with x402 payments
+- Delegation with escalation
+- Compliance frameworks
+- Communication channels
+- Guardrails
+
+### Freelancer
+
+**File:** [examples/freelancer.md](examples/freelancer.md)
+
+Freelancer configuration with:
+- Contract employment
+- Crypto payments
+- Flexible availability
+- Limited delegation
+
+---
+
+## How AI Uses This
+
+### Step 1: Parse YAML
+AI reads the YAML file and extracts all fields.
+
+### Step 2: Understand Identity
+AI knows who they are (`agent_id`, `version`).
+
+### Step 3: Understand Role
+AI knows their job title, level, capabilities, and skills.
+
+### Step 4: Understand Economy
+AI knows their rate, payment method, and budget limits.
+
+### Step 5: Understand Delegation
+AI knows task limits, protocol, and escalation rules.
+
+### Step 6: Understand Lifecycle
+AI knows their current status and key dates.
+
+### Step 7: Follow Guardrails
+AI respects prohibited actions, approval requirements, and confidence thresholds.
+
+### Step 8: Configure AI
+AI uses AI settings for model preference, token limits, generation params, tools, memory.
+
+### Step 9: Access Knowledge Base
+AI uses knowledge base for documentation, training data, FAQs, best practices.
+
+### Step 10: Use Integrations
+AI connects to APIs, webhooks, services, MCP servers.
+
+### Step 11: Track Performance
+AI monitors metrics, KPIs, SLAs, benchmarks.
+
+### Step 12: Use Protocols
+AI communicates via A2A, handles x402 payments, follows human review, delegates tasks.
+
+### Step 13: Communicate
+AI uses specified channels, timezone, and availability.
+
+---
+
+## Validation
+
+### Using Python Validator
+
+```bash
+# Install dependencies
+pip install pyyaml
+
+# Run validation
+python tooling/validate.py employee.md
+
+# Validate examples
+python tooling/validate.py examples/ai-assistant.md
+python tooling/validate.py examples/data-analyst.md
+python tooling/validate.py examples/security-auditor.md
+```
+
+### Using JSON Schema
+
+```python
+import json
+from jsonschema import validate, ValidationError
+import yaml
+
+with open('tooling/schema.json', 'r') as f:
+    schema = json.load(f)
+
+with open('employee.md', 'r') as f:
+    config = yaml.safe_load(f)
+
+try:
+    validate(instance=config, schema=schema)
+    print("✓ Valid!")
+except ValidationError as e:
+    print(f"✗ Invalid: {e.message}")
+```
+
+---
+
+## Integration
+
+See [INTEGRATION.md](INTEGRATION.md) for complete integration guides:
+
+- Python integration (PyYAML, Pydantic)
+- TypeScript integration (js-yaml, Zod)
+- LangChain integration
+- AutoGen integration
+- Protocol integration (A2A, x402)
+- MCP server integration
+- Error handling
+- Best practices
+
+---
+
+## Best Practices
+
+### For AI Parsing
+- **Use inline comments** - Every field has a comment explaining type/options
+- **Use enums in comments** - e.g., "junior | mid | senior | lead"
+- **Specify defaults** - e.g., "(default: UTC)"
+- **Group related fields** - identity, role, economy, delegation, etc.
+
+### For AI Behavior
+- **Set clear delegation limits** - Prevent task overload
+- **Define guardrails** - Safety boundaries for AI actions
+- **Specify protocols** - How AI should handle tasks (auto vs human review)
+- **Set confidence thresholds** - When to act vs ask for help
+- **Configure AI settings** - Model preference, token limits, tools
+- **Define knowledge base** - Documentation, training data, FAQs
+- **Track performance** - Metrics, KPIs, SLAs, benchmarks
+
+### For Humans
+- **Use semantic versioning** - "1.0", "1.1", etc.
+- **Use ISO dates** - "2025-01-28" for consistency
+- **Use standard currencies** - USD, EUR, BTC, ETH
+- **Document custom fields** - Add comments explaining non-standard fields
+- **Validate configs** - Use provided validator tools
+- **Include spec metadata** - name, version, kind for interoperability
+
+### For Protocols
+- **Enable A2A** - For agent-to-agent communication
+- **Configure x402** - For crypto payments
+- **Use human review** - For sensitive operations
+- **Track delegation** - Monitor delegated tasks
+
+---
+
+## FAQ
+
+**Q: Is this like worker.md?**
+
+A: Different. worker.md = execution constraints (time limits, permissions). employee.md = employment (who you are, what you do, how you get paid). They complement each other.
+
+**Q: Do I need agents.md, soul.md, worker.md?**
+
+A: No. employee.md is standalone. Use it alone or combine with others if you want.
+
+**Q: Can I add custom stuff?**
+
+A: Yes. Use `custom_fields` for anything you need.
+
+**Q: Is x402 required?**
+
+A: No. Only if you want payments.
+
+**Q: How does AI parse this?**
+
+A: AI reads YAML and interprets inline comments as field documentation. The structure is optimized for LLM understanding.
+
+**Q: What's the minimum required?**
+
+A: Only `role.title`, `role.level`, and `lifecycle.status` are required. Everything else is optional.
+
+**Q: What's the difference between A2A and delegation?**
+
+A: A2A = agent-to-agent communication protocol (standardized messaging). Delegation = task assignment within your organization (who can do what).
+
+**Q: How do I integrate with my AI framework?**
+
+A: See [INTEGRATION.md](INTEGRATION.md) for examples with LangChain, AutoGen, Python, TypeScript.
+
+**Q: How do I validate my config?**
+
+A: Use `python tooling/validate.py employee.md` or JSON Schema validation.
+
+---
+
+## Files
+
+| File | Lines | Tokens | Purpose |
+|------|-------|--------|---------|
+| [employee.md](employee.md) | 170+ | 800+ | Main spec ✅ |
+| [README.md](README.md) | 350+ | 2,000+ | This guide |
+| [INTEGRATION.md](INTEGRATION.md) | 400+ | 2,500+ | Integration guide |
+| [tooling/validate.py](tooling/validate.py) | 260+ | 1,500+ | Python validator |
+| [tooling/schema.json](tooling/schema.json) | 300+ | 1,000+ | JSON Schema |
+| [examples/minimal.md](examples/minimal.md) | 12+ | 50 | Minimal example |
+| [examples/ai-assistant.md](examples/ai-assistant.md) | 160+ | 800+ | AI assistant |
+| [examples/data-analyst.md](examples/data-analyst.md) | 125+ | 500+ | Data analyst |
+| [examples/security-auditor.md](examples/security-auditor.md) | 180+ | 700+ | Security auditor |
+| [examples/senior-dev.md](examples/senior-dev.md) | 90+ | 600+ | Senior dev |
+| [examples/freelancer.md](examples/freelancer.md) | 55+ | 300+ | Freelancer |
+
+---
+
+## Version
+
+**v1.0 (January 2026)** — Open Standard
+
+- 170+ lines
+- 800+ tokens
+- Complete protocol support (A2A, x402, human review, delegation)
+- AI settings, knowledge base, integration, performance
+- Validation tools
+- Integration guides
+- Optimized for AI parsing
+- Works with all AI models
+
+---
+
+## License
+
+MIT
