@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this specification, please cite it as below."
+authors:
+  - family-names: "Labs"
+    given-names: "Nosyt"
+title: "employee.md: Open Standard for AI Agent Employment"
+version: 1.0.0
+date-released: 2026-01-29
+url: "https://github.com/NosytLabs/employee-md"
+license: MIT
+keywords:
+  - ai
+  - agents
+  - specification
+  - standard
+  - employment
+  - yaml

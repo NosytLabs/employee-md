@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "employee-md"
+version = "1.0.0"
+description = "Validation tooling for employee.md specification"
+authors = [
+  { name="NosytLabs", email="opensource@nosytlabs.com" },
+]
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "pyyaml>=6.0",
+    "jsonschema>=4.0.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/NosytLabs/employee-md"
+"Bug Tracker" = "https://github.com/NosytLabs/employee-md/issues"
+
+[project.scripts]
+employee-validate = "tooling.validate:main"

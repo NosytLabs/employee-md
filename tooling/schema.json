@@ -1,0 +1,390 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Employee.md Configuration",
+  "description": "AI agent employment specification",
+  "type": "object",
+  "required": ["role", "lifecycle"],
+  "properties": {
+    "spec": {
+      "type": "object",
+      "required": ["name", "version", "kind"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "kind": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "stable", "deprecated"] },
+        "schema": { "type": "string", "format": "uri" },
+        "license": { "type": "string" },
+        "homepage": { "type": "string", "format": "uri" },
+        "namespace": { "type": "string" },
+        "compatibility": { "type": "array", "items": { "type": "string" } },
+        "supersedes": { "type": "array", "items": { "type": "string" } },
+        "extends": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "properties": {
+        "agent_id": { "type": "string" },
+        "version": { "type": "string" },
+        "wallet": { "type": "string", "pattern": "^0x[a-fA-F0-9]{40}$" },
+        "created_at": { "type": "string", "format": "date" },
+        "updated_at": { "type": "string", "format": "date" }
+      }
+    },
+    "role": {
+      "type": "object",
+      "required": ["title", "level"],
+      "properties": {
+        "title": { "type": "string" },
+        "level": { "type": "string", "enum": ["junior", "mid", "senior", "lead"] },
+        "department": { "type": "string" },
+        "capabilities": { "type": "array", "items": { "type": "string" } },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "level": { "type": "number", "minimum": 0, "maximum": 5 }
+            },
+            "required": ["name", "level"]
+          }
+        },
+        "work_location": { "type": "string", "enum": ["remote", "office", "hybrid"] },
+        "employment_type": { "type": "string", "enum": ["full_time", "part_time", "contract"] }
+      }
+    },
+    "mission": {
+      "type": "object",
+      "properties": {
+        "purpose": { "type": "string" },
+        "constitution": { "type": "string" },
+        "objectives": { "type": "array", "items": { "type": "string" } },
+        "success_criteria": { "type": "array", "items": { "type": "string" } },
+        "non_goals": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "project": { "type": "string" },
+        "repo": { "type": "string", "format": "uri" },
+        "environment": { "type": "string", "enum": ["dev", "staging", "prod"] },
+        "team": { "type": "string" }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "in_scope": { "type": "array", "items": { "type": "string" } },
+        "out_of_scope": { "type": "array", "items": { "type": "string" } },
+        "dependencies": { "type": "array", "items": { "type": "string" } },
+        "constraints": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "properties": {
+        "data_access": { "type": "array", "items": { "type": "string" } },
+        "system_access": { "type": "array", "items": { "type": "string" } },
+        "network_access": { "type": "array", "items": { "type": "string" } },
+        "tool_access": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "properties": {
+        "required_checks": { "type": "array", "items": { "type": "string" } },
+        "evidence": { "type": "array", "items": { "type": "string" } },
+        "review_policy": { "type": "string" }
+      }
+    },
+    "principles": { "type": "array", "items": { "type": "string" } },
+    "operating_policy": {
+      "type": "object",
+      "properties": {
+        "always": { "type": "array", "items": { "type": "string" } },
+        "avoid": { "type": "array", "items": { "type": "string" } },
+        "ask_first": { "type": "array", "items": { "type": "string" } },
+        "evidence_required": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "workflows": {
+      "type": "object",
+      "properties": {
+        "intake": { "type": "array", "items": { "type": "string" } },
+        "execution": { "type": "array", "items": { "type": "string" } },
+        "review": { "type": "array", "items": { "type": "string" } },
+        "handoff": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "properties": {
+        "deliverables": { "type": "array", "items": { "type": "string" } },
+        "artifacts": { "type": "array", "items": { "type": "string" } },
+        "reporting": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "economy": {
+      "type": "object",
+      "properties": {
+        "rate": { "type": "number", "minimum": 0 },
+        "currency": { "type": "string", "enum": ["USD", "EUR", "BTC", "ETH"] },
+        "payment_method": { "type": "string", "enum": ["x402", "crypto", "fiat", "none"] },
+        "billing_schedule": { "type": "string", "enum": ["weekly", "monthly", "milestone"] },
+        "budget_limit": { "type": "number", "minimum": 0 },
+        "cost_center": { "type": "string" }
+      }
+    },
+    "delegation": {
+      "type": "object",
+      "properties": {
+        "max_tasks": { "type": "number", "minimum": 1, "default": 5 },
+        "protocol": { "type": "string", "enum": ["a2a", "A2A", "human_review", "auto"], "default": "auto" },
+        "task_timeout": { "type": "number", "minimum": 60, "default": 3600 },
+        "sub_delegation": { "type": "boolean", "default": false },
+        "escalation_path": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "type": "string", "enum": ["onboarding", "active", "suspended", "terminated"] },
+        "start_date": { "type": "string", "format": "date" },
+        "end_date": { "type": "string", "format": "date" },
+        "probation_end": { "type": "string", "format": "date" },
+        "performance_rating": { "type": "string", "enum": ["exceeds", "meets", "needs_improvement"] },
+        "next_review": { "type": "string", "format": "date" }
+      }
+    },
+    "compliance": {
+      "type": "object",
+      "properties": {
+        "frameworks": { "type": "array", "items": { "type": "string" } },
+        "data_classification": { "type": "string", "enum": ["public", "confidential", "restricted"] },
+        "audit_required": { "type": "boolean", "default": false },
+        "security_clearance": { "type": "string", "enum": ["none", "basic", "secret", "top_secret"], "default": "none" }
+      }
+    },
+    "communication": {
+      "type": "object",
+      "properties": {
+        "channels": { "type": "array", "items": { "type": "string" } },
+        "timezone": { "type": "string", "default": "UTC" },
+        "availability": { "type": "string" },
+        "response_time": { "type": "string" }
+      }
+    },
+    "guardrails": {
+      "type": "object",
+      "properties": {
+        "prohibited_actions": { "type": "array", "items": { "type": "string" } },
+        "required_approval": { "type": "array", "items": { "type": "string" } },
+        "max_spend_per_task": { "type": "number", "minimum": 0 },
+        "confidence_threshold": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "ai_settings": {
+      "type": "object",
+      "properties": {
+        "model_preference": { "type": "string" },
+        "token_limits": {
+          "type": "object",
+          "properties": {
+            "input": { "type": "number", "minimum": 1, "default": 128000 },
+            "output": { "type": "number", "minimum": 1, "default": 4096 },
+            "context": { "type": "number", "minimum": 1, "default": 200000 }
+          }
+        },
+        "generation_params": {
+          "type": "object",
+          "properties": {
+            "temperature": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.7 },
+            "top_p": { "type": "number", "minimum": 0, "maximum": 1, "default": 1.0 },
+            "frequency_penalty": { "type": "number", "minimum": -2, "maximum": 2, "default": 0.0 },
+            "presence_penalty": { "type": "number", "minimum": -2, "maximum": 2, "default": 0.0 }
+          }
+        },
+        "tools_enabled": { "type": "array", "items": { "type": "string" } },
+        "memory_settings": {
+          "type": "object",
+          "properties": {
+            "context_retention": { "type": "string", "enum": ["conversation", "session", "persistent"], "default": "conversation" },
+            "max_history": { "type": "number", "minimum": 1, "default": 10 },
+            "vector_store": { "type": "boolean", "default": false }
+          }
+        },
+        "reasoning_effort": { "type": "string", "enum": ["low", "medium", "high"], "default": "medium" }
+      }
+    },
+    "knowledge_base": {
+      "type": "object",
+      "properties": {
+        "documentation_urls": { "type": "array", "items": { "type": "string", "format": "uri" } },
+        "training_data": {
+          "type": "object",
+          "properties": {
+            "sources": { "type": "array", "items": { "type": "string" } },
+            "corpora": { "type": "array", "items": { "type": "string" } },
+            "datasets": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "faq_links": { "type": "array", "items": { "type": "string", "format": "uri" } },
+        "best_practices": { "type": "array", "items": { "type": "string", "format": "uri" } },
+        "version_control": { "type": "string", "format": "uri" }
+      }
+    },
+    "integration": {
+      "type": "object",
+      "properties": {
+        "apis": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "endpoint": { "type": "string", "format": "uri" },
+              "auth_type": { "type": "string", "enum": ["api_key", "oauth", "jwt"] },
+              "rate_limit": { "type": "number", "minimum": 1 }
+            },
+            "required": ["name", "endpoint", "auth_type", "rate_limit"]
+          }
+        },
+        "webhooks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "event": { "type": "string" },
+              "url": { "type": "string", "format": "uri" },
+              "method": { "type": "string", "enum": ["POST", "PUT", "PATCH"] }
+            },
+            "required": ["event", "url", "method"]
+          }
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string", "enum": ["database", "storage", "queue", "cache"] },
+              "connection_string": { "type": "string" }
+            },
+            "required": ["name", "type", "connection_string"]
+          }
+        },
+        "mcp_servers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "endpoint": { "type": "string", "format": "uri" },
+              "capabilities": { "type": "array", "items": { "type": "string" } }
+            },
+            "required": ["name", "endpoint", "capabilities"]
+          }
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "target": { "type": "number" },
+              "weight": { "type": "number", "minimum": 0, "maximum": 1 }
+            },
+            "required": ["name", "target", "weight"]
+          }
+        },
+        "kpis": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "formula": { "type": "string" },
+              "threshold": { "type": "number" }
+            },
+            "required": ["name", "formula", "threshold"]
+          }
+        },
+        "slas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "metric": { "type": "string" },
+              "target": { "type": "number" },
+              "penalty": { "type": "number" }
+            },
+            "required": ["metric", "target", "penalty"]
+          }
+        },
+        "benchmarks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "dataset": { "type": "string" },
+              "score": { "type": "number", "minimum": 0, "maximum": 1 }
+            },
+            "required": ["name", "dataset", "score"]
+          }
+        }
+      }
+    },
+    "protocols": {
+      "type": "object",
+      "properties": {
+        "a2a": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "discovery_method": { "type": "string", "enum": ["broadcast", "registry", "direct"], "default": "broadcast" },
+            "message_format": { "type": "string", "enum": ["json", "yaml", "protobuf"], "default": "json" },
+            "encryption": { "type": "boolean", "default": true }
+          }
+        },
+        "x402": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "wallet_address": { "type": "string", "pattern": "^0x[a-fA-F0-9]{40}$" },
+            "settlement": { "type": "string", "enum": ["instant", "net30", "net60"], "default": "instant" },
+            "escrow": { "type": "boolean", "default": true }
+          }
+        },
+        "human_review": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "review_triggers": { "type": "array", "items": { "type": "string" } },
+            "approval_timeout": { "type": "number", "minimum": 1, "default": 86400 },
+            "escalation_contacts": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "delegation": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true },
+            "delegation_chain": { "type": "array", "items": { "type": "string" } },
+            "task_tracking": { "type": "boolean", "default": true },
+            "notification": { "type": "string", "enum": ["slack", "email", "none"], "default": "slack" }
+          }
+        }
+      }
+    },
+    "custom_fields": { "type": "object" }
+  }
+}
