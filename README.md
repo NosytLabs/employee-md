@@ -1,5 +1,10 @@
 # employee.md
 
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Build Status](https://github.com/NosytLabs/employee-md/actions/workflows/validate.yml/badge.svg)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
 **AI agent employment specification.**
 
 ---
