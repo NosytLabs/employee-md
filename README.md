@@ -51,7 +51,7 @@ As the **Agentic Web** emerges, AI agents are transitioning from simple chatbots
 
 1.  **Context Awareness**: Agents know *where* they are working (Repo, Project, Team) and *who* they are.
 2.  **Ethical Grounding**: Agents link to a "Constitution" or "Soul Document" for alignment.
-3.  **Economic Autonomy**: Agents have wallets and payment protocols (**x402**) to earn and spend.
+3.  **Economic Autonomy**: Agents have wallets and payment protocols (**x402 - Experimental**) to earn and spend.
 4.  **Operational Safety**: Explicit guardrails, permissions, and scope definitions preventing rogue actions.
 5.  **Interoperability**: A standard format that any Agent Runtime (LangChain, AutoGen, CrewAI, etc.) can parse.
 6.  **Compliance & Governance**: Built-in support for audit logs, SOC2/GDPR frameworks, and access controls.
@@ -71,7 +71,7 @@ Understanding the vocabulary of the Agentic Workforce:
 | **Context** | The operational environment. Includes the specific Project, Repository, Team, and Deployment Environment (Dev/Prod). |
 | **Scope** | The "Job Description". Defines what is `in_scope` (do this) and `out_of_scope` (never do this). |
 | **Guardrails** | Hard constraints. `prohibited_actions` and `confidence_thresholds` that prevent the agent from hallucinating or taking dangerous actions. |
-| **Economy (x402)** | The payment layer. Defines how the agent is billed (hourly/task), its crypto wallet, and budget limits. Supports **JouleWork** (energy-based currency). |
+| **Economy (x402 - Experimental)** | The payment layer. Defines how the agent is billed (hourly/task), its crypto wallet, and budget limits. Supports **JouleWork** (energy-based currency). |
 | **A2A (Agent-to-Agent)** | Protocols for how this agent talks to *other* agents. Includes discovery, message formats, and delegation rules. |
 | **MCP (Model Context Protocol)** | Standard for connecting AI agents to tools, data sources, and external systems. |
 
