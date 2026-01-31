@@ -618,6 +618,209 @@ Projects and standards that reference or integrate with `employee.md`:
 
 ---
 
+## ❓ FAQ
+
+### General Questions
+
+| Question | Answer |
+|-----------|--------|
+| **What is the difference between `employee.md` and `AGENTS.md`?** | `AGENTS.md` describes the codebase and how to work with it. `employee.md` describes the AI agent itself - its role, permissions, economy, and guardrails. Use both together for complete context. |
+| **Can I use `employee.md` without a Soul/Constitution?** | Technically yes, but we strongly recommend linking to a `mission.constitution`. Without it, the agent lacks ethical grounding and behavioral alignment. |
+| **Is `employee.md` compatible with my agent framework?** | `employee.md` is a standard YAML format. Any framework that can parse YAML (LangChain, AutoGen, CrewAI, custom runtimes) can use it. |
+| **What happens if validation fails?** | The validator will show which field is missing or has the wrong type. Fix the reported issues and run validation again. |
+| **Can I extend `employee.md` with custom fields?** | Yes! Use the `custom_fields` section at the end of the spec to add any project-specific data. |
+
+### JouleWork & Economy
+
+| Question | Answer |
+|-----------|--------|
+| **What is JouleWork?** | JouleWork is an economic paradigm where energy (measured in Joules or Tokens) is the fundamental currency for computation. It aligns agent costs with physical reality. |
+| **How do I track P&L for my agent?** | Set `economy.profit_loss_tracking: true` and the agent runtime will maintain profit/loss statements automatically. |
+| **What currencies are supported?** | USD, EUR, BTC, ETH, and ENERGY (Joules). You can also use `payment_method: x402` for crypto payments. |
+| **How does multi-wallet work?** | Separate wallets for different purposes: `outbound` (Bitcoin/L1 for external payments), `inbound` (receiving payments), and `internal` (ecosystem tokens). |
+
+### MCP & Integration
+
+| Question | Answer |
+|-----------|--------|
+| **How do I add MCP servers?** | Add them to the `integration.mcp_servers` list with `name`, `endpoint`, and `capabilities`. See the [MCP Server Examples](#-openclawai--ecosystem-integration) section. |
+| **What MCP servers are available?** | See the [Model Context Protocol](https://modelcontextprotocol.io/) registry for a list of community MCP servers. Common ones include vector databases, API gateways, browser automation, and code execution. |
+| **Does OpenClaw support MCP?** | Yes! OpenClaw has native MCP support. Wire it as shown in the [OpenClaw Quick Setup](#-openclawai--ecosystem-integration) section. |
+
+---
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+| Issue | Solution |
+|--------|----------|
+| **Validation fails with "required field missing"** | Check that you have `role.title`, `role.level`, and `lifecycle.status`. These are the minimum required fields. |
+| **PyYAML errors on parsing** | Ensure your YAML has proper indentation (2 spaces per level) and that all strings are quoted if they contain special characters. |
+| **MCP server connection refused** | Verify the MCP server is running and the endpoint is correct. Check firewall settings and ensure the port is accessible. |
+| **Agent ignores guardrails** | Ensure `guardrails.confidence_threshold` is set (0.0-1.0). If the agent is too confident, lower the threshold. |
+| **x402 payment not working** | Verify `identity.wallet` is set and `protocols.x402.enabled: true`. Check that the wallet address is valid for the chosen blockchain. |
+
+### Debug Mode
+
+Enable debug mode in your agent runtime to see detailed logs:
+
+```yaml
+ai_settings:
+  debug_mode: true
+  log_level: "verbose"
+```
+
+### Getting Help
+
+-   **GitHub Issues**: Search [existing issues](https://github.com/NosytLabs/employee-md/issues) for similar problems
+-   **Discussions**: Ask questions in [GitHub Discussions](https://github.com/NosytLabs/employee-md/discussions)
+-   **Email**: Contact support at [support@nosytlabs.com](mailto:support@nosytlabs.com)
+
+---
+
+## 🛡️ Security Best Practices
+
+### Production Deployment
+
+1.  **Never expose secrets in `employee.md`**:
+    - Use environment variables for API keys, passwords, and tokens.
+    - Reference them using `${ENV_VAR}` syntax in your runtime, not in the YAML.
+
+2.  **Validate before deploying**:
+    ```bash
+    python tooling/validate.py employee.md --strict
+    ```
+
+3.  **Set appropriate guardrails**:
+    - `guardrails.confidence_threshold`: 0.9+ for production agents.
+    - `guardrails.max_spend_per_task`: Set strict limits to prevent runaway costs.
+    - `guardrails.prohibited_actions`: Explicitly list dangerous operations.
+
+4.  **Enable audit logging**:
+    ```yaml
+    compliance:
+      audit_required: true
+      frameworks:
+        - "SOC2"
+        - "GDPR"
+    ```
+
+5.  **Use secure MCP connections**:
+    - Always use HTTPS endpoints for MCP servers.
+    - Verify server certificates.
+    - Rotate MCP server tokens regularly.
+
+### Access Control
+
+| Principle | Implementation |
+|------------|----------------|
+| **Principle of Least Privilege** | Only grant `permissions` and `tool_access` that are absolutely necessary for the agent's role. |
+| **Defense in Depth** | Layer multiple security controls: `guardrails`, `permissions`, and `compliance` frameworks. |
+| **Audit Trails** | Enable `compliance.audit_required` to maintain immutable logs of all agent actions. |
+| **Human-in-the-Loop** | Use `guardrails.required_approval` and `protocols.human_review` for sensitive operations. |
+
+### Threat Model
+
+| Threat | Mitigation |
+|---------|-------------|
+| **Prompt Injection** | Use `guardrails.confidence_threshold` and validate all external inputs. |
+| **Data Exfiltration** | Restrict `permissions.network_access` and `permissions.data_access`. Enable audit logging. |
+| **Resource Exhaustion** | Set `economy.budget_limit` and `guardrails.max_spend_per_task`. |
+| **Unauthorized Access** | Use secure MCP connections and rotate credentials regularly. |
+
+---
+
+## 📊 Specification Comparison
+
+### employee.md vs AGENTS.md vs SOUL.md
+
+| Aspect | employee.md | AGENTS.md | SOUL.md |
+|---------|-------------|------------|-----------|
+| **Purpose** | Agent employment contract | Repository-level instructions | Agent personality & ethics |
+| **Scope** | Single agent's role, permissions, economy | Codebase structure, conventions | Values, behavior, alignment |
+| **Required Fields** | `role.title`, `role.level`, `lifecycle.status` | None recommended | None recommended |
+| **Economic Features** | x402, JouleWork, P&L tracking | ❌ None | ❌ None |
+| **Guardrails** | `prohibited_actions`, `confidence_threshold`, `max_spend` | ❌ None | ✅ Ethical principles |
+| **MCP Integration** | ✅ `integration.mcp_servers` | ❌ None | ❌ None |
+| **Use Together** | ✅ Recommended | ✅ Recommended | ✅ Recommended |
+
+### When to Use Which File
+
+| Scenario | Use File(s) |
+|----------|---------------|
+| **Deploying a new agent** | `employee.md` + `SOUL.md` |
+| **Onboarding to a codebase** | `employee.md` + `AGENTS.md` + `SOUL.md` |
+| **Defining project structure** | `AGENTS.md` only |
+| **Aligning agent behavior** | `SOUL.md` only |
+| **Production deployment** | All three (`employee.md`, `AGENTS.md`, `SOUL.md`) |
+
+---
+
+## 🏗️ Architecture Overview
+
+```mermaid
+graph TD
+    subgraph "Specification Layer"
+        Spec[employee.md]
+        Soul[SOUL.md]
+        Agents[AGENTS.md]
+    end
+    
+    subgraph "Agent Runtime"
+        Runtime[Runtime / Orchestrator]
+        Parser[YAML Parser]
+        Validator[Schema Validator]
+    end
+    
+    subgraph "Integration Layer"
+        MCP[MCP Servers]
+        APIs[External APIs]
+        DBs[Databases]
+        VFS[Vector Stores]
+    end
+    
+    subgraph "Execution Layer"
+        LLM[Language Model]
+        Tools[Tool Execution]
+        Memory[Context Memory]
+    end
+    
+    subgraph "Economy & Governance"
+        Wallet[Crypto Wallets]
+        Payment[x402 Protocol]
+        Audit[Compliance Logs]
+        PnL[Profit & Loss]
+    end
+    
+    Spec -->|Defines| Runtime
+    Soul -->|Aligns| LLM
+    Agents -->|Provides Context| Runtime
+    Runtime -->|Validates| Validator
+    Runtime -->|Connects| MCP
+    Runtime -->|Integrates| APIs
+    Runtime -->|Queries| DBs
+    Runtime -->|Stores| VFS
+    LLM -->|Executes| Tools
+    LLM -->|Remembers| Memory
+    Runtime -->|Manages| Wallet
+    Runtime -->|Processes| Payment
+    Runtime -->|Logs| Audit
+    Runtime -->|Tracks| PnL
+```
+
+### Component Descriptions
+
+| Component | Description | Key Files/Sections |
+|-----------|-------------|-------------------|
+| **Specification Layer** | YAML files that define agent behavior, project context, and ethical alignment. | `employee.md`, `SOUL.md`, `AGENTS.md` |
+| **Agent Runtime** | Parses specifications, validates schemas, and orchestrates agent execution. | Runtime implementation (LangChain, AutoGen, CrewAI, Molt) |
+| **Integration Layer** | External systems and tools that the agent connects to via MCP or APIs. | `integration.mcp_servers`, `integration.apis` |
+| **Execution Layer** | The LLM, tool execution engine, and context/memory system. | `ai_settings`, `memory_settings`, `tools_enabled` |
+| **Economy & Governance** | Payment processing, wallet management, compliance logging, and P&L tracking. | `economy`, `protocols.x402`, `compliance` |
+
+---
+
 ## 🤝 Contributing
 
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
