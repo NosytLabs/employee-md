@@ -264,6 +264,7 @@ Available at [tooling/schema.json](tooling/schema.json). Use it with any JSON Sc
 |------|------|-------------|
 | **AI Assistant** | [examples/ai-assistant.md](examples/ai-assistant.md) | General purpose assistant with Soul. |
 | **Senior Dev** | [examples/senior-dev.md](examples/senior-dev.md) | Coding agent with x402 & permissions. |
+| **ZHC Worker** | [examples/zhc-worker.md](examples/zhc-worker.md) | **JouleWork** model, energy accounting, and P&L tracking. |
 | **Security Auditor** | [examples/security-auditor.md](examples/security-auditor.md) | Compliance-focused agent. |
 | **Data Analyst** | [examples/data-analyst.md](examples/data-analyst.md) | Data processing & reporting. |
 

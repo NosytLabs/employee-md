@@ -18,8 +18,15 @@ def validate_email(email: str) -> bool:
 
 def validate_wallet(wallet: str) -> bool:
     """Validate crypto wallet address format."""
+    # Ethereum/EVM
     if wallet.startswith('0x'):
         return len(wallet) == 42 and all(c in '0123456789abcdefABCDEF' for c in wallet[2:])
+    # Bitcoin (Legacy, SegWit, Bech32)
+    if wallet.startswith(('1', '3', 'bc1')):
+        return 26 <= len(wallet) <= 90
+    # Solana
+    if len(wallet) >= 32 and len(wallet) <= 44:
+        return True # Simplified Solana check
     return False
 
 def validate_iso_date(date_str: str) -> bool:

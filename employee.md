@@ -210,6 +210,8 @@ integration:
         - string
 
 performance:
+  efficiency_score: number  # Target energy efficiency score (optional)
+  profit_margin: number     # Target profit margin % for P&L agents (optional)
   metrics:                # Performance metrics to track (optional)
     - name: string        # accuracy, speed, satisfaction, etc.
       target: number      # Target value
