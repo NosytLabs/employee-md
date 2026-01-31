@@ -217,6 +217,9 @@ class EmployeeValidator:
                 'mcp_servers': list,
             },
             'performance': {
+                'efficiency_score': (int, float),
+                'thermodynamic_efficiency': (int, float),
+                'profit_margin': (int, float),
                 'metrics': list,
                 'kpis': list,
                 'slas': list,

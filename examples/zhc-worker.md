@@ -36,17 +36,23 @@ context:
 
 economy:
   model: "joulework"
-  rate: 0.05 # Rate per unit of energy/compute
-  currency: "ENERGY" # or ZHC token
+  pricing_model: "complexity_based" # Scales with task difficulty
+  rate: 0.05 # Base rate per unit of energy/compute
+  currency: "ENERGY"
   payment_method: "joulework"
   billing_schedule: "real_time"
   budget_limit: 1000 # Daily limit
   energy_accounting: true
   profit_loss_tracking: true
+  insolvency_policy: "suspend"
+  wallets:
+    outbound: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh" # Bitcoin for external
+    internal: "0xinternal_ledger_address" # Token for internal economy
   internal_token: "ZHC"
 
 performance:
   efficiency_score: 0.95
+  thermodynamic_efficiency: 0.88 # Joules converted to valuable work
   profit_margin: 20.0
   metrics:
     - name: "token_efficiency"

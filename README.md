@@ -48,8 +48,21 @@ Understanding the vocabulary of the Agentic Workforce:
 | **Context** | The operational environment. Includes the specific Project, Repository, Team, and Deployment Environment (Dev/Prod). |
 | **Scope** | The "Job Description". Defines what is `in_scope` (do this) and `out_of_scope` (never do this). |
 | **Guardrails** | Hard constraints. `prohibited_actions` and `confidence_thresholds` that prevent the agent from hallucinating or taking dangerous actions. |
-| **Economy (x402)** | The payment layer. Defines how the agent is billed (hourly/task), its crypto wallet, and budget limits. |
+| **Economy (x402)** | The payment layer. Defines how the agent is billed (hourly/task), its crypto wallet, and budget limits. Supports **JouleWork** (energy-based currency). |
 | **A2A (Agent-to-Agent)** | Protocols for how this agent talks to *other* agents. Includes discovery, message formats, and delegation rules. |
+
+---
+
+## ⚡ The JouleWork Revolution & Zero-Human Company (ZHC)
+
+`employee.md` is the first standard to fully support the **JouleWork** economic paradigm, where energy is the ultimate currency.
+
+*   **Energy Accounting**: Track computation costs in Joules or Tokens.
+*   **P&L Tracking**: Agents maintain their own Profit & Loss statements.
+*   **Dynamic Pricing**: Support for `complexity_based` and `auction` pricing models.
+*   **Multi-Wallet Support**: Separate `outbound` (Bitcoin/L1) and `internal` (Ledger/L2) wallets.
+
+> "Every computation carries real consequences. Economic viability becomes the ultimate feedback loop." — *The Zero-Human Company*
 
 ---
 

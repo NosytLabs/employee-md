@@ -110,11 +110,21 @@ outputs:
 
 economy:
   rate: number              # Hourly/project rate (optional)
-  currency: string          # USD | EUR | BTC | ETH (default: USD)
-  payment_method: string     # x402 | crypto | fiat | none (optional)
-  billing_schedule: string   # weekly | monthly | milestone (optional)
+  currency: string          # USD | EUR | BTC | ETH | ENERGY (default: USD)
+  payment_method: string     # x402 | crypto | fiat | joulework | none (optional)
+  billing_schedule: string   # weekly | monthly | milestone | real_time (optional)
   budget_limit: number       # Monthly spend limit (optional)
   cost_center: string        # Department code (optional)
+  model: string             # wage | task | joulework | subscription (default: wage)
+  pricing_model: string     # fixed | dynamic | complexity_based | auction (optional)
+  energy_accounting: boolean # Track computation energy costs (default: false)
+  profit_loss_tracking: boolean # Maintain agent P&L (default: false)
+  insolvency_policy: string # suspend | escalate | liquidate | auto_loan (optional)
+  wallets:                  # Multiple wallets support (optional)
+    outbound: string        # Outbound payments (e.g., Bitcoin)
+    inbound: string         # Inbound payments
+    internal: string        # Internal ecosystem token
+  internal_token: string    # Symbol for internal value token (optional)
 
 delegation:
   max_tasks: number         # Concurrent task limit (default: 5)
