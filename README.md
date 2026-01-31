@@ -27,7 +27,7 @@
 
 - [Why employee.md?](#-why-employeemd)
 - [Glossary & Core Concepts](#-glossary--core-concepts)
-- [The JouleWork Revolution](#-the-joulework-revolution--zero-human-company-zhc)
+- [Experimental Concepts & Emerging Standards](#-experimental-concepts--emerging-standards)
 - [Use Cases](#-use-cases)
 - [How It Works](#️-how-it-works)
 - [Production Realism Checklist](#-production-realism-checklist)
@@ -308,7 +308,7 @@ Your personality is defined by: https://gist.github.com/... (Soul).
 | **[TASKS.md](https://github.com/snarktank/ai-dev-tasks)** | Standard for tracking agent work items. |
 | **[Skills.sh](https://skills.sh)** | Vercel's standard for agent skills. Link them in `capabilities`. |
 
-### Molt.bot Example
+### Basic Integration Example
 
 1.  **Place** `employee.md` in your workspace root.
 2.  **Reference** it in your `AGENTS.md`:
@@ -367,6 +367,8 @@ integration:
 ```
 
 ### Additional MCP Server Examples
+
+> **Note**: The examples below are illustrative of how MCP servers might be configured. Actual capabilities and endpoints depend on your specific MCP server implementation. Always refer to your MCP server's documentation for available capabilities.
 
 Expand your agent's capabilities by adding more MCP servers:
 
@@ -475,7 +477,9 @@ integration:
 
 ### OpenClaw Markdown Memory Integration
 
-OpenClaw stores persistent context in Markdown files in `~/.openclaw/workspace/`. Link your employee.md `knowledge_base.version_control` to this workspace for automatic knowledge sync:
+> **Note**: This is a conceptual integration approach. OpenClaw stores persistent context in Markdown files in `~/.openclaw/workspace/`, but automatic knowledge sync with `employee.md` would need to be implemented in your agent runtime. This is not a documented OpenClaw feature.
+
+You can conceptually link your employee.md `knowledge_base.version_control` to this workspace:
 
 ```yaml
 knowledge_base:
@@ -484,9 +488,11 @@ knowledge_base:
     - "https://docs.openclaw.ai/"
 ```
 
-This allows OpenClaw to read and write knowledge that your agent references, creating a bidirectional sync between your agent's knowledge and OpenClaw's persistent memory.
+This approach could allow OpenClaw to read and write knowledge that your agent references, creating a bidirectional sync between your agent's knowledge and OpenClaw's persistent memory - though this would require custom runtime implementation.
 
 ### MCP Server Capabilities Reference
+
+> **Note**: These are example capabilities that illustrate the types of functionality MCP servers might provide. Actual capabilities vary by implementation. Always consult your MCP server's documentation for the complete list of available capabilities.
 
 Common capabilities you may see in MCP servers:
 
@@ -765,7 +771,7 @@ ai_settings:
 | **Purpose** | Agent employment contract | Repository-level instructions | Agent personality & ethics |
 | **Scope** | Single agent's role, permissions, economy | Codebase structure, conventions | Values, behavior, alignment |
 | **Required Fields** | `role.title`, `role.level`, `lifecycle.status` | None recommended | None recommended |
-| **Economic Features** | x402, JouleWork, P&L tracking | ❌ None | ❌ None |
+| **Economic Features** | x402 (Experimental), JouleWork (Experimental), P&L tracking (Experimental) | ❌ None | ❌ None |
 | **Guardrails** | `prohibited_actions`, `confidence_threshold`, `max_spend` | ❌ None | ✅ Ethical principles |
 | **MCP Integration** | ✅ `integration.mcp_servers` | ❌ None | ❌ None |
 | **Use Together** | ✅ Recommended | ✅ Recommended | ✅ Recommended |
@@ -812,10 +818,10 @@ graph TD
     end
     
     subgraph "Economy & Governance"
-        Wallet[Crypto Wallets]
-        Payment[x402 Protocol]
+        Wallet[Crypto Wallets (Experimental)]
+        Payment[x402 Protocol (Experimental)]
         Audit[Compliance Logs]
-        PnL[Profit & Loss]
+        PnL[Profit & Loss (Experimental)]
     end
     
     Spec -->|Defines| Runtime
