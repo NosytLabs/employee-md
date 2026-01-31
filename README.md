@@ -77,25 +77,46 @@ Understanding the vocabulary of the Agentic Workforce:
 
 ---
 
-## ⚡ The JouleWork Revolution & Zero-Human Company (ZHC)
+## ⚡ Experimental Concepts & Emerging Standards
 
-`employee.md` is the first standard to fully support the **JouleWork** economic paradigm, where energy is the ultimate currency.
+`employee.md` includes support for experimental and emerging economic models that are exploring new paradigms for AI agent economics.
 
-### Key Features
+### JouleWork & Energy-Based Economics
 
-*   **Energy Accounting**: Track computation costs in Joules or Tokens.
-*   **P&L Tracking**: Agents maintain their own Profit & Loss statements.
-*   **Dynamic Pricing**: Support for `complexity_based` and `auction` pricing models.
-*   **Multi-Wallet Support**: Separate `outbound` (Bitcoin/L1) and `internal` (Ledger/L2) wallets.
-*   **Thermodynamic Efficiency**: Track physical energy costs vs. computational output.
+The spec includes experimental support for **JouleWork**, a theoretical economic paradigm where energy (measured in Joules) becomes the fundamental currency for computation.
 
-> 💡 **"Every computation carries real consequences. Economic viability becomes the ultimate feedback loop."**  
-> — *The Zero-Human Company*
+> **Note**: JouleWork is an experimental concept exploring energy-based AI economics. Related efforts include:
+> - **JouleAI** - AI agents for energy grid optimization [joulesai.com](https://joulesai.com/)
+> - **SAP Joule** - Enterprise AI copilot platform
 
-### Related Resources
+### Experimental Features in Spec
 
--   [Wages for AI Workers: The JouleWork Revolution](https://readmultiplex.com/2026/01/31/wages-for-ai-workers-the-joulework-revolution-and-the-birth-of-a-new-economic-paradigm/)
--   [The Zero-Human Company](https://readmultiplex.com/2026/01/24/the-zero-human-company-run-by-just-ai/)
+| Feature | Description | Status |
+|----------|-------------|--------|
+| **Energy Accounting** | Track computation costs in Joules or Tokens | Experimental |
+| **P&L Tracking** | Agents maintain their own Profit & Loss statements | Experimental |
+| **Dynamic Pricing** | Support for `complexity_based` and `auction` pricing models | Experimental |
+| **Multi-Wallet Support** | Separate `outbound` (Bitcoin/L1) and `internal` (Ledger/L2) wallets | Experimental |
+| **Thermodynamic Efficiency** | Track physical energy costs vs. computational output | Experimental |
+
+> 💡 **"Exploring new economic paradigms helps us think differently about AI agent value."**
+
+### Zero-Human Company Concept
+
+The "Zero-Human Company" (ZHC) is an experimental concept from [ReadMultiplex](https://readmultiplex.com/2026/01/24/the-zero-human-company-run-by-just-ai/) exploring fully autonomous AI-only enterprises. It's currently a thought experiment demonstrating how AI agents could theoretically run entire operations without human employees.
+
+> **Note**: This is a conceptual framework, not an established industry standard. The spec supports it for exploration purposes.
+
+### Verified Standards & Protocols
+
+| Standard | Description | Verification |
+|----------|-------------|-------------|
+| **AGENTS.md** | Repository-level instructions for AI agents | ✅ Real standard [agents.md](https://agents.md/) |
+| **Model Context Protocol (MCP)** | Standard for connecting AI agents to tools | ✅ Real, active [modelcontextprotocol.io](https://modelcontextprotocol.io/) |
+| **SOUL.md** | Agent personality and ethical alignment | ✅ Concept, linked from repo |
+| **OpenClaw.ai** | Local-first agent gateway with MCP support | ✅ Real platform [docs.openclaw.ai](https://docs.openclaw.ai/) |
+| **x402** | Hypothetical payment protocol | ⚠️ Not verified as active standard |
+| **JouleWork** | Energy-based economic paradigm | ⚠️ Experimental concept |
 
 ---
 
@@ -589,14 +610,16 @@ For VS Code users, install the [YAML extension](https://marketplace.visualstudio
 
 | Source | Description | Link |
 |----------|-------------|--------|
-| **The Zero-Human Company** | Foundational essay on AI-only companies and economic viability | [readmultiplex.com](https://readmultiplex.com/2026/01/24/the-zero-human-company-run-by-just-ai/) |
-| **Wages for AI Workers** | JouleWork economic paradigm and energy-based currency | [readmultiplex.com](https://readmultiplex.com/2026/01/31/wages-for-ai-workers-the-joulework-revolution-and-the-birth-of-a-new-economic-paradigm/) |
+| **The Zero-Human Company** | Foundational essay exploring AI-only companies and economic viability (experimental concept) | [readmultiplex.com](https://readmultiplex.com/2026/01/24/the-zero-human-company-run-by-just-ai/) |
+| **Wages for AI Workers** | Essay exploring energy-based economics for AI agents (theoretical paradigm) | [readmultiplex.com](https://readmultiplex.com/2026/01/31/wages-for-ai-workers-the-joulework-revolution-and-the-birth-of-a-new-economic-paradigm/) |
 | **AGENTS.md** | Repository-level instructions for AI agents | [agents.md](https://agents.md/) |
 | **Model Context Protocol** | Standard for AI tool integration | [modelcontextprotocol.io](https://modelcontextprotocol.io/) |
 | **OpenClaw.ai** | Local-first agent gateway with persistent memory | [docs.openclaw.ai](https://docs.openclaw.ai/) |
 | **SOUL.md** | Agent personality and ethical alignment standard | [github.com/NosytLabs/soul-md](https://github.com/NosytLabs/soul-md) |
 | **TASKS.md** | Standard for tracking agent work items | [github.com/snarktank/ai-dev-tasks](https://github.com/snarktank/ai-dev-tasks) |
 | **Skills.sh** | Vercel's standard for agent skills | [skills.sh](https://skills.sh) |
+
+> **Note on Experimental Content**: The "Zero-Human Company" and "JouleWork" concepts referenced above are theoretical explorations of AI economics, not established industry standards. The employee.md spec includes support for these experimental concepts as forward-thinking explorations.
 
 ### Backlinks & References
 
@@ -634,10 +657,12 @@ Projects and standards that reference or integrate with `employee.md`:
 
 | Question | Answer |
 |-----------|--------|
-| **What is JouleWork?** | JouleWork is an economic paradigm where energy (measured in Joules or Tokens) is the fundamental currency for computation. It aligns agent costs with physical reality. |
+| **What is JouleWork?** | JouleWork is an **experimental** concept in the spec for exploring energy-based AI economics. It's a theoretical paradigm where energy (measured in Joules) becomes the fundamental currency for computation. Related real-world efforts include **JouleAI** (energy grid optimization) and **SAP Joule** (enterprise AI platform). |
 | **How do I track P&L for my agent?** | Set `economy.profit_loss_tracking: true` and the agent runtime will maintain profit/loss statements automatically. |
 | **What currencies are supported?** | USD, EUR, BTC, ETH, and ENERGY (Joules). You can also use `payment_method: x402` for crypto payments. |
 | **How does multi-wallet work?** | Separate wallets for different purposes: `outbound` (Bitcoin/L1 for external payments), `inbound` (receiving payments), and `internal` (ecosystem tokens). |
+
+> ⚠️ **Note**: JouleWork and related features (Energy Accounting, P&L Tracking, Dynamic Pricing, Multi-Wallet Support, Thermodynamic Efficiency) are **experimental** concepts in the spec. They represent forward-thinking explorations of AI agent economics rather than current industry standards.
 
 ### MCP & Integration
 
