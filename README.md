@@ -70,7 +70,7 @@ Understanding the vocabulary of the Agentic Workforce:
 | **Mission** | The high-level purpose. Unlike specific tasks, the Mission guides the agent's long-term decision making and prioritization. |
 | **Context** | The operational environment. Includes the specific Project, Repository, Team, and Deployment Environment (Dev/Prod). |
 | **Scope** | The "Job Description". Defines what is `in_scope` (do this) and `out_of_scope` (never do this). |
-| **Guardrails** | Hard constraints. `prohibited_actions` and `confidence_thresholds` that prevent the agent from hallucinating or taking dangerous actions. |
+| **Guardrails** | Hard constraints. `prohibited_actions` and `confidence_threshold` that prevents the agent from hallucinating or taking dangerous actions. |
 | **Economy (x402 - Experimental)** | The payment layer. Defines how the agent is billed (hourly/task), its crypto wallet, and budget limits. Supports **JouleWork** (energy-based currency). |
 | **A2A (Agent-to-Agent)** | Protocols for how this agent talks to *other* agents. Includes discovery, message formats, and delegation rules. |
 | **MCP (Model Context Protocol)** | Standard for connecting AI agents to tools, data sources, and external systems. |
