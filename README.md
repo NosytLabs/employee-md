@@ -85,8 +85,8 @@ Understanding the vocabulary of the Agentic Workforce:
 
 The spec includes experimental support for **JouleWork**, a theoretical economic paradigm where energy (measured in Joules) becomes the fundamental currency for computation.
 
-> **Note**: JouleWork is an experimental concept exploring energy-based AI economics. Related efforts include:
-> - **JouleAI** - AI agents for energy grid optimization [joulesai.com](https://joulesai.com/)
+> **Note**: JouleWork is an experimental concept exploring energy-based AI economics. Related real-world efforts include:
+> - **Joule** - Data center infrastructure and energy abundance platform [joulepower.ai](https://joulepower.ai/)
 > - **SAP Joule** - Enterprise AI copilot platform
 
 ### Experimental Features in Spec
@@ -606,7 +606,7 @@ For VS Code users, install the [YAML extension](https://marketplace.visualstudio
 | **Security Auditor** | [examples/security-auditor.md](examples/security-auditor.md) | Compliance-focused agent. | SOC2/GDPR, audit logs |
 | **Data Analyst** | [examples/data-analyst.md](examples/data-analyst.md) | Data processing & reporting. | Performance metrics |
 | **Freelancer** | [examples/freelancer.md](examples/freelancer.md) | Contract-based delivery with crypto payments. | x402, crypto wallets |
-| **Molt Integration** | [examples/molt-bot-integration.md](examples/molt-bot-integration.md) | MCP-enabled workspace example. | MCP servers, tools |
+| **Molt.bot Integration** | [examples/molt-bot-integration.md](examples/molt-bot-integration.md) | MCP-enabled workspace example. | MCP servers, tools |
 
 ---
 
