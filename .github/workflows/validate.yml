@@ -4,22 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main, master]
-    paths:
-      - '.github/workflows/validate.yml'
-      - 'employee.md'
-      - 'examples/*.md'
-      - 'tooling/**'
-      - 'tests/**'
-      - 'pyproject.toml'
   pull_request:
     branches: [main, master]
-    paths:
-      - '.github/workflows/validate.yml'
-      - 'employee.md'
-      - 'examples/*.md'
-      - 'tooling/**'
-      - 'tests/**'
-      - 'pyproject.toml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
