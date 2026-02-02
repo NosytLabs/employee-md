@@ -1,26 +1,25 @@
 name: CI
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, master]
-    paths-ignore:
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - 'CONTRIBUTING.md'
-      - 'CODE_OF_CONDUCT.md'
-      - 'SECURITY.md'
-      - 'LICENSE'
-      - '.gitignore'
+    paths:
+      - '.github/workflows/validate.yml'
+      - 'employee.md'
+      - 'examples/*.md'
+      - 'tooling/**'
+      - 'tests/**'
+      - 'pyproject.toml'
   pull_request:
     branches: [main, master]
-    paths-ignore:
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - 'CONTRIBUTING.md'
-      - 'CODE_OF_CONDUCT.md'
-      - 'SECURITY.md'
-      - 'LICENSE'
-      - '.gitignore'
+    paths:
+      - '.github/workflows/validate.yml'
+      - 'employee.md'
+      - 'examples/*.md'
+      - 'tooling/**'
+      - 'tests/**'
+      - 'pyproject.toml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
