@@ -1,20 +1,20 @@
 .PHONY: validate test clean install docker-build docker-run
 
 install:
-	pip install -r requirements.txt
-	pip install pytest
+	pip install -e .
+	pip install -e .[dev]
 
 validate:
-	python tooling/validate.py employee.md
-	python tooling/validate.py examples/minimal.md
-	python tooling/validate.py examples/ai-assistant.md
-	python tooling/validate.py examples/data-analyst.md
-	python tooling/validate.py examples/security-auditor.md
-	python tooling/validate.py examples/senior-dev.md
-	python tooling/validate.py examples/freelancer.md
+	python -m tooling.cli employee.md
+	python -m tooling.cli examples/minimal.md
+	python -m tooling.cli examples/ai-assistant.md
+	python -m tooling.cli examples/data-analyst.md
+	python -m tooling.cli examples/security-auditor.md
+	python -m tooling.cli examples/senior-dev.md
+	python -m tooling.cli examples/freelancer.md
 
 test:
-	pytest tests/
+	python -m pytest tests/
 
 docker-build:
 	docker build -t employee-validate .

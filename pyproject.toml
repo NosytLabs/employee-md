@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "employee-md"
-version = "1.0.0"
+version = "2.1.0"
 description = "Validation tooling for employee.md specification"
 authors = [
   { name="NosytLabs", email="opensource@nosytlabs.com" },
@@ -25,5 +25,15 @@ dependencies = [
 "Homepage" = "https://github.com/NosytLabs/employee-md"
 "Bug Tracker" = "https://github.com/NosytLabs/employee-md/issues"
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+
 [project.scripts]
-employee-validate = "tooling.validate:main"
+employee-validate = "tooling.cli:main"

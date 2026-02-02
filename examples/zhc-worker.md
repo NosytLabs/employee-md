@@ -1,7 +1,7 @@
 ---
 spec:
   name: "employee.md"
-  version: "1.0"
+  version: "2.1.0"
   kind: "agent-employment"
 
 identity:
@@ -34,6 +34,26 @@ context:
   team: "Zero-Human Ops"
   project: "Project OpenClaw"
 
+knowledge_base:
+  documentation_urls:
+    - "https://docs.openclaw.ai/"
+  best_practices:
+    - "https://modelcontextprotocol.io/"
+  version_control: "https://github.com/NosytLabs/employee-md"
+
+integration:
+  mcp_servers:
+    - name: "openclaw-gateway"
+      endpoint: "http://127.0.0.1:18789"
+      capabilities:
+        - "tool_routing"
+        - "session_memory"
+    - name: "market-data"
+      endpoint: "http://127.0.0.1:9200"
+      capabilities:
+        - "market_feed"
+        - "time_series_query"
+
 economy:
   model: "joulework"
   pricing_model: "complexity_based" # Scales with task difficulty
@@ -47,7 +67,7 @@ economy:
   insolvency_policy: "suspend"
   wallets:
     outbound: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh" # Bitcoin for external
-    internal: "0xinternal_ledger_address" # Token for internal economy
+    internal: "So11111111111111111111111111111111111111112" # Token for internal economy
   internal_token: "ZHC"
 
 performance:

@@ -1,7 +1,7 @@
 ---
 spec:
   name: "employee.md"
-  version: "1.0"
+  version: "2.1.0"
   kind: "agent-employment"
   status: "stable"
   schema: "https://raw.githubusercontent.com/NosytLabs/employee-md/main/tooling/schema.json"

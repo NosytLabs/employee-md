@@ -1,0 +1,30 @@
+# Employee.md Validator Configuration File
+# Place this file as .employe-validatorrc in your project root
+
+# Enable parallel validation
+parallel=false
+
+# Enable production mode (sanitizes error messages)
+production=false
+
+# Enable verbose logging
+verbose=false
+
+# Suppress output except errors
+quiet=false
+
+# Cache configuration
+cache.enabled=true
+cache.size=100
+cache.ttl=300
+
+# Logging configuration
+logging.level=INFO
+logging.format=text
+
+# Metrics configuration
+metrics.enabled=false
+metrics.format=prometheus
+
+# Allowed directories for file validation (empty = all directories allowed)
+# allowed_directories=/path/to/project

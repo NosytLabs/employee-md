@@ -14,4 +14,4 @@ repos:
         entry: python tooling/validate.py
         language: python
         additional_dependencies: [pyyaml, jsonschema]
-        files: ^(employee\.md|examples/.*\.md)$
+        files: ^(employee\.md|examples/(?!README\.md|molt-bot-integration\.md).+\.md)$
