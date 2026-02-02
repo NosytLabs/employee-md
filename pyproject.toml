@@ -7,7 +7,7 @@ name = "employee-md"
 version = "2.1.0"
 description = "Validation tooling for employee.md specification"
 authors = [
-  { name="NosytLabs", email="opensource@nosytlabs.com" },
+  { name="NosytLabs", email="hi@nosytlabs.com" },
 ]
 readme = "README.md"
 requires-python = ">=3.8"

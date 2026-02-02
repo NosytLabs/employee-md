@@ -32,9 +32,9 @@ class OutputFormatter:
         lines = []
 
         if filename:
-            lines.append(f"\n{'='*60}")
+            lines.append(f"\n{'=' * 60}")
             lines.append(f"File: {filename}")
-            lines.append(f"{'='*60}\n")
+            lines.append(f"{'=' * 60}\n")
 
         if result.is_valid:
             lines.append("✓ Validation passed!")
@@ -211,8 +211,8 @@ def validate_files(
     # Log summary
     summary = metrics.get_summary()
     logger.info(
-        f'Validation complete: {summary["total_validations"]} files, '
-        f'{summary["successful_validations"]} passed, {summary["failed_validations"]} failed'
+        f"Validation complete: {summary['total_validations']} files, "
+        f"{summary['successful_validations']} passed, {summary['failed_validations']} failed"
     )
 
     return 0 if all_valid else 1

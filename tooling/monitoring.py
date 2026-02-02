@@ -159,25 +159,25 @@ def format_prometheus_metrics(metrics: MetricsCollector) -> str:
     summary = metrics.get_summary()
     lines = []
 
-    lines.append(f'employee_validator_total_validations {summary["total_validations"]}')
+    lines.append(f"employee_validator_total_validations {summary['total_validations']}")
     lines.append(
-        f'employee_validator_successful_validations {summary["successful_validations"]}'
+        f"employee_validator_successful_validations {summary['successful_validations']}"
     )
     lines.append(
-        f'employee_validator_failed_validations {summary["failed_validations"]}'
+        f"employee_validator_failed_validations {summary['failed_validations']}"
     )
-    lines.append(f'employee_validator_cache_hit_rate {summary["cache_hit_rate"]}')
-    lines.append(f'employee_validator_cache_hits {summary["cache_hits"]}')
-    lines.append(f'employee_validator_cache_misses {summary["cache_misses"]}')
-    lines.append(f'employee_validator_cache_size {summary["cache_size"]}')
-    lines.append(f'employee_validator_cache_max_size {summary["cache_max_size"]}')
-    lines.append(f'employee_validator_cache_utilization {summary["cache_utilization"]}')
-    lines.append(f'employee_validator_cache_evictions {summary["cache_evictions"]}')
+    lines.append(f"employee_validator_cache_hit_rate {summary['cache_hit_rate']}")
+    lines.append(f"employee_validator_cache_hits {summary['cache_hits']}")
+    lines.append(f"employee_validator_cache_misses {summary['cache_misses']}")
+    lines.append(f"employee_validator_cache_size {summary['cache_size']}")
+    lines.append(f"employee_validator_cache_max_size {summary['cache_max_size']}")
+    lines.append(f"employee_validator_cache_utilization {summary['cache_utilization']}")
+    lines.append(f"employee_validator_cache_evictions {summary['cache_evictions']}")
     lines.append(
-        f'employee_validator_avg_validation_time_seconds {summary["avg_validation_time_seconds"]}'
+        f"employee_validator_avg_validation_time_seconds {summary['avg_validation_time_seconds']}"
     )
     lines.append(
-        f'employee_validator_total_validation_time_seconds {summary["total_validation_time_seconds"]}'
+        f"employee_validator_total_validation_time_seconds {summary['total_validation_time_seconds']}"
     )
 
     for validator_name, total_time in summary["individual_validator_times"].items():
@@ -201,28 +201,28 @@ def format_statsd_metrics(metrics: MetricsCollector) -> str:
     lines = []
 
     lines.append(
-        f'employee_validator.total_validations:{summary["total_validations"]}|c'
+        f"employee_validator.total_validations:{summary['total_validations']}|c"
     )
     lines.append(
-        f'employee_validator.successful_validations:{summary["successful_validations"]}|c'
+        f"employee_validator.successful_validations:{summary['successful_validations']}|c"
     )
     lines.append(
-        f'employee_validator.failed_validations:{summary["failed_validations"]}|c'
+        f"employee_validator.failed_validations:{summary['failed_validations']}|c"
     )
-    lines.append(f'employee_validator.cache_hit_rate:{summary["cache_hit_rate"]}|c')
-    lines.append(f'employee_validator.cache_hits:{summary["cache_hits"]}|c')
-    lines.append(f'employee_validator.cache_misses:{summary["cache_misses"]}|c')
-    lines.append(f'employee_validator.cache_size:{summary["cache_size"]}|g')
-    lines.append(f'employee_validator.cache_max_size:{summary["cache_max_size"]}|g')
+    lines.append(f"employee_validator.cache_hit_rate:{summary['cache_hit_rate']}|c")
+    lines.append(f"employee_validator.cache_hits:{summary['cache_hits']}|c")
+    lines.append(f"employee_validator.cache_misses:{summary['cache_misses']}|c")
+    lines.append(f"employee_validator.cache_size:{summary['cache_size']}|g")
+    lines.append(f"employee_validator.cache_max_size:{summary['cache_max_size']}|g")
     lines.append(
-        f'employee_validator.cache_utilization:{summary["cache_utilization"]}|g'
+        f"employee_validator.cache_utilization:{summary['cache_utilization']}|g"
     )
-    lines.append(f'employee_validator.cache_evictions:{summary["cache_evictions"]}|c')
+    lines.append(f"employee_validator.cache_evictions:{summary['cache_evictions']}|c")
     lines.append(
-        f'employee_validator.avg_validation_time_seconds:{summary["avg_validation_time_seconds"]}|c'
+        f"employee_validator.avg_validation_time_seconds:{summary['avg_validation_time_seconds']}|c"
     )
     lines.append(
-        f'employee_validator.total_validation_time_seconds:{summary["total_validation_time_seconds"]}|c'
+        f"employee_validator.total_validation_time_seconds:{summary['total_validation_time_seconds']}|c"
     )
 
     for validator_name, total_time in summary["individual_validator_times"].items():
