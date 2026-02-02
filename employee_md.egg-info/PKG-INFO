@@ -2,7 +2,7 @@ Metadata-Version: 2.4
 Name: employee-md
 Version: 2.1.0
 Summary: Validation tooling for employee.md specification
-Author-email: NosytLabs <opensource@nosytlabs.com>
+Author-email: NosytLabs <hi@nosytlabs.com>
 Project-URL: Homepage, https://github.com/NosytLabs/employee-md
 Project-URL: Bug Tracker, https://github.com/NosytLabs/employee-md/issues
 Classifier: Programming Language :: Python :: 3
@@ -20,6 +20,7 @@ Requires-Dist: black>=23.0.0; extra == "dev"
 Requires-Dist: ruff>=0.1.0; extra == "dev"
 Requires-Dist: mypy>=1.0.0; extra == "dev"
 Requires-Dist: pre-commit>=3.0.0; extra == "dev"
+Requires-Dist: types-PyYAML>=6.0; extra == "dev"
 Dynamic: license-file
 
 # employee.md
@@ -50,16 +51,16 @@ Dynamic: license-file
 
 ## 📑 Table of Contents
 
-- [Why employee.md?](#-why-employeemd)
-- [Quick Start](#-quick-start)
-- [Core Concepts](#-core-concepts)
-- [Specification](#-specification)
-- [Examples](#-examples)
-- [Tooling](#-tooling)
-- [Integrations](#-integrations)
-- [Ecosystem](#-ecosystem)
-- [Contributing](#-contributing)
-- [License](#-license)
+- [Why employee.md?](#why-employeemd)
+- [Quick Start](#quick-start)
+- [Core Concepts](#core-concepts)
+- [Specification](#specification)
+- [Examples](#examples)
+- [Tooling](#tooling)
+- [Integrations](#integrations)
+- [Ecosystem](#ecosystem)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
