@@ -26,16 +26,16 @@
 
 ## 📑 Table of Contents
 
-- [Why employee.md?](#-why-employeemd)
-- [Quick Start](#-quick-start)
-- [Core Concepts](#-core-concepts)
-- [Specification](#-specification)
-- [Examples](#-examples)
-- [Tooling](#-tooling)
-- [Integrations](#-integrations)
-- [Ecosystem](#-ecosystem)
-- [Contributing](#-contributing)
-- [License](#-license)
+- [Why employee.md?](#why-employeemd)
+- [Quick Start](#quick-start)
+- [Core Concepts](#core-concepts)
+- [Specification](#specification)
+- [Examples](#examples)
+- [Tooling](#tooling)
+- [Integrations](#integrations)
+- [Ecosystem](#ecosystem)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
