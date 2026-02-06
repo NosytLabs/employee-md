@@ -2,14 +2,14 @@
 
 Copy and paste the prompt below into any AI model (Claude, ChatGPT, DeepSeek) to generate a valid `employee.md` file for your agent.
 
-This prompt is optimized to produce a **v1.0 compliant** specification that integrates with `AGENTS.md` and other standard protocols.
+This prompt is optimized to produce a **v2.1.0 compliant** specification that integrates with `AGENTS.md` and other standard protocols.
 
 ---
 
 ## 📋 The Prompt
 
 ```markdown
-Act as an expert AI Agent Architect. I need you to generate a valid `employee.md` file (v1.0 standard) for a new AI agent.
+Act as an expert AI Agent Architect. I need you to generate a valid `employee.md` file (v2.1.0 standard) for a new AI agent.
 
 Here is the context for the agent I want to build:
 
@@ -22,7 +22,7 @@ Here is the context for the agent I want to build:
 Based on this, please generate a complete `employee.md` YAML file. 
 
 Ensure you include:
-- `spec` metadata (v1.0)
+- `spec` metadata (v2.1.0)
 - `identity` and `role` sections
 - `mission` with a placeholder link to a soul document if needed
 - `guardrails` and `permissions` based on the constraints

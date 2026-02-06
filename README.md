@@ -480,6 +480,7 @@ jobs:
 ## 🤝 Contributing
 
 We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+See [AGENTS.md](AGENTS.md) for AI agent-specific instructions.
 
 ```bash
 # Development setup
