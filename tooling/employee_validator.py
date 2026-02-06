@@ -77,7 +77,10 @@ class EmployeeValidationOrchestrator:
                     self._metrics.record_validation_end(start_time, cached.is_valid)
                     return cached
         try:
-            data, _ = self.parser.parse_file(filepath)
+            # Create a parser that explicitly allows the file's directory
+            file_dir = Path(filepath).resolve().parent
+            parser = SecureYAMLParser(allowed_directories=[str(file_dir)])
+            data, _ = parser.parse_file(filepath)
         except YAMLErrorContext as e:
             error = ValidationError(
                 field="file",
