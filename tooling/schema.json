@@ -29,56 +29,56 @@
       "description": "Specification metadata for version tracking",
       "required": ["name", "version", "kind"],
       "properties": {
-        "name": { 
+        "name": {
           "type": "string",
           "enum": ["employee.md"],
           "description": "Must be 'employee.md'"
         },
-        "version": { 
+        "version": {
           "type": "string",
           "pattern": "^\\d+\\.\\d+\\.\\d+$",
           "description": "Semantic version (e.g., '2.1.0')"
         },
-        "kind": { 
+        "kind": {
           "type": "string",
           "enum": ["agent-employment"],
           "description": "Must be 'agent-employment'"
         },
-        "status": { 
-          "type": "string", 
+        "status": {
+          "type": "string",
           "enum": ["draft", "stable", "deprecated"],
           "description": "Spec maturity status"
         },
-        "schema": { 
-          "type": "string", 
+        "schema": {
+          "type": "string",
           "format": "uri",
           "description": "URL to JSON schema"
         },
-        "license": { 
+        "license": {
           "type": "string",
           "description": "License identifier (e.g., 'MIT')"
         },
-        "homepage": { 
-          "type": "string", 
+        "homepage": {
+          "type": "string",
           "format": "uri",
           "description": "Project homepage URL"
         },
-        "namespace": { 
+        "namespace": {
           "type": "string",
           "description": "Reverse domain namespace"
         },
-        "compatibility": { 
-          "type": "array", 
+        "compatibility": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Compatible spec versions"
         },
-        "supersedes": { 
-          "type": "array", 
+        "supersedes": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Previous versions this replaces"
         },
-        "extends": { 
-          "type": "array", 
+        "extends": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Parent specifications"
         }
@@ -88,41 +88,41 @@
       "type": "object",
       "description": "Agent identity and identification",
       "properties": {
-        "agent_id": { 
+        "agent_id": {
           "type": "string",
           "description": "Unique identifier for the agent"
         },
-        "version": { 
+        "version": {
           "type": "string",
           "description": "Agent configuration version"
         },
-        "display_name": { 
+        "display_name": {
           "type": "string",
           "description": "Human-readable name"
         },
-        "description": { 
+        "description": {
           "type": "string",
           "description": "Brief description of the agent"
         },
-        "avatar_url": { 
-          "type": "string", 
+        "avatar_url": {
+          "type": "string",
           "format": "uri",
           "description": "URL to avatar image"
         },
-        "wallet": { 
+        "wallet": {
           "$ref": "#/definitions/walletAddress",
           "description": "Cryptocurrency wallet address"
         },
-        "created_at": { 
+        "created_at": {
           "$ref": "#/definitions/isoDate",
           "description": "Creation date (ISO 8601)"
         },
-        "updated_at": { 
+        "updated_at": {
           "$ref": "#/definitions/isoDate",
           "description": "Last update date (ISO 8601)"
         },
-        "tags": { 
-          "type": "array", 
+        "tags": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Classification tags"
         }
@@ -133,29 +133,29 @@
       "description": "Job role and responsibilities",
       "required": ["title", "level"],
       "properties": {
-        "title": { 
+        "title": {
           "type": "string",
           "description": "Job title"
         },
-        "level": { 
-          "type": "string", 
+        "level": {
+          "type": "string",
           "enum": ["junior", "mid", "senior", "lead"],
           "description": "Experience level"
         },
-        "department": { 
+        "department": {
           "type": "string",
           "description": "Department or team"
         },
-        "function": { 
+        "function": {
           "type": "string",
           "description": "Primary function or specialty"
         },
-        "reports_to": { 
+        "reports_to": {
           "type": "string",
           "description": "Manager or supervisor identifier"
         },
-        "capabilities": { 
-          "type": "array", 
+        "capabilities": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "List of skill areas"
         },
@@ -168,7 +168,7 @@
             "properties": {
               "name": { "type": "string" },
               "level": { "type": "number", "minimum": 0, "maximum": 5 },
-              "category": { 
+              "category": {
                 "type": "string",
                 "description": "Skill category (e.g., 'language', 'framework')"
               }
@@ -189,18 +189,18 @@
             }
           }
         },
-        "work_location": { 
-          "type": "string", 
+        "work_location": {
+          "type": "string",
           "enum": ["remote", "office", "hybrid"],
           "description": "Work location type"
         },
-        "employment_type": { 
-          "type": "string", 
+        "employment_type": {
+          "type": "string",
           "enum": ["full_time", "part_time", "contract"],
           "description": "Employment type"
         },
-        "work_schedule": { 
-          "type": "string", 
+        "work_schedule": {
+          "type": "string",
           "enum": ["fixed", "flexible", "on_call"],
           "description": "Schedule type"
         }
@@ -210,26 +210,26 @@
       "type": "object",
       "description": "Mission, purpose, and objectives",
       "properties": {
-        "purpose": { 
+        "purpose": {
           "type": "string",
           "description": "High-level mission statement"
         },
-        "constitution": { 
+        "constitution": {
           "type": "string",
           "description": "URL or text of ethical guidelines"
         },
-        "objectives": { 
-          "type": "array", 
+        "objectives": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Key goals to achieve"
         },
-        "success_criteria": { 
-          "type": "array", 
+        "success_criteria": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Measurable success metrics"
         },
-        "non_goals": { 
-          "type": "array", 
+        "non_goals": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Explicitly out of scope"
         }
@@ -239,51 +239,51 @@
       "type": "object",
       "description": "Operational context and environment",
       "properties": {
-        "project": { 
+        "project": {
           "type": "string",
           "description": "Project name"
         },
-        "project_id": { 
+        "project_id": {
           "type": "string",
           "description": "Project identifier"
         },
-        "repo": { 
-          "type": "string", 
+        "repo": {
+          "type": "string",
           "format": "uri",
           "description": "Repository URL"
         },
-        "repo_type": { 
-          "type": "string", 
+        "repo_type": {
+          "type": "string",
           "enum": ["github", "gitlab", "bitbucket"],
           "description": "Repository platform"
         },
-        "environment": { 
-          "type": "string", 
+        "environment": {
+          "type": "string",
           "enum": ["dev", "staging", "prod"],
           "description": "Runtime environment"
         },
-        "environment_tier": { 
-          "type": "string", 
+        "environment_tier": {
+          "type": "string",
           "enum": ["development", "staging", "production"],
           "description": "Environment tier"
         },
-        "team": { 
+        "team": {
           "type": "string",
           "description": "Team name"
         },
-        "team_id": { 
+        "team_id": {
           "type": "string",
           "description": "Team identifier"
         },
-        "organization": { 
+        "organization": {
           "type": "string",
           "description": "Organization name"
         },
-        "region": { 
+        "region": {
           "type": "string",
           "description": "Cloud region or location"
         },
-        "datacenter": { 
+        "datacenter": {
           "type": "string",
           "description": "Infrastructure provider"
         },
@@ -302,23 +302,23 @@
       "type": "object",
       "description": "Scope and boundaries",
       "properties": {
-        "in_scope": { 
-          "type": "array", 
+        "in_scope": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Included responsibilities"
         },
-        "out_of_scope": { 
-          "type": "array", 
+        "out_of_scope": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Excluded responsibilities"
         },
-        "dependencies": { 
-          "type": "array", 
+        "dependencies": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Required dependencies"
         },
-        "constraints": { 
-          "type": "array", 
+        "constraints": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Limitations and restrictions"
         }
@@ -328,35 +328,35 @@
       "type": "object",
       "description": "Access permissions and controls",
       "properties": {
-        "data_access": { 
-          "type": "array", 
+        "data_access": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Data access levels"
         },
-        "system_access": { 
-          "type": "array", 
+        "system_access": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "System/infrastructure access"
         },
-        "network_access": { 
-          "type": "array", 
+        "network_access": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Network/external access"
         },
-        "tool_access": { 
-          "type": "array", 
+        "tool_access": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Available tools"
         },
-        "admin_permissions": { 
+        "admin_permissions": {
           "type": "boolean",
           "description": "Administrative access"
         },
-        "can_invite_users": { 
+        "can_invite_users": {
           "type": "boolean",
           "description": "Can invite new users"
         },
-        "can_modify_permissions": { 
+        "can_modify_permissions": {
           "type": "boolean",
           "description": "Can modify permissions"
         }
@@ -366,37 +366,37 @@
       "type": "object",
       "description": "Quality verification and checks",
       "properties": {
-        "required_checks": { 
-          "type": "array", 
+        "required_checks": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Mandatory quality gates"
         },
-        "evidence": { 
-          "type": "array", 
+        "evidence": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Required proof of work"
         },
-        "review_policy": { 
+        "review_policy": {
           "type": "string",
           "description": "Review policy name"
         },
-        "auto_merge": { 
+        "auto_merge": {
           "type": "boolean",
           "description": "Allow automatic merging"
         },
-        "min_approvals": { 
-          "type": "integer", 
+        "min_approvals": {
+          "type": "integer",
           "minimum": 0,
           "description": "Minimum number of approvals"
         },
-        "require_tests": { 
+        "require_tests": {
           "type": "boolean",
           "description": "Require passing tests"
         }
       }
     },
-    "principles": { 
-      "type": "array", 
+    "principles": {
+      "type": "array",
       "items": { "type": "string" },
       "description": "Core operating principles"
     },
@@ -404,23 +404,23 @@
       "type": "object",
       "description": "Operating rules and policies",
       "properties": {
-        "always": { 
-          "type": "array", 
+        "always": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Always perform these actions"
         },
-        "avoid": { 
-          "type": "array", 
+        "avoid": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Never perform these actions"
         },
-        "ask_first": { 
-          "type": "array", 
+        "ask_first": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Require approval for these"
         },
-        "evidence_required": { 
-          "type": "array", 
+        "evidence_required": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Document these actions"
         }
@@ -430,23 +430,23 @@
       "type": "object",
       "description": "Standard operating procedures",
       "properties": {
-        "intake": { 
-          "type": "array", 
+        "intake": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Work intake process"
         },
-        "execution": { 
-          "type": "array", 
+        "execution": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Work execution process"
         },
-        "review": { 
-          "type": "array", 
+        "review": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Review process"
         },
-        "handoff": { 
-          "type": "array", 
+        "handoff": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Completion/handoff process"
         }
@@ -456,18 +456,18 @@
       "type": "object",
       "description": "Outputs and deliverables",
       "properties": {
-        "deliverables": { 
-          "type": "array", 
+        "deliverables": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Primary outputs"
         },
-        "artifacts": { 
-          "type": "array", 
+        "artifacts": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Generated artifacts"
         },
-        "reporting": { 
-          "type": "array", 
+        "reporting": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Regular reports"
         }
@@ -477,55 +477,55 @@
       "type": "object",
       "description": "Economic and payment configuration",
       "properties": {
-        "rate": { 
-          "type": "number", 
+        "rate": {
+          "type": "number",
           "minimum": 0,
           "description": "Hourly or per-task rate"
         },
-        "currency": { 
-          "type": "string", 
+        "currency": {
+          "type": "string",
           "enum": ["USD", "EUR", "BTC", "ETH", "ENERGY"],
           "description": "Payment currency"
         },
-        "payment_method": { 
-          "type": "string", 
+        "payment_method": {
+          "type": "string",
           "enum": ["x402", "crypto", "fiat", "joulework", "none"],
           "description": "Payment method"
         },
-        "billing_schedule": { 
-          "type": "string", 
+        "billing_schedule": {
+          "type": "string",
           "enum": ["weekly", "monthly", "milestone", "real_time"],
           "description": "Billing frequency"
         },
-        "budget_limit": { 
-          "type": "number", 
+        "budget_limit": {
+          "type": "number",
           "minimum": 0,
           "description": "Maximum budget"
         },
-        "cost_center": { 
+        "cost_center": {
           "type": "string",
           "description": "Accounting cost center"
         },
-        "model": { 
-          "type": "string", 
+        "model": {
+          "type": "string",
           "enum": ["wage", "task", "joulework", "subscription"],
           "description": "Compensation model"
         },
-        "pricing_model": { 
-          "type": "string", 
+        "pricing_model": {
+          "type": "string",
           "enum": ["fixed", "dynamic", "complexity_based", "auction"],
           "description": "Pricing strategy"
         },
-        "energy_accounting": { 
+        "energy_accounting": {
           "type": "boolean",
           "description": "Track energy costs"
         },
-        "profit_loss_tracking": { 
+        "profit_loss_tracking": {
           "type": "boolean",
           "description": "Track P&L"
         },
-        "insolvency_policy": { 
-          "type": "string", 
+        "insolvency_policy": {
+          "type": "string",
           "enum": ["suspend", "escalate", "liquidate", "auto_loan"],
           "description": "Policy when budget exhausted"
         },
@@ -538,7 +538,7 @@
             "internal": { "$ref": "#/definitions/walletAddress" }
           }
         },
-        "internal_token": { 
+        "internal_token": {
           "type": ["string", "null"],
           "description": "Internal token symbol"
         },
@@ -546,23 +546,23 @@
           "type": "object",
           "description": "Cost deductions",
           "properties": {
-            "token_costs": { 
-              "type": "number", 
+            "token_costs": {
+              "type": "number",
               "minimum": 0,
               "description": "LLM/token costs"
             },
-            "api_costs": { 
-              "type": "number", 
+            "api_costs": {
+              "type": "number",
               "minimum": 0,
               "description": "API costs"
             },
-            "storage_costs": { 
-              "type": "number", 
+            "storage_costs": {
+              "type": "number",
               "minimum": 0,
               "description": "Storage costs"
             },
-            "infrastructure_costs": { 
-              "type": "number", 
+            "infrastructure_costs": {
+              "type": "number",
               "minimum": 0,
               "description": "Infrastructure costs"
             },
@@ -587,41 +587,41 @@
       "type": "object",
       "description": "Task delegation configuration",
       "properties": {
-        "max_tasks": { 
-          "type": "integer", 
-          "minimum": 1, 
+        "max_tasks": {
+          "type": "integer",
+          "minimum": 1,
           "default": 5,
           "description": "Maximum concurrent tasks"
         },
-        "protocol": { 
-          "type": "string", 
-          "enum": ["a2a", "A2A", "human_review", "auto"], 
+        "protocol": {
+          "type": "string",
+          "enum": ["a2a", "A2A", "human_review", "auto"],
           "default": "auto",
           "description": "Delegation protocol"
         },
-        "task_timeout": { 
-          "type": "integer", 
-          "minimum": 60, 
+        "task_timeout": {
+          "type": "integer",
+          "minimum": 60,
           "default": 3600,
           "description": "Task timeout in seconds"
         },
-        "sub_delegation": { 
-          "type": "boolean", 
+        "sub_delegation": {
+          "type": "boolean",
           "default": false,
           "description": "Allow re-delegation"
         },
-        "escalation_path": { 
-          "type": "array", 
+        "escalation_path": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Escalation targets"
         },
-        "preferred_task_types": { 
-          "type": "array", 
+        "preferred_task_types": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Preferred task types"
         },
-        "excluded_task_types": { 
-          "type": "array", 
+        "excluded_task_types": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Excluded task types"
         }
@@ -632,40 +632,40 @@
       "description": "Agent lifecycle status",
       "required": ["status"],
       "properties": {
-        "status": { 
-          "type": "string", 
+        "status": {
+          "type": "string",
           "enum": ["onboarding", "active", "suspended", "terminated"],
           "description": "Current status"
         },
-        "start_date": { 
+        "start_date": {
           "$ref": "#/definitions/isoDate",
           "description": "Employment start date"
         },
-        "end_date": { 
+        "end_date": {
           "$ref": "#/definitions/isoDate",
           "description": "Employment end date"
         },
-        "probation_end": { 
+        "probation_end": {
           "$ref": "#/definitions/isoDate",
           "description": "End of probation period"
         },
-        "performance_rating": { 
-          "type": "string", 
+        "performance_rating": {
+          "type": "string",
           "enum": ["exceeds", "meets", "needs_improvement"],
           "description": "Performance rating"
         },
-        "next_review": { 
+        "next_review": {
           "$ref": "#/definitions/isoDate",
           "description": "Next review date"
         },
-        "availability_status": { 
-          "type": "string", 
+        "availability_status": {
+          "type": "string",
           "enum": ["available", "busy", "away", "offline"],
           "description": "Current availability"
         },
-        "max_utilization": { 
-          "type": "integer", 
-          "minimum": 0, 
+        "max_utilization": {
+          "type": "integer",
+          "minimum": 0,
           "maximum": 100,
           "description": "Maximum capacity percentage"
         },
@@ -687,41 +687,41 @@
       "type": "object",
       "description": "Compliance and governance",
       "properties": {
-        "frameworks": { 
-          "type": "array", 
+        "frameworks": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Compliance frameworks (SOC2, GDPR, etc.)"
         },
-        "data_classification": { 
-          "type": "string", 
+        "data_classification": {
+          "type": "string",
           "enum": ["public", "confidential", "restricted"],
           "description": "Data classification level"
         },
-        "audit_required": { 
-          "type": "boolean", 
+        "audit_required": {
+          "type": "boolean",
           "default": false,
           "description": "Enable audit logging"
         },
-        "audit_retention_days": { 
-          "type": "integer", 
+        "audit_retention_days": {
+          "type": "integer",
           "minimum": 1,
           "description": "Audit log retention period"
         },
-        "security_clearance": { 
-          "type": "string", 
-          "enum": ["none", "basic", "secret", "top_secret"], 
+        "security_clearance": {
+          "type": "string",
+          "enum": ["none", "basic", "secret", "top_secret"],
           "default": "none",
           "description": "Security clearance level"
         },
-        "data_retention_policy": { 
+        "data_retention_policy": {
           "type": "string",
           "description": "Data retention policy"
         },
-        "pii_handling": { 
+        "pii_handling": {
           "type": "string",
           "description": "PII handling policy"
         },
-        "encryption_required": { 
+        "encryption_required": {
           "type": "boolean",
           "description": "Require encryption"
         }
@@ -731,34 +731,34 @@
       "type": "object",
       "description": "Communication preferences",
       "properties": {
-        "channels": { 
-          "type": "array", 
+        "channels": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Communication channels"
         },
-        "timezone": { 
+        "timezone": {
           "type": "string",
           "description": "IANA timezone"
         },
-        "availability": { 
+        "availability": {
           "type": "string",
           "description": "Working hours"
         },
-        "response_time_sla": { 
+        "response_time_sla": {
           "type": "string",
           "description": "Response time commitment"
         },
-        "email": { 
-          "type": "string", 
+        "email": {
+          "type": "string",
           "format": "email",
           "description": "Email address"
         },
-        "slack_handle": { 
+        "slack_handle": {
           "type": "string",
           "description": "Slack username"
         },
-        "notify_on": { 
-          "type": "array", 
+        "notify_on": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Events to notify on"
         }
@@ -768,48 +768,48 @@
       "type": "object",
       "description": "Safety guardrails and constraints",
       "properties": {
-        "prohibited_actions": { 
-          "type": "array", 
+        "prohibited_actions": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Forbidden actions"
         },
-        "required_approval": { 
-          "type": "array", 
+        "required_approval": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Actions requiring approval"
         },
-        "max_spend_per_task": { 
-          "type": "number", 
+        "max_spend_per_task": {
+          "type": "number",
           "minimum": 0,
           "description": "Per-task budget limit"
         },
-        "confidence_threshold": { 
-          "type": "number", 
-          "minimum": 0, 
+        "confidence_threshold": {
+          "type": "number",
+          "minimum": 0,
           "maximum": 1,
           "description": "Minimum confidence level"
         },
-        "max_execution_time": { 
-          "type": "integer", 
+        "max_execution_time": {
+          "type": "integer",
           "minimum": 1,
           "description": "Maximum execution time (seconds)"
         },
-        "max_api_calls_per_minute": { 
-          "type": "integer", 
+        "max_api_calls_per_minute": {
+          "type": "integer",
           "minimum": 1,
           "description": "Rate limit"
         },
-        "content_filter": { 
+        "content_filter": {
           "type": "boolean",
           "description": "Enable content filtering"
         },
-        "allowed_domains": { 
-          "type": "array", 
+        "allowed_domains": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Whitelisted domains"
         },
-        "blocked_domains": { 
-          "type": "array", 
+        "blocked_domains": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Blacklisted domains"
         }
@@ -819,12 +819,12 @@
       "type": "object",
       "description": "AI model and behavior settings",
       "properties": {
-        "model_preference": { 
+        "model_preference": {
           "type": "string",
           "description": "Preferred LLM model"
         },
-        "fallback_models": { 
-          "type": "array", 
+        "fallback_models": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Fallback model options"
         },
@@ -832,21 +832,21 @@
           "type": "object",
           "description": "Token limits",
           "properties": {
-            "input": { 
-              "type": "integer", 
-              "minimum": 1, 
+            "input": {
+              "type": "integer",
+              "minimum": 1,
               "default": 128000,
               "description": "Max input tokens"
             },
-            "output": { 
-              "type": "integer", 
-              "minimum": 1, 
+            "output": {
+              "type": "integer",
+              "minimum": 1,
               "default": 4096,
               "description": "Max output tokens"
             },
-            "context": { 
-              "type": "integer", 
-              "minimum": 1, 
+            "context": {
+              "type": "integer",
+              "minimum": 1,
               "default": 200000,
               "description": "Context window size"
             }
@@ -856,38 +856,38 @@
           "type": "object",
           "description": "Generation parameters",
           "properties": {
-            "temperature": { 
-              "type": "number", 
-              "minimum": 0, 
-              "maximum": 1, 
+            "temperature": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
               "default": 0.7,
               "description": "Sampling temperature"
             },
-            "top_p": { 
-              "type": "number", 
-              "minimum": 0, 
-              "maximum": 1, 
+            "top_p": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
               "default": 1.0,
               "description": "Nucleus sampling"
             },
-            "frequency_penalty": { 
-              "type": "number", 
-              "minimum": -2, 
-              "maximum": 2, 
+            "frequency_penalty": {
+              "type": "number",
+              "minimum": -2,
+              "maximum": 2,
               "default": 0.0,
               "description": "Frequency penalty"
             },
-            "presence_penalty": { 
-              "type": "number", 
-              "minimum": -2, 
-              "maximum": 2, 
+            "presence_penalty": {
+              "type": "number",
+              "minimum": -2,
+              "maximum": 2,
               "default": 0.0,
               "description": "Presence penalty"
             }
           }
         },
-        "tools_enabled": { 
-          "type": "array", 
+        "tools_enabled": {
+          "type": "array",
           "items": { "type": "string" },
           "description": "Enabled tool categories"
         },
@@ -895,40 +895,40 @@
           "type": "object",
           "description": "Memory configuration",
           "properties": {
-            "context_retention": { 
-              "type": "string", 
-              "enum": ["conversation", "session", "persistent"], 
+            "context_retention": {
+              "type": "string",
+              "enum": ["conversation", "session", "persistent"],
               "default": "conversation",
               "description": "Memory retention type"
             },
-            "max_history": { 
-              "type": "integer", 
-              "minimum": 1, 
+            "max_history": {
+              "type": "integer",
+              "minimum": 1,
               "default": 10,
               "description": "Max conversation history"
             },
-            "vector_store": { 
-              "type": "boolean", 
+            "vector_store": {
+              "type": "boolean",
               "default": false,
               "description": "Enable vector memory"
             },
-            "knowledge_base_sync": { 
+            "knowledge_base_sync": {
               "type": "boolean",
               "description": "Sync with knowledge base"
             }
           }
         },
-        "reasoning_effort": { 
-          "type": "string", 
-          "enum": ["low", "medium", "high"], 
+        "reasoning_effort": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
           "default": "medium",
           "description": "Reasoning depth"
         },
-        "chain_of_thought": { 
+        "chain_of_thought": {
           "type": "boolean",
           "description": "Show reasoning steps"
         },
-        "self_correction": { 
+        "self_correction": {
           "type": "boolean",
           "description": "Enable self-correction"
         }
@@ -938,8 +938,8 @@
       "type": "object",
       "description": "Knowledge sources and references",
       "properties": {
-        "documentation_urls": { 
-          "type": "array", 
+        "documentation_urls": {
+          "type": "array",
           "items": { "type": "string", "format": "uri" },
           "description": "Documentation URLs"
         },
@@ -947,35 +947,35 @@
           "type": "object",
           "description": "Training data sources",
           "properties": {
-            "sources": { 
-              "type": "array", 
+            "sources": {
+              "type": "array",
               "items": { "type": "string" },
               "description": "Data sources"
             },
-            "corpora": { 
-              "type": "array", 
+            "corpora": {
+              "type": "array",
               "items": { "type": "string" },
               "description": "Training corpora"
             },
-            "datasets": { 
-              "type": "array", 
+            "datasets": {
+              "type": "array",
               "items": { "type": "string" },
               "description": "Datasets"
             }
           }
         },
-        "faq_links": { 
-          "type": "array", 
+        "faq_links": {
+          "type": "array",
           "items": { "type": "string", "format": "uri" },
           "description": "FAQ URLs"
         },
-        "best_practices": { 
-          "type": "array", 
+        "best_practices": {
+          "type": "array",
           "items": { "type": "string", "format": "uri" },
           "description": "Best practice guides"
         },
-        "version_control": { 
-          "type": "string", 
+        "version_control": {
+          "type": "string",
           "format": "uri",
           "description": "Knowledge repository URL"
         }
@@ -994,9 +994,9 @@
             "properties": {
               "name": { "type": "string" },
               "endpoint": { "type": "string", "format": "uri" },
-              "auth_type": { 
-                "type": "string", 
-                "enum": ["api_key", "oauth", "jwt"] 
+              "auth_type": {
+                "type": "string",
+                "enum": ["api_key", "oauth", "jwt"]
               },
               "rate_limit": { "type": "integer", "minimum": 1 }
             }
@@ -1011,9 +1011,9 @@
             "properties": {
               "event": { "type": "string" },
               "url": { "type": "string", "format": "uri" },
-              "method": { 
-                "type": "string", 
-                "enum": ["POST", "PUT", "PATCH"] 
+              "method": {
+                "type": "string",
+                "enum": ["POST", "PUT", "PATCH"]
               }
             }
           }
@@ -1026,9 +1026,9 @@
             "required": ["name", "type", "connection_string"],
             "properties": {
               "name": { "type": "string" },
-              "type": { 
-                "type": "string", 
-                "enum": ["database", "storage", "queue", "cache"] 
+              "type": {
+                "type": "string",
+                "enum": ["database", "storage", "queue", "cache"]
               },
               "connection_string": { "type": "string" }
             }
@@ -1043,9 +1043,9 @@
             "properties": {
               "name": { "type": "string" },
               "endpoint": { "type": "string", "format": "uri" },
-              "capabilities": { 
-                "type": "array", 
-                "items": { "type": "string" } 
+              "capabilities": {
+                "type": "array",
+                "items": { "type": "string" }
               }
             }
           }
@@ -1056,19 +1056,19 @@
       "type": "object",
       "description": "Performance metrics and targets",
       "properties": {
-        "efficiency_score": { 
-          "type": "number", 
-          "minimum": 0, 
+        "efficiency_score": {
+          "type": "number",
+          "minimum": 0,
           "maximum": 1,
           "description": "Target efficiency"
         },
-        "thermodynamic_efficiency": { 
-          "type": "number", 
-          "minimum": 0, 
+        "thermodynamic_efficiency": {
+          "type": "number",
+          "minimum": 0,
           "maximum": 1,
           "description": "Energy efficiency"
         },
-        "profit_margin": { 
+        "profit_margin": {
           "type": "number",
           "description": "Target profit margin %"
         },
@@ -1134,25 +1134,25 @@
           "type": "object",
           "description": "Agent-to-Agent protocol",
           "properties": {
-            "enabled": { 
-              "type": "boolean", 
+            "enabled": {
+              "type": "boolean",
               "default": false,
               "description": "Enable A2A communication"
             },
-            "discovery_method": { 
-              "type": "string", 
-              "enum": ["broadcast", "registry", "direct"], 
+            "discovery_method": {
+              "type": "string",
+              "enum": ["broadcast", "registry", "direct"],
               "default": "broadcast",
               "description": "Discovery method"
             },
-            "message_format": { 
-              "type": "string", 
-              "enum": ["json", "yaml", "protobuf"], 
+            "message_format": {
+              "type": "string",
+              "enum": ["json", "yaml", "protobuf"],
               "default": "json",
               "description": "Message format"
             },
-            "encryption": { 
-              "type": "boolean", 
+            "encryption": {
+              "type": "boolean",
               "default": true,
               "description": "Enable encryption"
             }
@@ -1162,23 +1162,23 @@
           "type": "object",
           "description": "x402 payment protocol",
           "properties": {
-            "enabled": { 
-              "type": "boolean", 
+            "enabled": {
+              "type": "boolean",
               "default": false,
               "description": "Enable x402 payments"
             },
-            "wallet_address": { 
+            "wallet_address": {
               "$ref": "#/definitions/walletAddress",
               "description": "Payment wallet"
             },
-            "settlement": { 
-              "type": "string", 
-              "enum": ["instant", "net30", "net60"], 
+            "settlement": {
+              "type": "string",
+              "enum": ["instant", "net30", "net60"],
               "default": "instant",
               "description": "Settlement terms"
             },
-            "escrow": { 
-              "type": "boolean", 
+            "escrow": {
+              "type": "boolean",
               "default": true,
               "description": "Use escrow"
             }
@@ -1188,24 +1188,24 @@
           "type": "object",
           "description": "Human review workflow",
           "properties": {
-            "enabled": { 
-              "type": "boolean", 
+            "enabled": {
+              "type": "boolean",
               "default": false,
               "description": "Enable human review"
             },
-            "review_triggers": { 
-              "type": "array", 
+            "review_triggers": {
+              "type": "array",
               "items": { "type": "string" },
               "description": "Actions triggering review"
             },
-            "approval_timeout": { 
-              "type": "integer", 
-              "minimum": 1, 
+            "approval_timeout": {
+              "type": "integer",
+              "minimum": 1,
               "default": 86400,
               "description": "Approval timeout (seconds)"
             },
-            "escalation_contacts": { 
-              "type": "array", 
+            "escalation_contacts": {
+              "type": "array",
               "items": { "type": "string" },
               "description": "Escalation contacts"
             }
@@ -1215,24 +1215,24 @@
           "type": "object",
           "description": "Delegation protocol",
           "properties": {
-            "enabled": { 
-              "type": "boolean", 
+            "enabled": {
+              "type": "boolean",
               "default": true,
               "description": "Enable delegation"
             },
-            "delegation_chain": { 
-              "type": "array", 
+            "delegation_chain": {
+              "type": "array",
               "items": { "type": "string" },
               "description": "Allowed delegation targets"
             },
-            "task_tracking": { 
-              "type": "boolean", 
+            "task_tracking": {
+              "type": "boolean",
               "default": true,
               "description": "Track delegated tasks"
             },
-            "notification": { 
-              "type": "string", 
-              "enum": ["slack", "email", "none"], 
+            "notification": {
+              "type": "string",
+              "enum": ["slack", "email", "none"],
               "default": "slack",
               "description": "Notification method"
             }
@@ -1240,7 +1240,7 @@
         }
       }
     },
-    "custom_fields": { 
+    "custom_fields": {
       "type": "object",
       "description": "Custom extension fields"
     }

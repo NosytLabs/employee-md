@@ -3,11 +3,11 @@ contact_links:
   - name: 📖 Documentation
     url: https://github.com/NosytLabs/employee-md/blob/main/README.md
     about: Check the documentation before opening an issue
-  
+
   - name: 💬 Discussions
     url: https://github.com/NosytLabs/employee-md/discussions
     about: Ask questions and share ideas in our discussions forum
-  
+
   - name: 🔒 Security Issues
     url: https://github.com/NosytLabs/employee-md/security/advisories/new
     about: Report security vulnerabilities privately

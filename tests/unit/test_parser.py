@@ -138,21 +138,6 @@ class TestSecureYAMLParser:
         assert data == {"a": {"b": {"c": {"d": "value"}}}}
         assert error_line is None
 
-    def test_calculate_depth_flat(self):
-        parser = SecureYAMLParser()
-        depth = parser._calculate_depth({"a": 1, "b": 2, "c": 3})
-        assert depth == 1
-
-    def test_calculate_depth_nested(self):
-        parser = SecureYAMLParser()
-        depth = parser._calculate_depth({"a": {"b": {"c": {"d": "value"}}}})
-        assert depth == 4
-
-    def test_calculate_depth_with_lists(self):
-        parser = SecureYAMLParser()
-        depth = parser._calculate_depth({"items": [{"nested": "value"}]})
-        assert depth == 3
-
     def test_path_traversal_protection(self):
         parser = SecureYAMLParser()
 

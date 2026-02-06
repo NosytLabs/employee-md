@@ -17,6 +17,11 @@ class YAMLErrorContext(Exception):
         super().__init__(message)
 
 
+class DepthLimitExceeded(yaml.MarkedYAMLError):
+    """Exception raised when YAML structure exceeds depth limit."""
+    pass
+
+
 class SecureYAMLParser:
     """YAML parser with security hardening."""
 
@@ -88,9 +93,48 @@ class SecureYAMLParser:
                 line_number=None,
             )
 
+        class DepthLimitLoader(yaml.SafeLoader):
+            def __init__(self, stream):
+                super().__init__(stream)
+                self.max_depth = self._outer.max_depth
+                self.current_depth = 0
+
+            def compose_mapping_node(self, anchor):
+                self.current_depth += 1
+                if self.current_depth > self.max_depth:
+                    mark = self.peek_event().start_mark
+                    raise DepthLimitExceeded(
+                        problem=f"YAML nesting too deep: {self.current_depth} levels (max: {self.max_depth})",
+                        problem_mark=mark
+                    )
+                try:
+                    return super().compose_mapping_node(anchor)
+                finally:
+                    self.current_depth -= 1
+
+            def compose_sequence_node(self, anchor):
+                self.current_depth += 1
+                if self.current_depth > self.max_depth:
+                    mark = self.peek_event().start_mark
+                    raise DepthLimitExceeded(
+                        problem=f"YAML nesting too deep: {self.current_depth} levels (max: {self.max_depth})",
+                        problem_mark=mark
+                    )
+                try:
+                    return super().compose_sequence_node(anchor)
+                finally:
+                    self.current_depth -= 1
+
+        # Attach outer self to loader class
+        DepthLimitLoader._outer = self
+
         try:
-            # Use safe_load to prevent arbitrary code execution
-            data = yaml.safe_load(content)
+            # Use load with DepthLimitLoader to check depth during parsing
+            data = yaml.load(content, Loader=DepthLimitLoader)
+        except DepthLimitExceeded as e:
+            line_number = self._extract_line_number(e)
+            # Use e.problem as message
+            raise YAMLErrorContext(str(e.problem), line_number=line_number)
         except YAMLError as e:
             line_number = self._extract_line_number(e)
             raise YAMLErrorContext(f"YAML parsing error: {e}", line_number=line_number)
@@ -101,14 +145,6 @@ class SecureYAMLParser:
         if not isinstance(data, dict):
             raise YAMLErrorContext(
                 "Root YAML element must be a dictionary", line_number=None
-            )
-
-        # Security: Depth limit check
-        depth = self._calculate_depth(data)
-        if depth > self.max_depth:
-            raise YAMLErrorContext(
-                f"YAML nesting too deep: {depth} levels (max: {self.max_depth})",
-                line_number=None,
             )
 
         return data, None
@@ -151,50 +187,6 @@ class SecureYAMLParser:
             return True
         except (ValueError, OSError):
             return False
-
-    def _calculate_depth(self, obj: Any, current_depth: int = 0) -> int:
-        """Calculate maximum nesting depth of a data structure.
-
-        Optimized with early termination to prevent unnecessary traversal of deep structures.
-
-        Args:
-            obj: The data structure to calculate depth for
-            current_depth: Current depth in traversal
-
-        Returns:
-            Maximum depth of the structure
-        """
-        if current_depth > self.max_depth:
-            return current_depth
-
-        if isinstance(obj, dict):
-            if not obj:
-                return current_depth
-
-            max_child_depth = current_depth
-            for v in obj.values():
-                child_depth = self._calculate_depth(v, current_depth + 1)
-                if child_depth > max_child_depth:
-                    max_child_depth = child_depth
-                    if max_child_depth > self.max_depth:
-                        return max_child_depth
-            return max_child_depth
-
-        elif isinstance(obj, list):
-            if not obj:
-                return current_depth
-
-            max_child_depth = current_depth
-            for item in obj:
-                child_depth = self._calculate_depth(item, current_depth + 1)
-                if child_depth > max_child_depth:
-                    max_child_depth = child_depth
-                    if max_child_depth > self.max_depth:
-                        return max_child_depth
-            return max_child_depth
-
-        else:
-            return current_depth
 
     def _extract_line_number(self, error: YAMLError) -> Optional[int]:
         """Extract line number from YAML error."""
