@@ -191,7 +191,7 @@ class SecureYAMLParser:
             if ".." in str_path.split(os.sep):
                 return False
 
-            # If allowlist is configured, verify path is within allowed directories
+            # Verify path is within allowed directories
             if self.allowed_directories:
                 for allowed_dir in self.allowed_directories:
                     try:
@@ -199,9 +199,8 @@ class SecureYAMLParser:
                         return True
                     except ValueError:
                         continue
-                return False
 
-            return True
+            return False
         except (ValueError, OSError):
             return False
 

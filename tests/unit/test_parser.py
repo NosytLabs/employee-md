@@ -1,5 +1,6 @@
 """Tests for SecureYAMLParser."""
 
+import os
 import pytest
 from pathlib import Path
 import tempfile
@@ -24,7 +25,7 @@ class TestSecureYAMLParser:
         assert error_line is None
 
     def test_parse_file_success(self, tmp_path):
-        parser = SecureYAMLParser()
+        parser = SecureYAMLParser(allowed_directories=[str(tmp_path)])
         test_file = tmp_path / "test.yaml"
 
         yaml_content = """
@@ -37,6 +38,18 @@ class TestSecureYAMLParser:
         data, error_line = parser.parse_file(str(test_file))
         assert data == {"role": {"title": "Agent", "level": "senior"}}
         assert error_line is None
+
+    def test_parse_file_no_allowed_dirs_fails(self, tmp_path):
+        """Test that parsing fails when no allowed directories are configured."""
+        parser = SecureYAMLParser()
+        test_file = tmp_path / "test.yaml"
+        test_file.write_text("key: value")
+
+        with pytest.raises(YAMLErrorContext) as exc_info:
+            parser.parse_file(str(test_file))
+
+        # Should raise traversal/permission error because path is not allowed
+        assert "Path traversal" in str(exc_info.value)
 
     def test_parse_invalid_yaml(self):
         parser = SecureYAMLParser()
@@ -53,7 +66,7 @@ class TestSecureYAMLParser:
         assert "YAML parsing error" in str(exc_info.value)
 
     def test_parse_non_existent_file(self):
-        parser = SecureYAMLParser()
+        parser = SecureYAMLParser(allowed_directories=["/nonexistent"])
 
         with pytest.raises(YAMLErrorContext) as exc_info:
             parser.parse_file("/nonexistent/file.yaml")
@@ -139,7 +152,8 @@ class TestSecureYAMLParser:
         assert error_line is None
 
     def test_path_traversal_protection(self):
-        parser = SecureYAMLParser()
+        # Allow current directory to ensure traversal is blocked even if start point is allowed
+        parser = SecureYAMLParser(allowed_directories=[os.getcwd()])
 
         with pytest.raises(YAMLErrorContext) as exc_info:
             parser.parse_file("../../../etc/passwd")
@@ -150,8 +164,8 @@ class TestSecureYAMLParser:
         )
 
     def test_is_safe_path_valid(self):
-        parser = SecureYAMLParser()
         path = Path(__file__).resolve()
+        parser = SecureYAMLParser(allowed_directories=[str(path.parent)])
         assert parser._is_safe_path(path) is True
 
     def test_parse_root_list_raises_error(self):
