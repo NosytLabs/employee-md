@@ -7,7 +7,11 @@ from typing import Any, Dict, Optional
 from .constants import (
     PLACEHOLDER_VALUES,
     ISO_DATE_CACHE_SIZE,
+
 )
+
+BECH32_CHARS = set("023456789acdefghjklmnpqrstuvwxyz")
+BASE58_CHARS = set("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
 
 
 def is_placeholder(value: Any) -> bool:
@@ -88,22 +92,19 @@ def validate_wallet(wallet: str) -> bool:
         if not (26 <= len(wallet) <= 35):
             return False
         # Check for valid base58 characters
-        base58_chars = set("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
-        return all(c in base58_chars for c in wallet)
+        return all(c in BASE58_CHARS for c in wallet)
 
     # Bitcoin Bech32 (bc1...): 42-62 chars
     if wallet.startswith("bc1"):
         if not (42 <= len(wallet) <= 62):
             return False
         # Bech32 characters: lowercase alphanumeric except 1, b, i, o
-        bech32_chars = set("023456789acdefghjklmnpqrstuvwxyz")
-        return all(c in bech32_chars for c in wallet[3:])
+        return all(c in BECH32_CHARS for c in wallet[3:])
 
     # Solana: Base58, 32-44 chars, must be all base58 chars
     # Only return True if it doesn't match other patterns
     if 32 <= len(wallet) <= 44:
-        base58_chars = set("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
-        if all(c in base58_chars for c in wallet):
+        if all(c in BASE58_CHARS for c in wallet):
             return True
 
     return False
