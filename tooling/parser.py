@@ -181,10 +181,8 @@ class SecureYAMLParser:
         """Check if path is safe (no traversal outside allowed dirs)."""
         # Normalize and check for traversal
         try:
-            if path.is_absolute():
-                resolved_path = path
-            else:
-                resolved_path = path.resolve()
+            # Always resolve to canonicalize path and resolve symlinks/..
+            resolved_path = path.resolve()
 
             # Check for path traversal attempts
             str_path = str(resolved_path)
