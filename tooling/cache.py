@@ -5,6 +5,7 @@ import threading
 import time
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
+from collections import OrderedDict
 
 from .constants import DEFAULT_CACHE_MAX_SIZE, DEFAULT_CACHE_TTL
 from .monitoring import get_metrics
@@ -36,7 +37,7 @@ class ValidationCache:
         """
         self.max_size = max_size
         self.default_ttl = default_ttl
-        self._cache: Dict[str, CacheEntry] = {}
+        self._cache: OrderedDict[str, CacheEntry] = OrderedDict()
         self._lock = threading.Lock()
         self._metrics = get_metrics()
 
@@ -122,14 +123,13 @@ class ValidationCache:
             evicted = False
             if len(self._cache) >= self.max_size:
                 evicted = True
-                oldest_key = min(
-                    self._cache.keys(), key=lambda k: self._cache[k].timestamp
-                )
-                del self._cache[oldest_key]
+                # Remove oldest item (first inserted/updated)
+                self._cache.popitem(last=False)
 
             self._cache[key] = CacheEntry(
                 result=result, timestamp=time.time(), ttl=ttl or self.default_ttl
             )
+            self._cache.move_to_end(key)
 
             self._metrics.record_cache_size(len(self._cache), self.max_size)
             if evicted:
