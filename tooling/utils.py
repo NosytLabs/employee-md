@@ -1,5 +1,7 @@
 """Utility functions for validation."""
 
+import os
+import sys
 from datetime import datetime
 from functools import lru_cache
 from urllib.parse import urlparse
@@ -7,8 +9,31 @@ from typing import Any, Dict, Optional
 from .constants import (
     PLACEHOLDER_VALUES,
     ISO_DATE_CACHE_SIZE,
-
+    URL_CACHE_SIZE,
+    EMAIL_CACHE_SIZE,
 )
+
+
+class Color:
+    """ANSI color codes for terminal output."""
+
+    HEADER = "\033[95m"
+    BLUE = "\033[94m"
+    CYAN = "\033[96m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
+    @staticmethod
+    def style(text: str, *styles: str) -> str:
+        """Apply styles to text if connected to a TTY."""
+        if not sys.stdout.isatty() and not os.environ.get("FORCE_COLOR"):
+            return text
+        return "".join(styles) + text + Color.RESET
+
 
 BECH32_CHARS = set("023456789acdefghjklmnpqrstuvwxyz")
 BASE58_CHARS = set("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
@@ -110,10 +135,24 @@ def validate_wallet(wallet: str) -> bool:
     return False
 
 
+@lru_cache(maxsize=URL_CACHE_SIZE)
+def _validate_url_impl(url: str) -> bool:
+    """Cached implementation of URL validation."""
+    if not url or is_placeholder(url):
+        return True
+
+    try:
+        parsed = urlparse(url)
+        return bool(parsed.scheme in ("http", "https") and parsed.netloc)
+    except (ValueError, TypeError):
+        return False
+
+
 def validate_url(url: Any) -> bool:
     """Validate URL format securely without regex.
 
     Uses urllib.parse to avoid ReDoS vulnerabilities.
+    Cached for performance optimization on string inputs.
 
     Args:
         url: URL string to validate
@@ -128,34 +167,12 @@ def validate_url(url: Any) -> bool:
     if not isinstance(url, str):
         return False
 
-    if not url or is_placeholder(url):
-        return True
-
-    try:
-        parsed = urlparse(url)
-        return bool(parsed.scheme in ("http", "https") and parsed.netloc)
-    except (ValueError, TypeError):
-        return False
+    return _validate_url_impl(url)
 
 
-def validate_email(email: Any) -> bool:
-    """Validate email format.
-
-    Uses a safe pattern without catastrophic backtracking.
-
-    Args:
-        email: Email string to validate
-
-    Returns:
-        True if valid email or placeholder, False otherwise
-    """
-    # None is treated as placeholder/acceptable
-    if email is None:
-        return True
-
-    if not isinstance(email, str):
-        return False
-
+@lru_cache(maxsize=EMAIL_CACHE_SIZE)
+def _validate_email_impl(email: str) -> bool:
+    """Cached implementation of email validation."""
     if not email or is_placeholder(email):
         return True
 
@@ -184,6 +201,28 @@ def validate_email(email: Any) -> bool:
         return False
 
     return True
+
+
+def validate_email(email: Any) -> bool:
+    """Validate email format.
+
+    Uses a safe pattern without catastrophic backtracking.
+    Cached for performance optimization on string inputs.
+
+    Args:
+        email: Email string to validate
+
+    Returns:
+        True if valid email or placeholder, False otherwise
+    """
+    # None is treated as placeholder/acceptable
+    if email is None:
+        return True
+
+    if not isinstance(email, str):
+        return False
+
+    return _validate_email_impl(email)
 
 
 def get_nested_value(data: Dict[str, Any], path: str) -> Optional[Any]:

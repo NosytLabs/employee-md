@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 from typing import Any, List, Optional
 
+from .utils import Color
 from .employee_validator import EmployeeValidationOrchestrator
 from .validators import (
     ValidationResult,
@@ -33,28 +34,28 @@ class OutputFormatter:
 
         if filename:
             lines.append(f"\n{'=' * 60}")
-            lines.append(f"File: {filename}")
+            lines.append(f"File: {Color.style(filename, Color.BOLD, Color.CYAN)}")
             lines.append(f"{'=' * 60}\n")
 
         if result.is_valid:
-            lines.append("✓ Validation passed!")
+            lines.append(Color.style("✓ Validation passed!", Color.GREEN))
         else:
-            lines.append("❌ Validation failed!")
+            lines.append(Color.style("❌ Validation failed!", Color.RED))
 
         if result.errors:
-            lines.append("\nErrors:")
+            lines.append(f"\n{Color.style('Errors:', Color.RED, Color.BOLD)}")
             for error in result.errors:
-                line = f"  ✗ {error.field}: {error.message}"
+                line = f"  {Color.style('✗', Color.RED)} {Color.style(error.field, Color.BOLD)}: {error.message}"
                 if error.line_number:
                     line += f" (line {error.line_number})"
                 lines.append(line)
                 if error.suggestion:
-                    lines.append(f"    💡 Suggestion: {error.suggestion}")
+                    lines.append(f"    {Color.style('💡 Suggestion:', Color.CYAN)} {error.suggestion}")
 
         if result.warnings:
-            lines.append("\nWarnings:")
+            lines.append(f"\n{Color.style('Warnings:', Color.YELLOW, Color.BOLD)}")
             for warning in result.warnings:
-                line = f"  ⚠ {warning.field}: {warning.message}"
+                line = f"  {Color.style('⚠', Color.YELLOW)} {Color.style(warning.field, Color.BOLD)}: {warning.message}"
                 if warning.line_number:
                     line += f" (line {warning.line_number})"
                 lines.append(line)
@@ -101,7 +102,11 @@ class OutputFormatter:
     def format_compact(result: ValidationResult, filename: Optional[str] = None) -> str:
         """Format results in a compact single-line format."""
         prefix = f"{filename}: " if filename else ""
-        status = "✓ PASS" if result.is_valid else "✗ FAIL"
+        status = (
+            Color.style("✓ PASS", Color.GREEN)
+            if result.is_valid
+            else Color.style("✗ FAIL", Color.RED)
+        )
         details = f"{result.error_count}E/{result.warning_count}W"
         return f"{prefix}{status} ({details})"
 
