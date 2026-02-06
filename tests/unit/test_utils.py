@@ -1,6 +1,9 @@
 """Tests for utility functions."""
 
 import pytest
+import os
+import sys
+from unittest.mock import patch
 from tooling.utils import (
     is_placeholder,
     validate_iso_date,
@@ -9,6 +12,7 @@ from tooling.utils import (
     validate_email,
     get_nested_value,
     check_type,
+    Color,
 )
 
 
@@ -314,3 +318,24 @@ class TestCheckType:
         assert check_type(False, bool)
         assert not check_type(1, bool)
         assert not check_type("true", bool)
+
+
+class TestColor:
+    """Tests for Color class."""
+
+    def test_style_no_tty(self):
+        """Test style returns plain text when not TTY and no FORCE_COLOR."""
+        with patch.object(sys.stdout, "isatty", return_value=False):
+            with patch.dict(os.environ, {}, clear=True):
+                assert Color.style("text", Color.RED) == "text"
+
+    def test_style_tty(self):
+        """Test style returns colored text when TTY."""
+        with patch.object(sys.stdout, "isatty", return_value=True):
+            assert Color.style("text", Color.RED) == f"{Color.RED}text{Color.RESET}"
+
+    def test_style_force_color(self):
+        """Test style returns colored text when FORCE_COLOR is set."""
+        with patch.object(sys.stdout, "isatty", return_value=False):
+            with patch.dict(os.environ, {"FORCE_COLOR": "1"}):
+                assert Color.style("text", Color.RED) == f"{Color.RED}text{Color.RESET}"

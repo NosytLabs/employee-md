@@ -1,5 +1,7 @@
 """Utility functions for validation."""
 
+import os
+import sys
 from datetime import datetime
 from functools import lru_cache
 from urllib.parse import urlparse
@@ -9,6 +11,27 @@ from .constants import (
     ISO_DATE_CACHE_SIZE,
 
 )
+
+
+class Color:
+    """ANSI color codes for terminal output."""
+
+    HEADER = "\033[95m"
+    BLUE = "\033[94m"
+    CYAN = "\033[96m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
+    @staticmethod
+    def style(text: str, *styles: str) -> str:
+        """Apply styles to text if connected to a TTY."""
+        if not sys.stdout.isatty() and not os.environ.get("FORCE_COLOR"):
+            return text
+        return "".join(styles) + text + Color.RESET
 
 BECH32_CHARS = set("023456789acdefghjklmnpqrstuvwxyz")
 BASE58_CHARS = set("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
