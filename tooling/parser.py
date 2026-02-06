@@ -63,11 +63,14 @@ class SecureYAMLParser:
 
         try:
             with open(resolved_path, "r", encoding="utf-8") as f:
-                content = f.read()
+                data = yaml.safe_load(f)
         except (IOError, OSError) as e:
             raise YAMLErrorContext(f"Error reading file: {e}", line_number=None)
+        except YAMLError as e:
+            line_number = self._extract_line_number(e)
+            raise YAMLErrorContext(f"YAML parsing error: {e}", line_number=line_number)
 
-        return self.parse_string(content)
+        return self._validate_structure(data)
 
     def parse_string(self, content: str) -> Tuple[Dict[str, Any], Optional[int]]:
         """Parse YAML content from string.
@@ -95,6 +98,10 @@ class SecureYAMLParser:
             line_number = self._extract_line_number(e)
             raise YAMLErrorContext(f"YAML parsing error: {e}", line_number=line_number)
 
+        return self._validate_structure(data)
+
+    def _validate_structure(self, data: Any) -> Tuple[Dict[str, Any], Optional[int]]:
+        """Validate structure of parsed YAML data."""
         if data is None:
             return {}, None
 
