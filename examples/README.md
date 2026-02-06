@@ -60,7 +60,7 @@ identity:
 scope:
   in_scope:
     - "Your specific tasks"
-  
+
 # Set permissions
 permissions:
   data_access:

@@ -100,12 +100,12 @@ class AgentConfig:
     purpose: str
     model: str
     temperature: float
-    
+
     @classmethod
     def from_file(cls, path: str) -> "AgentConfig":
         with open(path, 'r') as f:
             data = yaml.safe_load(f)
-        
+
         return cls(
             agent_id=data['identity']['agent_id'],
             title=data['role']['title'],
@@ -114,7 +114,7 @@ class AgentConfig:
             model=data['ai_settings']['model_preference'],
             temperature=data['ai_settings']['generation_params']['temperature']
         )
-    
+
     def can_access(self, resource: str) -> bool:
         """Check if agent has access to a resource"""
         # Implementation based on permissions
@@ -341,7 +341,7 @@ integration:
         - "read_file"
         - "write_file"
         - "list_directory"
-    
+
     - name: "web-search"
       endpoint: "http://localhost:3001"
       capabilities:
@@ -442,14 +442,14 @@ integration:
         - "tool_routing"
         - "session_memory"
         - "rate_limiting"
-    
+
     # Semantic search and embeddings
     - name: "vector-db"
       endpoint: "http://localhost:6333"
       capabilities:
         - "vector_search"
         - "embedding_queries"
-    
+
     # External API management
     - name: "api-gateway"
       endpoint: "http://localhost:8080"
@@ -457,7 +457,7 @@ integration:
         - "http_requests"
         - "rate_limiting"
         - "api_key_management"
-    
+
     # Web research capabilities
     - name: "browser-mcp"
       endpoint: "http://localhost:9222"
@@ -465,14 +465,14 @@ integration:
         - "web_navigation"
         - "page_extraction"
         - "screenshot_capture"
-    
+
     # Secure code execution
     - name: "code-exec-mcp"
       endpoint: "http://localhost:5555"
       capabilities:
         - "python_execution"
         - "sandbox_isolation"
-    
+
     # Internal documentation
     - name: "docs-mcp"
       endpoint: "http://localhost:8888"
@@ -547,7 +547,7 @@ with open('employee.md', 'r') as f:
 
 if config.get('protocols', {}).get('x402', {}).get('enabled'):
     w3 = Web3(Web3.HTTPProvider('https://mainnet.infura.io/v3/YOUR_KEY'))
-    
+
     # Create payment transaction
     transaction = {
         'to': config['identity']['wallet'],
@@ -571,13 +571,13 @@ if human_review.get('enabled'):
     def request_human_approval(action: str, context: dict):
         """Request human approval for sensitive actions"""
         triggers = human_review.get('review_triggers', [])
-        
+
         # Check if action matches any trigger
         if any(trigger in action for trigger in triggers):
             # Send notification to escalation contacts
             contacts = human_review.get('escalation_contacts', [])
             timeout = human_review.get('approval_timeout', 86400)
-            
+
             # Implementation: Send email/Slack notification
             print(f"Approval required from {contacts} for: {action}")
             return wait_for_approval(timeout)
@@ -645,15 +645,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
+
       - name: Install validator
         run: pip install employee-md
-      
+
       - name: Validate
         run: employee-validate employee.md --format compact
 ```
