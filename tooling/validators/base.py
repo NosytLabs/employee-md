@@ -19,15 +19,22 @@ def get_production_mode() -> bool:
     return _production_mode
 
 
+# Compiled regexes for sanitization
+_WINDOWS_PATH_REGEX = re.compile(r"[A-Z]:\\[^\\]+\\[^\\]+")
+_UNIX_PATH_REGEX = re.compile(r"/[^/\s]+/[^/\s]+")
+_ETH_WALLET_REGEX = re.compile(r"0x[a-fA-F0-9]{40}")
+_BTC_WALLET_REGEX = re.compile(r"\b[13][a-km-zA-HJ-NP-Z1-9]{25,39}\b")
+
+
 def _sanitize_path_in_message(message: str) -> str:
     """Remove file system paths from error messages in production mode."""
     if not _production_mode:
         return message
 
     # Remove Windows paths like C:\path\to\file
-    message = re.sub(r"[A-Z]:\\[^\\]+\\[^\\]+", "[REDACTED_PATH]", message)
+    message = _WINDOWS_PATH_REGEX.sub("[REDACTED_PATH]", message)
     # Remove Unix paths like /path/to/file
-    message = re.sub(r"/[^/\s]+/[^/\s]+", "[REDACTED_PATH]", message)
+    message = _UNIX_PATH_REGEX.sub("[REDACTED_PATH]", message)
 
     return message
 
@@ -38,11 +45,9 @@ def _sanitize_wallet_in_message(message: str) -> str:
         return message
 
     # Ethereum addresses: 0x + 40 hex chars
-    message = re.sub(r"0x[a-fA-F0-9]{40}", "0x[REDACTED]", message)
+    message = _ETH_WALLET_REGEX.sub("0x[REDACTED]", message)
     # Bitcoin-style addresses: 26-42 chars
-    message = re.sub(
-        r"\b[13][a-km-zA-HJ-NP-Z1-9]{25,39}\b", "[REDACTED_WALLET]", message
-    )
+    message = _BTC_WALLET_REGEX.sub("[REDACTED_WALLET]", message)
 
     return message
 
