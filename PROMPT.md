@@ -19,7 +19,7 @@ Here is the context for the agent I want to build:
 4. **Constraints**: [e.g., Never deploy on Fridays, Max budget $50/mo, Approval required for tweets]
 5. **Tools**: [e.g., GitHub CLI, Slack, Notion, Molt.bot]
 
-Based on this, please generate a complete `employee.md` YAML file. 
+Based on this, please generate a complete `employee.md` YAML file.
 
 Ensure you include:
 - `spec` metadata (v1.0)

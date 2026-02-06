@@ -113,10 +113,10 @@ jobs:
           import json
           import yaml
           from jsonschema import validate, ValidationError
-          
+
           with open('tooling/schema.json') as f:
               schema = json.load(f)
-          
+
           examples = [
               'examples/minimal.md',
               'examples/senior-dev.md',
@@ -125,7 +125,7 @@ jobs:
               'examples/data-analyst.md',
               'examples/freelancer.md'
           ]
-          
+
           for example in examples:
               with open(example) as f:
                   data = yaml.safe_load(f)
