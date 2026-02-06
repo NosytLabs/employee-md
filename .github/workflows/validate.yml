@@ -3,7 +3,25 @@ name: CI
 on:
   workflow_dispatch:
   push:
+    branches: [main, master]
+    paths-ignore:
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - 'CONTRIBUTING.md'
+      - 'CODE_OF_CONDUCT.md'
+      - 'SECURITY.md'
+      - 'LICENSE'
+      - '.gitignore'
   pull_request:
+    branches: [main, master]
+    paths-ignore:
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - 'CONTRIBUTING.md'
+      - 'CODE_OF_CONDUCT.md'
+      - 'SECURITY.md'
+      - 'LICENSE'
+      - '.gitignore'
 
 permissions: read-all
 
@@ -14,7 +32,7 @@ concurrency:
 jobs:
   validate:
     name: Validate & Test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
