@@ -32,9 +32,9 @@ Fixes # (issue number)
 
 ### Key Changes
 
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ## Testing
 
