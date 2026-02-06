@@ -24,7 +24,7 @@ class TestSecureYAMLParser:
         assert error_line is None
 
     def test_parse_file_success(self, tmp_path):
-        parser = SecureYAMLParser()
+        parser = SecureYAMLParser(allowed_directories=[str(tmp_path)])
         test_file = tmp_path / "test.yaml"
 
         yaml_content = """
@@ -56,7 +56,7 @@ class TestSecureYAMLParser:
         parser = SecureYAMLParser()
 
         with pytest.raises(YAMLErrorContext) as exc_info:
-            parser.parse_file("/nonexistent/file.yaml")
+            parser.parse_file("nonexistent_file.yaml")
 
         assert "File not found" in str(exc_info.value)
 
@@ -154,15 +154,20 @@ class TestSecureYAMLParser:
         assert depth == 3
 
     def test_path_traversal_protection(self):
+        # By default, only CWD is allowed
         parser = SecureYAMLParser()
 
+        # Test absolute path to system file (should be denied)
+        with pytest.raises(YAMLErrorContext) as exc_info:
+            parser.parse_file("/etc/passwd")
+        assert "Path traversal" in str(exc_info.value)
+
+        # Test relative path traversal
         with pytest.raises(YAMLErrorContext) as exc_info:
             parser.parse_file("../../../etc/passwd")
 
         # Should raise either path traversal error or file not found
-        assert "Path traversal" in str(exc_info.value) or "File not found" in str(
-            exc_info.value
-        )
+        assert "Path traversal" in str(exc_info.value)
 
     def test_is_safe_path_valid(self):
         parser = SecureYAMLParser()

@@ -40,7 +40,6 @@ class EmployeeValidationOrchestrator:
             use_cache = enable_cache
         self.use_cache = use_cache
         self.parallel_validation = parallel_validation
-        self.parser = SecureYAMLParser()
         self._validator_factories: List[Callable[[], Any]] = [
             RequiredFieldValidator,
             EnumValidator,
@@ -77,7 +76,10 @@ class EmployeeValidationOrchestrator:
                     self._metrics.record_validation_end(start_time, cached.is_valid)
                     return cached
         try:
-            data, _ = self.parser.parse_file(filepath)
+            parser = SecureYAMLParser(
+                allowed_directories=[str(Path(filepath).parent.resolve())]
+            )
+            data, _ = parser.parse_file(filepath)
         except YAMLErrorContext as e:
             error = ValidationError(
                 field="file",

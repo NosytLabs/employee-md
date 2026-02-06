@@ -95,7 +95,9 @@ def validate_file(file_path: str) -> ValidationResult:
     }:
         return ValidationResult(is_valid=True)
     try:
-        parser = SecureYAMLParser()
+        parser = SecureYAMLParser(
+            allowed_directories=[str(Path(file_path).parent.resolve())]
+        )
         config, _ = parser.parse_file(file_path)
         engine = ValidatorEngine()
         return engine.validate(config, file_path)

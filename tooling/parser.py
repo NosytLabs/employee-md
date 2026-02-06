@@ -28,7 +28,10 @@ class SecureYAMLParser:
     ):
         self.max_depth = max_depth
         self.max_size = max_size
-        self.allowed_directories = self._normalize_allowed_dirs(allowed_directories)
+        if allowed_directories is None:
+            self.allowed_directories = {Path.cwd()}
+        else:
+            self.allowed_directories = self._normalize_allowed_dirs(allowed_directories)
 
     def parse_file(self, filepath: str) -> Tuple[Dict[str, Any], Optional[int]]:
         """Parse a YAML file with security checks.
@@ -148,17 +151,14 @@ class SecureYAMLParser:
             if ".." in str_path.split(os.sep):
                 return False
 
-            # If allowlist is configured, verify path is within allowed directories
-            if self.allowed_directories:
-                for allowed_dir in self.allowed_directories:
-                    try:
-                        resolved_path.relative_to(allowed_dir)
-                        return True
-                    except ValueError:
-                        continue
-                return False
-
-            return True
+            # Verify path is within allowed directories
+            for allowed_dir in self.allowed_directories:
+                try:
+                    resolved_path.relative_to(allowed_dir)
+                    return True
+                except ValueError:
+                    continue
+            return False
         except (ValueError, OSError):
             return False
 
