@@ -42,6 +42,13 @@ class SecureYAMLParser:
         Raises:
             YAMLErrorContext: If parsing fails or security checks fail
         """
+        # Security: Input path traversal check
+        # Check raw input for traversal attempts before resolving
+        if ".." in str(filepath).split(os.sep):
+            raise YAMLErrorContext(
+                f"Path traversal attempt detected: {filepath}", line_number=None
+            )
+
         # Security: Path traversal protection
         resolved_path = Path(filepath).resolve()
         if not self._is_safe_path(resolved_path):
