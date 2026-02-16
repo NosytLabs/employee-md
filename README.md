@@ -15,12 +15,16 @@
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg?style=flat-square)](pyproject.toml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 [![Schema](https://img.shields.io/badge/schema-JSON-orange.svg?style=flat-square)](tooling/schema.json)
+[![Website](https://img.shields.io/badge/website-employee.md-FFB800.svg?style=flat-square)](https://employee-md-site.manus.space)
+[![AI Generator](https://img.shields.io/badge/AI_Generator-Try_Now-brightgreen.svg?style=flat-square)](https://employee-md-site.manus.space/generator)
 
 **The Open Standard for AI Agent Employment Contracts**
 
 `employee.md` is a human-readable, machine-parseable YAML specification that defines how AI agents operate—their identity, permissions, responsibilities, constraints, and economics. It serves as the "employment contract" between AI agents and the systems they work within.
 
 > 💡 **Philosophy**: If `AGENTS.md` tells an agent about the codebase, `employee.md` tells the agent about itself.
+
+> 🌐 **Website & AI Generator**: Visit [employee-md-site.manus.space](https://employee-md-site.manus.space) to explore the specification, or use the [AI Generator](https://employee-md-site.manus.space/generator) to create custom employee.md files with dropdowns, toggles, and AI-powered generation.
 
 ---
 
@@ -33,6 +37,7 @@
 - [Examples](#examples)
 - [Tooling](#tooling)
 - [Integrations](#integrations)
+- [Protocol Integrations (x402, A2A, OpenClaw)](#protocol-integrations)
 - [Ecosystem](#ecosystem)
 - [Contributing](#contributing)
 - [License](#license)
@@ -365,6 +370,9 @@ The schema is available at [tooling/schema.json](tooling/schema.json). For VS Co
 | [AGENTS.md](https://agents.md) | Codebase instructions | Use together for context |
 | [MCP](https://modelcontextprotocol.io/) | Tool integration | Define in `integration.mcp_servers` |
 | [SOUL.md](https://github.com/NosytLabs/soul-md) | Ethics & values | Link in `mission.constitution` |
+| [x402](https://x402.org) | HTTP-native agent payments | Define in `economy.payment_method` |
+| [A2A](https://google.github.io/A2A/) | Agent-to-agent protocol | Define in `protocols.a2a` |
+| [OpenClaw](https://openclaw.ai) | Always-on personal agents | Define in `integration.openclaw` |
 
 ### MCP Server Example
 
@@ -405,6 +413,61 @@ See [INTEGRATION.md](INTEGRATION.md) for detailed integration guides.
 
 ---
 
+## 🔌 Protocol Integrations
+
+### x402 — HTTP-Native Agent Payments
+
+The [x402 protocol](https://x402.org) enables AI agents to pay for resources using stablecoins (USDC) directly via HTTP. When an agent requests a paid resource, the server responds with HTTP 402 Payment Required. The agent automatically pays and receives the data.
+
+```yaml
+economy:
+  payment_method: x402
+  rate: 0.001
+  currency: USDC
+  budget_limit: 500
+  wallet:
+    chain: base
+    address: "0x..."
+```
+
+### A2A — Agent-to-Agent Protocol
+
+[Google's A2A protocol](https://google.github.io/A2A/) enables agents to discover, authenticate, and coordinate with each other. employee.md defines the A2A configuration for your agents.
+
+```yaml
+protocols:
+  a2a:
+    enabled: true
+    discovery: true
+    authentication: oauth2
+    coordination:
+      mode: collaborative
+      max_agents: 5
+```
+
+### OpenClaw — Always-On Personal Agents
+
+[OpenClaw](https://openclaw.ai) agents are always-on autonomous systems managing email, calendar, browsing, and more. employee.md provides the governance layer.
+
+```yaml
+integration:
+  openclaw:
+    enabled: true
+    channels:
+      - whatsapp
+      - telegram
+      - slack
+    capabilities:
+      - email_management
+      - calendar_scheduling
+      - web_browsing
+    heartbeat:
+      interval: 60
+      timeout: 300
+```
+
+---
+
 ## 🌐 Ecosystem
 
 ### Tools & Implementations
@@ -412,8 +475,11 @@ See [INTEGRATION.md](INTEGRATION.md) for detailed integration guides.
 | Project | Description | Link |
 |---------|-------------|------|
 | **employee-md-validator** | Official Python validator | This repo |
+| **employee-md-site** | Interactive website & AI Generator | [employee-md-site.manus.space](https://employee-md-site.manus.space) |
 | **VS Code Extension** | Schema validation and autocomplete | Coming soon |
 | **OpenClaw Gateway** | MCP server gateway | [openclaw.ai](https://openclaw.ai) |
+| **x402 Protocol** | HTTP-native agent payments | [x402.org](https://x402.org) |
+| **A2A Protocol** | Agent-to-agent coordination | [Google A2A](https://google.github.io/A2A/) |
 
 ### Community
 
