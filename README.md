@@ -15,16 +15,12 @@
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg?style=flat-square)](pyproject.toml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 [![Schema](https://img.shields.io/badge/schema-JSON-orange.svg?style=flat-square)](tooling/schema.json)
-[![Website](https://img.shields.io/badge/website-employee.md-FFB800.svg?style=flat-square)](https://employee-md-site.manus.space)
-[![AI Generator](https://img.shields.io/badge/AI_Generator-Try_Now-brightgreen.svg?style=flat-square)](https://employee-md-site.manus.space/generator)
 
 **The Open Standard for AI Agent Employment Contracts**
 
 `employee.md` is a human-readable, machine-parseable YAML specification that defines how AI agents operate—their identity, permissions, responsibilities, constraints, and economics. It serves as the "employment contract" between AI agents and the systems they work within.
 
 > 💡 **Philosophy**: If `AGENTS.md` tells an agent about the codebase, `employee.md` tells the agent about itself.
-
-> 🌐 **Website & AI Generator**: Visit [employee-md-site.manus.space](https://employee-md-site.manus.space) to explore the specification, or use the [AI Generator](https://employee-md-site.manus.space/generator) to create custom employee.md files with dropdowns, toggles, and AI-powered generation.
 
 ---
 
@@ -475,7 +471,6 @@ integration:
 | Project | Description | Link |
 |---------|-------------|------|
 | **employee-md-validator** | Official Python validator | This repo |
-| **employee-md-site** | Interactive website & AI Generator | [employee-md-site.manus.space](https://employee-md-site.manus.space) |
 | **VS Code Extension** | Schema validation and autocomplete | Coming soon |
 | **OpenClaw Gateway** | MCP server gateway | [openclaw.ai](https://openclaw.ai) |
 | **x402 Protocol** | HTTP-native agent payments | [x402.org](https://x402.org) |
