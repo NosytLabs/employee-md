@@ -1,92 +1,66 @@
 # employee.md
 
-```text
-  _____                 _                                _
- | ____|_ __ ___  _ __ | | ___  _   _  ___  ___   _ __ ___   __| |
- |  _| | '_ ` _ \| '_ \| |/ _ \| | | |/ _ \/ _ \ | '_ ` _ \ / _` |
- | |___| | | | | | |_) | | (_) | |_| |  __/  __/ | | | | | | (_| |
- |_____|_| |_| |_| .__/|_|\___/ \__, |\___|\___| |_| |_| |_|\__,_|
-                 |_|            |___/
-```
+**The open standard for AI agent employment contracts.**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?style=flat-square)](CHANGELOG.md)
-[![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](LICENSE)
-[![Build Status](https://github.com/NosytLabs/employee-md/actions/workflows/validate.yml/badge.svg?style=flat-square)](https://github.com/NosytLabs/employee-md/actions)
-[![Python](https://img.shields.io/badge/python-3.8+-blue.svg?style=flat-square)](pyproject.toml)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
+A single human-readable, machine-parseable YAML file that defines how an AI agent operates — identity, role, mission, scope, permissions, guardrails, economy, and compliance. One contract, validated by a real JSON Schema, enforceable at runtime.
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](LICENSE)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg?style=flat-square)](pyproject.toml)
+[![Tests](https://img.shields.io/badge/tests-303%20passing-brightgreen.svg?style=flat-square)](tests/)
 [![Schema](https://img.shields.io/badge/schema-JSON-orange.svg?style=flat-square)](tooling/schema.json)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 
-**The Open Standard for AI Agent Employment Contracts**
-
-`employee.md` is a human-readable, machine-parseable YAML specification that defines how AI agents operate—their identity, permissions, responsibilities, constraints, and economics. It serves as the "employment contract" between AI agents and the systems they work within.
-
-> 💡 **Philosophy**: If `AGENTS.md` tells an agent about the codebase, `employee.md` tells the agent about itself.
+> If `AGENTS.md` tells an agent about the codebase, **`employee.md` tells the agent about itself**.
 
 ---
 
-## 📑 Table of Contents
+## Table of contents
 
-- [Why employee.md?](#why-employeemd)
-- [Quick Start](#quick-start)
-- [Core Concepts](#core-concepts)
-- [Specification](#specification)
+- [Why](#why)
+- [Quick start](#quick-start)
+- [The spec at a glance](#the-spec-at-a-glance)
 - [Examples](#examples)
-- [Tooling](#tooling)
-- [Integrations](#integrations)
-- [Protocol Integrations (x402, A2A)](#protocol-integrations)
-- [Ecosystem](#ecosystem)
+- [CLI](#cli)
+- [Python API](#python-api)
+- [Editor integration](#editor-integration)
+- [Protocols (x402, A2A, MCP, SKILL.md)](#protocols)
+- [Website & hosting](#website--hosting)
 - [Contributing](#contributing)
 - [License](#license)
 
 ---
 
-## 🚀 Why employee.md?
+## Why
 
-As AI agents become production workforce members, they need standardized contracts that define:
+AI agents are becoming production workforce members. They need standardized, auditable contracts that define exactly what they are, what they can do, and what they must not do.
 
-| Feature | Benefit |
-|---------|---------|
-| **Identity** | Clear agent identification, versioning, and metadata |
-| **Mission** | Defined purpose, objectives, and success criteria |
-| **Scope** | Explicit boundaries (in_scope/out_of_scope) |
-| **Permissions** | Granular access control for data, systems, and tools |
-| **Guardrails** | Safety constraints and prohibited actions |
-| **Economy** | Budget limits, rates, and payment configuration |
-| **Compliance** | Audit trails, frameworks (SOC2, GDPR), and retention |
-| **AI Settings** | Model preferences, token limits, and generation params |
-| **Integrations** | MCP servers, APIs, webhooks, and protocols |
+| Section | What it pins down |
+|---|---|
+| `identity` | Agent ID, version, wallet, tags |
+| `role` | Job title, level, capabilities |
+| `mission` | Purpose, objectives, non-goals |
+| `scope` | In-scope / out-of-scope / dependencies |
+| `permissions` | Data, system, network, and tool access |
+| `guardrails` | Prohibited actions, approval gates, confidence threshold |
+| `economy` | Rate, currency, budget cap, payment method (x402, fiat, crypto) |
+| `compliance` | Frameworks (SOC2, GDPR), data class, audit retention |
+| `ai_settings` | Model preference, temperature, fallbacks, reasoning effort |
+| `integration` | MCP servers, APIs, webhooks |
+| `protocols` | A2A, x402, human review, delegation |
 
-### Use Cases
-
-- **Development Teams**: Define AI coding assistants with clear scope and guardrails
-- **Enterprise Deployments**: Ensure compliance and auditability for AI agents
-- **Agent Marketplaces**: Standardize agent capabilities and pricing
-- **Multi-Agent Systems**: Enable A2A (Agent-to-Agent) communication with clear contracts
+Use cases: dev teams scoping coding assistants, enterprises deploying compliant agents, marketplaces standardizing capabilities, multi-agent systems coordinating via A2A.
 
 ---
 
-## 🌐 Try It Online
+## Quick start
 
-| Surface | URL | What's there |
-|---|---|---|
-| **Docs site** | [`nosytlabs.github.io/employee-md`](https://nosytlabs.github.io/employee-md/) | Spec reference, examples gallery, integration guide, runtime SDK docs (free, hosted on GitHub Pages) |
-| **Live validator** | [`employee-md.replit.app`](https://employee-md.replit.app/) | Same Flask app as the docs, but with the working `POST /api/validate` endpoint |
-
-> The static GitHub Pages build replaces `/validate` with install-the-CLI
-> instructions because the live validator needs a Python backend. Use the
-> Replit deploy or the CLI for live validation.
-
----
-
-## ⚡ Quick Start
-
-### 1. Create your employee.md
+### 1. Install the validator
 
 ```bash
-touch employee.md
+pip install -e .
 ```
 
-### 2. Add the basic structure
+### 2. Create your `employee.md`
 
 ```yaml
 ---
@@ -113,252 +87,106 @@ lifecycle:
 ### 3. Validate
 
 ```bash
-# Install the validator
-pip install -e .
-
-# Validate your file
 employee-validate employee.md
-
-# Or validate with JSON output
-employee-validate employee.md --format json
+employee-validate employee.md --format json     # JSON output
+employee-validate examples/*.md --parallel      # batch
 ```
+
+That's it. The `examples/` directory has 9 ready-to-copy specs spanning AI assistant, senior dev, security auditor, data analyst, freelancer, product manager, DevOps, trading bot, and more.
 
 ---
 
-## 📖 Core Concepts
+## The spec at a glance
 
-### Architecture Overview
-
-```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│  employee   │────▶│   Agent      │────▶│   Task      │
-│  .md        │     │  Runtime     │     │  Execution  │
-└─────────────┘     └──────────────┘     └─────────────┘
-      │                    │                    │
-      ▼                    ▼                    ▼
- Identity &           Apply            Check against
- Permissions          Guardrails         Scope & Budget
-```
-
-### Key Terms
-
-| Term | Description |
-|------|-------------|
-| **Agent** | An AI system performing work under this contract |
-| **Mission** | The high-level purpose guiding agent decisions |
-| **Scope** | What the agent should and shouldn't do |
-| **Guardrails** | Hard constraints preventing dangerous actions |
-| **Economy** | Budget, payment, and cost tracking settings |
-| **MCP** | Model Context Protocol for tool integration |
-| **A2A** | Agent-to-Agent communication protocol |
-
-### Lifecycle
-
-1. **Load**: The runtime reads and parses `employee.md`
-2. **Validate**: Schema validation ensures correctness
-3. **Configure**: Identity, permissions, and guardrails are applied
-4. **Execute**: Tasks are validated against scope and constraints
-5. **Monitor**: Performance and compliance are tracked
-
----
-
-## 📋 Specification
-
-### Required Fields
-
-| Section | Required Fields | Description |
-|---------|-----------------|-------------|
-| `spec` | `name`, `version`, `kind` | Specification metadata |
-| `role` | `title`, `level` | Job role and seniority |
-| `lifecycle` | `status` | Current agent status |
-
-### Complete Structure
+Every employee.md is a YAML document with these top-level sections. Only `spec`, `role`, and `lifecycle` are required; everything else is optional.
 
 ```yaml
-spec:              # Specification metadata
-  name: employee.md
-  version: "1.0.0"
-  kind: agent-employment
-  status: stable
-  schema: "https://..."
-
-identity:          # Agent identification
-  agent_id: string
-  display_name: string
-  version: string
-  wallet: string
-  tags: []
-
-role:              # Job definition (REQUIRED)
-  title: string
-  level: junior | mid | senior | lead
-  department: string
-  capabilities: []
-  skills: []
-  certifications: []
-
-mission:           # Purpose and objectives
-  purpose: string
-  constitution: url
-  objectives: []
-  success_criteria: []
-  non_goals: []
-
-context:           # Operational environment
-  project: string
-  repo: url
-  environment: dev | staging | prod
-  team: string
-  organization: string
-
-scope:             # Boundaries
-  in_scope: []
-  out_of_scope: []
-  dependencies: []
-  constraints: []
-
-permissions:       # Access control
-  data_access: []
-  system_access: []
-  network_access: []
-  tool_access: []
-  admin_permissions: boolean
-
-guardrails:        # Safety constraints
-  prohibited_actions: []
-  required_approval: []
-  confidence_threshold: 0.0-1.0
-  max_spend_per_task: number
-  max_execution_time: seconds
-
-economy:           # Budget and payment
-  rate: number
-  currency: USD | EUR | BTC | ETH | ENERGY
-  budget_limit: number
-  payment_method: x402 | crypto | fiat | none | joulework
-  billing_schedule: weekly | monthly | milestone | real_time
-
-verification:      # Quality gates
-  required_checks: []
-  evidence: []
-  review_policy: string
-  auto_merge: boolean
-  min_approvals: number
-
-ai_settings:       # Model configuration
-  model_preference: string
-  fallback_models: []
-  temperature: 0.0-1.0
-  tools_enabled: []
-  memory_settings: {}
-  reasoning_effort: low | medium | high
-
-integration:       # External connections
-  mcp_servers: []
-  apis: []
-  webhooks: []
-  services: []
-
-protocols:         # Communication protocols
-  a2a: {}
-  x402: {}
-  human_review: {}
-  delegation: {}
-
-compliance:        # Regulatory compliance
-  frameworks: []
-  data_classification: public | confidential | restricted
-  audit_required: boolean
-  audit_retention_days: number
-
-performance:       # Metrics and targets
-  efficiency_score: 0.0-1.0
-  metrics: []
-  kpis: []
-  slas: []
-
-communication:     # Contact and availability
-  channels: []
-  timezone: string
-  availability: string
-  response_time_sla: string
-
-custom_fields: {}  # Extensions
+spec:           # name + version + kind (REQUIRED)
+identity:       # agent_id, display_name, version, wallet, tags
+role:           # title + level (REQUIRED), capabilities, skills
+mission:        # purpose, objectives, success_criteria, non_goals
+lifecycle:      # status (REQUIRED): active | paused | retired | …
+context:        # project, repo, environment, team, organization
+scope:          # in_scope, out_of_scope, dependencies, constraints
+permissions:    # data_access, system_access, network_access, tool_access
+guardrails:     # prohibited_actions, required_approval, confidence_threshold
+economy:        # rate, currency, budget_limit, payment_method
+verification:   # required_checks, evidence, review_policy, min_approvals
+ai_settings:    # model_preference, temperature, fallback_models
+integration:    # mcp_servers, apis, webhooks
+protocols:      # a2a, x402, human_review, delegation
+compliance:     # frameworks, data_classification, audit_retention_days
+performance:    # efficiency_score, metrics, kpis, slas
+communication:  # channels, timezone, availability, response_time_sla
+custom_fields:  # extensions
 ```
 
-See the [full example](employee.md) for a complete reference implementation.
+The full machine-readable definition lives in [`tooling/schema.json`](tooling/schema.json). The repo's own [`employee.md`](employee.md) is the canonical reference implementation.
 
 ---
 
-## 📚 Examples
+## Examples
 
-| Example | Description | File |
-|---------|-------------|------|
-| **Minimal** | Smallest valid spec | [examples/minimal.md](examples/minimal.md) |
-| **Senior Dev** | Full developer config | [examples/senior-dev.md](examples/senior-dev.md) |
-| **AI Assistant** | General-purpose assistant | [examples/ai-assistant.md](examples/ai-assistant.md) |
-| **Security** | Compliance-focused auditor | [examples/security-auditor.md](examples/security-auditor.md) |
-| **Data Analyst** | Analytics specialist | [examples/data-analyst.md](examples/data-analyst.md) |
-| **Freelancer** | Contract worker | [examples/freelancer.md](examples/freelancer.md) |
+| File | Persona | Level |
+|---|---|---|
+| [`examples/minimal.md`](examples/minimal.md) | Smallest valid spec | — |
+| [`examples/ai-assistant.md`](examples/ai-assistant.md) | General-purpose assistant | senior |
+| [`examples/senior-dev.md`](examples/senior-dev.md) | Software engineer | senior |
+| [`examples/security-auditor.md`](examples/security-auditor.md) | Compliance / audit | senior |
+| [`examples/data-analyst.md`](examples/data-analyst.md) | Analytics specialist | senior |
+| [`examples/devops-engineer.md`](examples/devops-engineer.md) | Infrastructure | senior |
+| [`examples/product-manager.md`](examples/product-manager.md) | Product strategy | senior |
+| [`examples/technical-writer.md`](examples/technical-writer.md) | Documentation | senior |
+| [`examples/trading-bot.md`](examples/trading-bot.md) | Autonomous trading | — |
+| [`examples/molt-bot-integration.md`](examples/molt-bot-integration.md) | Integration guide | — |
+
+CI exercises every file under `examples/` against the JSON Schema on every push.
 
 ---
 
-## 🛠️ Tooling
-
-### Installation
+## CLI
 
 ```bash
-# From source
-git clone https://github.com/NosytLabs/employee-md.git
-cd employee-md
-pip install -e .
-
-# With dev dependencies
-pip install -e ".[dev]"
+employee-validate employee.md                      # plain text
+employee-validate employee.md --format json        # JSON
+employee-validate employee.md --format compact     # one-line, CI-friendly
+employee-validate examples/*.md --parallel         # batch + parallel
+employee-validate employee.md --metrics prometheus # emit Prometheus metrics
+employee-validate employee.md --production         # sanitize errors for prod
 ```
 
-### CLI Usage
+Exit codes: `0` valid, `1` invalid, `2` parse error. Suitable for CI pipelines.
 
-```bash
-# Validate a file
-employee-validate employee.md
+---
 
-# Validate multiple files
-employee-validate examples/*.md
-
-# JSON output
-employee-validate employee.md --format json
-
-# Compact output for CI/CD
-employee-validate employee.md --format compact
-
-# With metrics
-employee-validate employee.md --metrics prometheus
-
-# Parallel validation
-employee-validate examples/*.md --parallel
-
-# Production mode (sanitized errors)
-employee-validate employee.md --production
-```
-
-### Python API
+## Python API
 
 ```python
 from tooling import validate_file
 
 result = validate_file("employee.md")
-
 if result.is_valid:
-    print("✅ Valid!")
+    print("OK")
 else:
-    for error in result.errors:
-        print(f"❌ {error.field}: {error.message}")
+    for err in result.errors:
+        print(f"{err.field}: {err.message}")
 ```
 
-### JSON Schema
+A higher-level runtime SDK lives in `runtime/` and lets you load an `employee.md` as a typed `Employee` object, enforce guardrails at call time, and export to other formats:
 
-The schema is available at [tooling/schema.json](tooling/schema.json). For VS Code integration:
+```python
+from runtime import Employee
+
+emp = Employee.from_file("employee.md")
+emp.guardrails.check("delete_production_data")   # raises if prohibited
+emp.economy.charge(0.05)                         # raises if over budget
+```
+
+---
+
+## Editor integration
+
+VS Code (and any editor with the YAML extension) can validate live against the published schema:
 
 ```json
 {
@@ -368,65 +196,15 @@ The schema is available at [tooling/schema.json](tooling/schema.json). For VS Co
 }
 ```
 
----
-
-## 🔗 Integrations
-
-### Related Standards
-
-| Standard | Purpose | Integration |
-|----------|---------|-------------|
-| [AGENTS.md](https://agents.md) | Codebase instructions | Use together for context |
-| [MCP](https://modelcontextprotocol.io/) | Tool integration | Define in `integration.mcp_servers` |
-| [SKILL.md](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) | Anthropic Claude Skills format | Export with `runtime.skill_export.to_skill_md()` |
-| [CrewAI](https://docs.crewai.com/concepts/agents) | Multi-agent orchestration | Map to `agents.yaml` (see `/integrations`) |
-| [x402](https://x402.org) | HTTP-native agent payments | Define in `economy.payment_method` |
-| [A2A](https://google.github.io/A2A/) | Agent-to-agent protocol | Define in `protocols.a2a` |
-
-### MCP Server Example
-
-```yaml
-integration:
-  mcp_servers:
-    - name: "code-search"
-      endpoint: "http://localhost:8080"
-      capabilities:
-        - "semantic_search"
-        - "code_navigation"
-
-    - name: "documentation"
-      endpoint: "http://localhost:8081"
-      capabilities:
-        - "doc_retrieval"
-        - "faq_lookup"
-```
-
-### LangChain Integration
-
-```python
-from langchain_openai import ChatOpenAI
-import yaml
-
-# Load employee config
-with open('employee.md', 'r') as f:
-    config = yaml.safe_load(f)
-
-# Configure LLM based on agent settings
-llm = ChatOpenAI(
-    model=config['ai_settings']['model_preference'],
-    temperature=config['ai_settings']['generation_params']['temperature']
-)
-```
-
-See [INTEGRATION.md](INTEGRATION.md) for detailed integration guides.
+You get inline autocomplete, type hints, and error squiggles as you type.
 
 ---
 
-## 🔌 Protocol Integrations
+## Protocols
 
-### x402 — HTTP-Native Agent Payments
+employee.md is designed to interoperate with the agentic ecosystem rather than replace it.
 
-The [x402 protocol](https://x402.org) enables AI agents to pay for resources using stablecoins (USDC) directly via HTTP. When an agent requests a paid resource, the server responds with HTTP 402 Payment Required. The agent automatically pays and receives the data.
+### x402 — HTTP-native agent payments
 
 ```yaml
 economy:
@@ -439,9 +217,7 @@ economy:
     address: "0x..."
 ```
 
-### A2A — Agent-to-Agent Protocol
-
-[Google's A2A protocol](https://google.github.io/A2A/) enables agents to discover, authenticate, and coordinate with each other. employee.md defines the A2A configuration for your agents.
+### A2A — Google's Agent-to-Agent protocol
 
 ```yaml
 protocols:
@@ -454,12 +230,17 @@ protocols:
       max_agents: 5
 ```
 
-### Anthropic SKILL.md — Claude Skills export
+### MCP — Model Context Protocol
 
-Claude Skills are packaged as a folder with a `SKILL.md` at the root containing
-YAML frontmatter (`name` ≤64 chars, `description` ≤1024 chars, optional
-`allowed-tools`) and Markdown body. Export an `employee.md` contract directly
-to that format:
+```yaml
+integration:
+  mcp_servers:
+    - name: code-search
+      endpoint: http://localhost:8080
+      capabilities: [semantic_search, code_navigation]
+```
+
+### Anthropic SKILL.md export
 
 ```python
 from runtime import Employee
@@ -469,144 +250,55 @@ emp = Employee.from_file("employee.md")
 (skill_dir / "SKILL.md").write_text(to_skill_md(emp))
 ```
 
-See `runtime/skill_export.py` and the recipes on the
-[`/integrations`](https://employee-md.replit.app/integrations) page for
-full CrewAI / LangGraph / AutoGen / MCP examples.
+See [`INTEGRATION.md`](INTEGRATION.md) for full CrewAI / LangGraph / AutoGen / MCP recipes.
 
 ---
 
-## 🌐 Ecosystem
+## Website & hosting
 
-### Tools & Implementations
+The repo ships with a Flask docs site (`web/`) — spec reference, examples gallery, integration guide, runtime SDK docs, and an interactive validator. Two free hosting paths:
 
-| Project | Description | Link |
-|---------|-------------|------|
-| **employee-md validator** | Official Python validator + runtime SDK | This repo |
-| **employee.md → SKILL.md exporter** | Anthropic Claude Skills compatibility | `runtime/skill_export.py` (this repo) |
-| **Marketing + docs site** | Flask site at `web/` with interactive validator | This repo, hosted on Replit + GitHub Pages |
-| **x402 Protocol** | HTTP-native agent payments | [x402.org](https://x402.org) |
-| **A2A Protocol** | Agent-to-agent coordination | [Google A2A](https://google.github.io/A2A/) |
+| Path | What you get | Build |
+|---|---|---|
+| **GitHub Pages** | Static docs site at `nosytlabs.github.io/employee-md/`. No live validator (Pages can't run Python) — `/validate` shows install instructions instead. | `.github/workflows/static.yml` runs `scripts/build_static_site.py` on every push to `main`. |
+| **Replit Autoscale** | Full Flask app including `POST /api/validate`. | `.replit` `[deployment]` block (gunicorn). |
 
-### Community
+### Enabling GitHub Pages (one-time)
 
-- 💬 [Discussions](https://github.com/NosytLabs/employee-md/discussions)
-- 🐛 [Issues](https://github.com/NosytLabs/employee-md/issues)
-- 📖 [Wiki](https://github.com/NosytLabs/employee-md/wiki)
+After cloning this repo, go to:
 
----
+**Settings → Pages → Build and deployment → Source → `GitHub Actions`**
 
-## ✅ Best Practices
+The next push to `main` builds and deploys. (If Source is left as "Deploy from a branch", GitHub will fall back to Jekyll and just render this README — not what you want.)
 
-### Security First
-
-```yaml
-guardrails:
-  prohibited_actions:
-    - "delete_production_data"
-    - "modify_security_settings"
-    - "access_unauthorized_data"
-    - "disable_audit_logging"
-  confidence_threshold: 0.9
-  max_spend_per_task: 100
-
-compliance:
-  audit_required: true
-  frameworks:
-    - "SOC2"
-    - "GDPR"
-  encryption_required: true
-```
-
-### Production Checklist
-
-- [ ] Set `lifecycle.status` to `active`
-- [ ] Define clear `scope.in_scope` and `scope.out_of_scope`
-- [ ] Configure `guardrails.confidence_threshold` ≥ 0.8
-- [ ] Set `economy.budget_limit` appropriate for workload
-- [ ] Enable `compliance.audit_required`
-- [ ] Link a `mission.constitution` for ethical alignment
-- [ ] Define `verification.required_checks`
-- [ ] Set up `communication.channels` for notifications
-- [ ] Configure `integration.mcp_servers` for tools
-
-### CI/CD Integration
-
-```yaml
-# .github/workflows/employee-md.yml
-name: Validate employee.md
-on: [push, pull_request]
-jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pip install employee-md
-      - run: employee-validate employee.md --format compact
-```
-
----
-
-## 🌍 Hosting & Deployment
-
-Two free paths ship with this repo:
-
-| Path | Builds via | Hosts | Live validator? |
-|---|---|---|---|
-| **GitHub Pages** | `.github/workflows/pages.yml` (snapshots the Flask site to static HTML on every push to `main`) | `nosytlabs.github.io/employee-md` | No — replaced with install instructions |
-| **Replit Autoscale** | `.replit` `[deployment]` block (gunicorn) | `employee-md.replit.app` | Yes — full Flask app including `POST /api/validate` |
-
-**To enable GitHub Pages** after pulling this repo for the first time:
-**Settings → Pages → Build and deployment → Source: GitHub Actions**.
-The next push to `main` deploys.
-
-To run the website locally:
+### Run locally
 
 ```bash
-pip install -e ".[dev]"
-pip install flask pygments markdown gunicorn
-python -m web.app                 # dev server on 0.0.0.0:5000
-make tailwind                     # rebuild CSS if you edit a template
-python scripts/build_static_site.py  # produce dist/ for GitHub Pages
+pip install -e ".[dev,web]"
+python -m web.app                       # dev server on http://localhost:5000
+python scripts/build_static_site.py     # produce dist/ for GH Pages
+make tailwind                           # rebuild CSS if you edit a template
 ```
+
+303 tests; run with `pytest tests/ -v`.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-See [AGENTS.md](AGENTS.md) for AI agent-specific instructions.
+Issues and PRs welcome. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the workflow and [`AGENTS.md`](AGENTS.md) for agent-specific guidelines.
 
 ```bash
-# Development setup
 git clone https://github.com/NosytLabs/employee-md.git
 cd employee-md
-pip install -e ".[dev]"
-
-# Run tests
+pip install -e ".[dev,web]"
 pytest tests/ -v
-
-# Validate examples
+ruff check tooling/ runtime/ web/
 employee-validate examples/*.md
-
-# Run linting
-ruff check tooling/
-ruff format tooling/
-
-# Type checking
-mypy tooling/ --ignore-missing-imports
 ```
 
 ---
 
-## 📄 License
+## License
 
-MIT © [Nosyt Labs](https://nosytlabs.com)
-
----
-
-**Made with ❤️ for the Agentic Workforce**
-
-[![Star History](https://api.star-history.com/svg?repos=NosytLabs/employee-md&type=Date)](https://star-history.com/#NosytLabs/employee-md&Date)
+MIT © [Nosyt Labs](https://nosytlabs.com). See [`LICENSE`](LICENSE).
