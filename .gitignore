@@ -48,6 +48,11 @@ Thumbs.db
 
 # --- Agent / scratch ---
 attached_assets/
+.Jules/
+.jules/
+.trae/
+.bolt/
+.sentinel/
 
 # --- Built CSS is generated; keep it tracked so the prod deploy doesn't
 # need a Tailwind build step. (Intentionally NOT ignored.) ---
