@@ -53,6 +53,7 @@ attached_assets/
 .trae/
 .bolt/
 .sentinel/
+.agents/
 
 # --- Built CSS is generated; keep it tracked so the prod deploy doesn't
 # need a Tailwind build step. (Intentionally NOT ignored.) ---

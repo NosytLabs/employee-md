@@ -25,9 +25,7 @@ from web.app import app, EXAMPLES  # noqa: E402
 
 DIST = ROOT / "dist"
 BASE_PATH = os.environ.get("BASE_PATH", "/employee-md").rstrip("/")
-LIVE_VALIDATOR_URL = os.environ.get(
-    "LIVE_VALIDATOR_URL", "https://employee-md.replit.app/validate"
-)
+LIVE_VALIDATOR_URL = os.environ.get("LIVE_VALIDATOR_URL", "")
 CANONICAL_ORIGIN = os.environ.get(
     "CANONICAL_ORIGIN", "https://nosytlabs.github.io"
 ).rstrip("/")
@@ -72,6 +70,24 @@ def rewrite_urls(html: str) -> str:
     return _URL_ATTR_RE.sub(sub, html)
 
 
+VALIDATOR_SHIM_LIVE_BLOCK = """\
+    <li>
+      <div class="text-white font-semibold">1. Use the hosted validator</div>
+      <p class="text-ink-300 mt-1">Same code, running on a Python server:</p>
+      <a href="__LIVE__"
+         class="inline-block mt-2 bg-brand hover:bg-brand-dark text-white font-semibold px-4 py-2 rounded-lg">
+        Open the live validator &rarr;
+      </a>
+    </li>
+    <li>
+      <div class="text-white font-semibold">2. Run it locally from the CLI</div>
+"""
+
+VALIDATOR_SHIM_CLI_ONLY_BLOCK = """\
+    <li>
+      <div class="text-white font-semibold">Install and run the CLI</div>
+"""
+
 VALIDATOR_SHIM_HEAD = """\
 {% extends "base.html" %}
 {% block title %}Validate · employee.md{% endblock %}
@@ -81,20 +97,12 @@ VALIDATOR_SHIM_HEAD = """\
   <h1 class="text-3xl sm:text-4xl font-bold text-white">Run the validator locally</h1>
   <p class="mt-4 text-ink-300">
     The interactive validator needs a Python backend, so it doesn't run on
-    this static GitHub Pages snapshot. You have two options:
+    this static GitHub Pages snapshot. Install the CLI to validate any
+    <code>employee.md</code> in seconds:
   </p>
   <ol class="mt-6 space-y-6 text-ink-200">
-    <li>
-      <div class="text-white font-semibold">1. Use the live, hosted validator</div>
-      <p class="text-ink-300 mt-1">Same code, hosted on a Python server:</p>
-      <a href="__LIVE__"
-         class="inline-block mt-2 bg-brand hover:bg-brand-dark text-white font-semibold px-4 py-2 rounded-lg">
-        Open the live validator &rarr;
-      </a>
-    </li>
-    <li>
-      <div class="text-white font-semibold">2. Run it locally from the CLI</div>
-<pre class="mt-2 bg-ink-900 border border-ink-700 rounded-lg p-4 text-sm font-mono text-ink-100 overflow-x-auto"><code>pip install employee-md
+__BODY__
+<pre class="mt-2 bg-ink-900 border border-ink-700 rounded-lg p-4 text-sm font-mono text-ink-100 overflow-x-auto"><code>pip install -e git+https://github.com/NosytLabs/employee-md.git#egg=employee-md
 employee-validate path/to/employee.md
 employee-validate path/to/employee.md --format json</code></pre>
     </li>
@@ -111,8 +119,12 @@ employee-validate path/to/employee.md --format json</code></pre>
 def render_static_validator() -> str:
     """Render the validator shim through Jinja so it inherits the base layout."""
     from flask import render_template_string
+    if LIVE_VALIDATOR_URL:
+        body_block = VALIDATOR_SHIM_LIVE_BLOCK.replace("__LIVE__", LIVE_VALIDATOR_URL)
+    else:
+        body_block = VALIDATOR_SHIM_CLI_ONLY_BLOCK
     with app.app_context(), app.test_request_context("/validate"):
-        body = VALIDATOR_SHIM_HEAD.replace("__LIVE__", LIVE_VALIDATOR_URL)
+        body = VALIDATOR_SHIM_HEAD.replace("__BODY__", body_block)
         return render_template_string(body)
 
 

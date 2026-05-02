@@ -1,7 +1,7 @@
 # Research Notes — v1.0.0
 
 These are the verified primary sources behind the v1.0.0 documentation. Every claim made on
-[`/why`](https://employee-md.replit.app/why) and [`/integrations`](https://employee-md.replit.app/integrations)
+[`/why`](https://nosytlabs.github.io/employee-md/why/) and [`/integrations`](https://nosytlabs.github.io/employee-md/integrations/)
 traces back to one of these. Search snippets and search engine "answers" were **not** treated as primary
 sources — only canonical docs, peer-reviewed papers, and organisation-published material.
 
