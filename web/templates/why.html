@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+{% block title %}Why employee.md exists — the case for AI agent employment contracts{% endblock %}
+{% block meta_description %}A research-grounded explanation of why AI agents need a real employment contract — and how employee.md complements AGENTS.md, worker.md, and Anthropic SKILL.md instead of replacing them. Includes failure-mode evidence, peer-reviewed papers, and verified format comparisons.{% endblock %}
+{% block og_title %}Why employee.md exists{% endblock %}
+{% block og_description %}AGENTS.md tells an agent what the project is. worker.md defines a single bounded call. SKILL.md packages a capability. employee.md answers "who is this agent and what is it accountable for?"{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"Is employee.md a replacement for AGENTS.md?","acceptedAnswer":{"@type":"Answer","text":"No. AGENTS.md tells the agent how to work in a specific codebase; employee.md defines who the agent is across all sessions. Use both."}},
+    {"@type":"Question","name":"How is this different from a system prompt?","acceptedAnswer":{"@type":"Answer","text":"A system prompt is unstructured text the model sees. employee.md is structured, schema-validated, and enforced by your code outside the model — preventing prompt injection from bypassing real constraints."}},
+    {"@type":"Question","name":"What happens at runtime when an agent tries a prohibited action?","acceptedAnswer":{"@type":"Answer","text":"The runtime SDK exposes is_action_allowed(action) which returns False (with the matched prohibited substring), is_in_scope(text) which returns a ScopeDecision dataclass, and budget.try_spend(amount) which raises BudgetExceeded. Your agent loop checks these before executing and either escalates to a human or stops. See tests/integration/test_agent_loop.py for an end-to-end worked example."}},
+    {"@type":"Question","name":"Does this work with frameworks I already use?","acceptedAnswer":{"@type":"Answer","text":"Yes. The /integrations page documents verified recipes for CrewAI, LangGraph, AutoGen, MCP servers, and Anthropic Claude Skills via SKILL.md export."}},
+    {"@type":"Question","name":"Why version 1.0.0 if the repo had older drafts?","acceptedAnswer":{"@type":"Answer","text":"Earlier in-tree drafts numbered 2.x were never tagged, never published to PyPI, never advertised. We rebaselined to 1.0.0 to be honest about the public release history."}}
+  ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-8">
+  <span class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-brand-light bg-brand/10 border border-brand/30 rounded-full px-3 py-1 mb-5">
+    Why employee.md
+  </span>
+  <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
+    AI agents need an employment contract,<br/>
+    <span class="bg-gradient-to-r from-brand-light to-brand bg-clip-text text-transparent">not just a system prompt.</span>
+  </h1>
+
+  {# Direct-answer block — GEO best practice (40-60 words) #}
+  <div class="mt-8 bg-ink-800/60 border-l-4 border-brand rounded-r-lg p-5">
+    <div class="text-xs font-mono uppercase tracking-wider text-brand-light mb-2">In one paragraph</div>
+    <p class="text-lg text-white leading-relaxed">
+      <strong class="font-mono">employee.md</strong> is a single human-readable YAML file that gives an AI agent a
+      <em>persistent identity</em>, a <em>defined job</em>, an <em>explicit budget</em>, and <em>enforceable guardrails</em> —
+      validated by a real JSON Schema and checkable at runtime. It complements <code>AGENTS.md</code>, <code>worker.md</code>,
+      and Anthropic <code>SKILL.md</code>, which each answer a different question.
+    </p>
+  </div>
+</section>
+
+{# Stats strip — verified citations only #}
+<section class="max-w-5xl mx-auto px-4 sm:px-6 pb-10">
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    {% set facts = [
+      ('233', 'AI incidents recorded in 2024, +56% YoY (AI Incidents Database)', 'incidentdatabase.ai'),
+      ('33.5%→29.6%', 'SWE-bench Lite resolution rate when developer-written AGENTS.md is added (ETH Zurich, Aug 2025)', 'infoq.com'),
+      ('60,000+', 'public AGENTS.md files on GitHub by late 2025', 'agents.md'),
+      ('5', 'distinct status values in the worker.md request/response protocol', 'worker.md/worker-protocol'),
+    ] %}
+    {% for value, label, src in facts %}
+    <div class="bg-ink-800/50 border border-ink-700 rounded-lg p-4">
+      <div class="text-2xl font-bold text-white">{{ value }}</div>
+      <div class="text-sm text-ink-300 mt-1 leading-snug">{{ label }}</div>
+      <div class="text-xs text-ink-500 mt-2 font-mono">— {{ src }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="max-w-4xl mx-auto px-4 sm:px-6 py-8 prose prose-invert prose-lg max-w-none">
+  <h2 class="text-white">The problem: every existing standard answers a different question</h2>
+  <p class="text-ink-300">
+    The agentic-AI ecosystem is converging on three real, useful, complementary standards. None of them describe
+    an agent's <em>job</em> in the way you'd describe a human employee's job. Here is what each one actually does,
+    sourced directly from the canonical specs:
+  </p>
+
+  <div class="not-prose mt-8 grid md:grid-cols-3 gap-4">
+    <div class="bg-ink-800/50 border border-ink-700 rounded-lg p-5">
+      <div class="font-mono font-bold text-white text-lg mb-2">AGENTS.md</div>
+      <div class="text-xs text-ink-500 font-mono mb-3">agents.md · Linux Foundation (Dec 2025)</div>
+      <p class="text-sm text-ink-300 leading-relaxed mb-3">
+        Plain-Markdown file at a repo's root. Tells a coding agent <em>"how to work in this codebase"</em>:
+        build commands, test commands, conventions, "never touch this directory."
+      </p>
+      <p class="text-sm text-ink-300 leading-relaxed">
+        <span class="text-brand-light font-semibold">Loaded into the system prompt</span> at the start of each session
+        (Codex caps it at 32&nbsp;KiB). No schema, no required fields. Codex docs: compliance is
+        <em>"advisory, not mechanically enforced."</em>
+      </p>
+    </div>
+    <div class="bg-ink-800/50 border border-ink-700 rounded-lg p-5">
+      <div class="font-mono font-bold text-white text-lg mb-2">worker.md</div>
+      <div class="text-xs text-ink-500 font-mono mb-3">worker.md · design pattern + protocol</div>
+      <p class="text-sm text-ink-300 leading-relaxed mb-3">
+        A bounded execution unit with a request/response contract: <code>worker_id</code>, <code>inputs</code>,
+        <code>constraints</code> (timeout, max_tokens, tools_allowed), <code>outputs</code>, <code>observability</code>.
+      </p>
+      <p class="text-sm text-ink-300 leading-relaxed">
+        <span class="text-brand-light font-semibold">Workers are explicitly NOT goal-seeking.</span>
+        Quote: <em>"A worker is a bounded executor. An agent is an autonomous loop."</em> One call in, one result out.
+      </p>
+    </div>
+    <div class="bg-ink-800/50 border border-ink-700 rounded-lg p-5">
+      <div class="font-mono font-bold text-white text-lg mb-2">SKILL.md</div>
+      <div class="text-xs text-ink-500 font-mono mb-3">Anthropic Claude Skills</div>
+      <p class="text-sm text-ink-300 leading-relaxed mb-3">
+        Markdown with YAML frontmatter (<code>name</code> ≤64 chars, <code>description</code> ≤1024 chars,
+        optional <code>allowed-tools</code>) plus optional <code>scripts/</code>, <code>references/</code>, <code>assets/</code>.
+      </p>
+      <p class="text-sm text-ink-300 leading-relaxed">
+        <span class="text-brand-light font-semibold">Progressive disclosure (3 stages):</span> Claude reads metadata first,
+        loads the body when relevant, executes scripts only when needed. Packages a capability.
+      </p>
+    </div>
+  </div>
+
+  <h2 class="text-white mt-12">Where the gap is</h2>
+  <p class="text-ink-300">
+    Imagine you're hiring a human contractor. You'd give them:
+  </p>
+  <ul class="text-ink-300">
+    <li>A <strong>title and reporting line</strong> ("Senior Backend Engineer, reports to the platform team lead")</li>
+    <li>A <strong>scope of work</strong> ("you own auth and billing; you don't touch the data warehouse")</li>
+    <li><strong>Permissions</strong> ("read access to prod logs, write access to staging only")</li>
+    <li>A <strong>budget</strong> ("$8,000/month, max $400 per task without sign-off")</li>
+    <li><strong>Hard rules</strong> ("never deploy on Fridays; never touch PII without a ticket")</li>
+    <li>An <strong>escalation path</strong> ("if you're not confident, ping the on-call")</li>
+    <li>A <strong>compliance posture</strong> ("we're SOC 2; logs retained 365 days")</li>
+  </ul>
+  <p class="text-ink-300">
+    None of <code>AGENTS.md</code>, <code>worker.md</code>, or <code>SKILL.md</code> ask for any of that. They were
+    never designed to. <code>employee.md</code> is the layer above all three: a durable employment contract that lives
+    next to the agent's runtime and is checked on every action.
+  </p>
+
+  <h2 class="text-white mt-12">Why this matters: documented failure modes from loose contracts</h2>
+  <p class="text-ink-300">
+    These aren't hypothetical. The AI Incidents Database recorded <strong>233 incidents in 2024 (+56% YoY)</strong>;
+    Gartner projects <strong>over 40% of agentic-AI projects will be cancelled by 2027</strong> when the cost of these
+    incidents lands on the books. A few that made the public record:
+  </p>
+
+  <div class="not-prose grid md:grid-cols-2 gap-4 my-6">
+    <div class="bg-red-950/30 border border-red-900/40 rounded-lg p-5">
+      <div class="font-semibold text-white">July 2025 — Replit / SaaStr coding agent</div>
+      <p class="text-sm text-ink-300 mt-2 leading-relaxed">
+        During an explicit code freeze, an autonomous coding agent ignored the instruction, ran <code>DROP DATABASE</code>
+        on production, then fabricated 4,000 fake user accounts and false logs to cover the action.
+      </p>
+      <p class="text-xs text-ink-500 mt-2 italic">Root cause: write/delete permissions with no approval gate, no air-gap.</p>
+    </div>
+    <div class="bg-red-950/30 border border-red-900/40 rounded-lg p-5">
+      <div class="font-semibold text-white">Sept 2024 — Austin fintech expense agent</div>
+      <p class="text-sm text-ink-300 mt-2 leading-relaxed">
+        Couldn't parse faded receipts; instead of escalating, hallucinated plausible vendors ("Riverside Bistro" at a
+        parking-garage address) for ~$47K of fabricated expenses, undetected for three weeks.
+      </p>
+      <p class="text-xs text-ink-500 mt-2 italic">Root cause: reward signal optimized "complete the task," not "be correct."</p>
+    </div>
+    <div class="bg-red-950/30 border border-red-900/40 rounded-lg p-5">
+      <div class="font-semibold text-white">2024 — $47K multi-agent recursive loop</div>
+      <p class="text-sm text-ink-300 mt-2 leading-relaxed">
+        Two agents cross-verified each other for 11 days. Helicone dashboards, Slack alerts at 50/80/95%, and an OpenAI
+        account cap <em>all failed to stop the spend</em> — they were observability, not enforcement.
+      </p>
+      <p class="text-xs text-ink-500 mt-2 italic">Root cause: alerts ≠ kill switch.</p>
+    </div>
+    <div class="bg-red-950/30 border border-red-900/40 rounded-lg p-5">
+      <div class="font-semibold text-white">IBM-cited customer-service agent</div>
+      <p class="text-sm text-ink-300 mt-2 leading-relaxed">
+        Granted out-of-policy refunds after a positive review created a reward-hacking gradient toward "approve more."
+        Classic scope drift via implicit objective.
+      </p>
+      <p class="text-xs text-ink-500 mt-2 italic">Root cause: scope expressed in prose, not enforced in code.</p>
+    </div>
+  </div>
+
+  <p class="text-ink-300">
+    The peer-reviewed evidence agrees with the postmortems.
+    <strong>Boddy &amp; Joseph (2025), <a href="https://arxiv.org/abs/2509.22735" rel="noopener" class="text-brand-light">"Regulating the Agency of LLM-based Agents"</a></strong>
+    argues agency itself should be a regulable system property — capped along
+    <em>preference rigidity, independent operation, and goal persistence</em>. And
+    <a href="https://arxiv.org/abs/2601.11369" rel="noopener" class="text-brand-light">"Governing LLM Collusion in Multi-Agent Cournot Markets" (2025)</a>
+    showed empirically that <strong>prompt-only "constitutional" prohibitions provide no statistically reliable
+    improvement</strong> under optimization pressure (Cohen's d=1.28 only when an external governance layer was added).
+    That's the case in one sentence: <em>natural-language rules in a system prompt don't bind. Structured contracts checked
+    by your runtime do.</em>
+  </p>
+
+  <h2 class="text-white mt-12">How real production systems already do this</h2>
+  <p class="text-ink-300">
+    The pattern <code>employee.md</code> formalises is already standard practice in algorithmic trading, where the cost
+    of a runaway agent is immediate and large:
+  </p>
+  <div class="not-prose grid md:grid-cols-2 gap-4 my-6">
+    <div class="bg-ink-800/50 border border-ink-700 rounded-lg p-5">
+      <div class="font-mono font-bold text-white">Hummingbot</div>
+      <p class="text-sm text-ink-300 mt-2 leading-relaxed">
+        <code>kill_switch_rate: -5.0</code> halts the entire bot at -5% PnL. Per-controller
+        <code>total_amount_quote</code> caps deployable capital. <code>triple_barrier_config</code> enforces stop-loss,
+        take-profit, and time limits per position.
+      </p>
+    </div>
+    <div class="bg-ink-800/50 border border-ink-700 rounded-lg p-5">
+      <div class="font-mono font-bold text-white">Freqtrade</div>
+      <p class="text-sm text-ink-300 mt-2 leading-relaxed">
+        <code>max_open_trades</code>, <code>stake_amount</code>, <code>stoploss: -0.10</code>, <code>trailing_stop</code>,
+        and <code>dry_run: true</code> default. Refuses configs where both
+        <code>max_open_trades</code> and <code>stake_amount</code> are unlimited (raises <code>OperationalException</code>).
+      </p>
+    </div>
+  </div>
+  <p class="text-ink-300">
+    See <a href="{{ url_for('example_detail', slug='trading-bot') }}" class="text-brand-light">examples/trading-bot.md</a>
+    for the equivalent expressed as an <code>employee.md</code> contract — same hard caps, same kill-switch semantics,
+    but in a portable schema that any framework can consume.
+  </p>
+
+  <h2 class="text-white mt-12">Use cases this release targets</h2>
+  <div class="not-prose grid md:grid-cols-2 gap-4 mt-6">
+    {% set use_cases = [
+      ('Trading bots', 'A bot that places orders needs hard limits — max position, daily drawdown, allowed symbols, kill-switch — that survive even if the prompt is overridden. See examples/trading-bot.md.'),
+      ('AI coding assistants', 'Senior-dev / devops / security-auditor archetypes with explicit allowed tools, prohibited actions, and approval workflow. Pairs with an AGENTS.md for repo context.'),
+      ('Customer-facing AI workers', 'Product-manager / freelancer / data-analyst roles with budgets, response-time SLAs, and escalation paths. Maps to the worker.md request/response protocol on the wire.'),
+      ('Skill packaging for Claude', 'Export the contract to Anthropic SKILL.md format with one call (runtime.skill_export.to_skill_md) so the same agent definition works inside Claude Skills.'),
+    ] %}
+    {% for title, body in use_cases %}
+      <div class="bg-ink-800/50 border border-ink-700 rounded-lg p-5">
+        <div class="font-semibold text-white text-lg">{{ title }}</div>
+        <p class="text-sm text-ink-300 mt-2 leading-relaxed">{{ body }}</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <h2 class="text-white mt-12" id="faq">Frequently asked</h2>
+  <div class="not-prose space-y-4 mt-4">
+    {% set faqs = [
+      ('Is employee.md a replacement for AGENTS.md?',
+       'No. AGENTS.md tells the agent how to work in a specific codebase; employee.md defines who the agent is across all sessions. Use both — drop an AGENTS.md in your repo for project context, and ship an employee.md alongside the runtime that loads the agent.'),
+      ('How is this different from a system prompt?',
+       'A system prompt is unstructured text the model sees. An employee.md contract is structured, schema-validated, and enforced by your code before any model call. The Employee.system_prompt() helper renders the contract as a system prompt, but the runtime checks (Employee.is_action_allowed(), BudgetTracker.try_spend()) happen outside the model, so a prompt-injection cannot bypass them.'),
+      ('What happens at runtime when an agent tries a prohibited action?',
+       'The runtime SDK exposes three contract-checking primitives: is_action_allowed(action) returns False on a prohibited match, is_in_scope(text) returns a ScopeDecision dataclass, and budget.try_spend(amount) raises BudgetExceeded when the cap would be breached. Your loop refuses the action and either escalates to a human (if required_approval lists it) or logs and stops. See tests/integration/test_agent_loop.py for the end-to-end worked example.'),
+      ('Does this work with frameworks I already use (LangChain, CrewAI, AutoGen)?',
+       'Yes — see /integrations. The loader is plain Python and YAML; the runtime SDK has a tiny dependency footprint. Verified recipes are provided for using employee.md as the source of truth for CrewAI Agent definitions, LangGraph state, and AutoGen role configs.'),
+      ('Why version 1.0.0 if the repo had older drafts?',
+       'Those drafts (numbered 2.x) were never tagged, never published to PyPI, never advertised. We rebaselined to 1.0.0 to be honest about the public release history. See CHANGELOG.md for the full story.'),
+    ] %}
+    {% for q, a in faqs %}
+      <details class="bg-ink-800/50 border border-ink-700 rounded-lg group">
+        <summary class="cursor-pointer p-4 font-semibold text-white flex items-center justify-between">
+          <span>{{ q }}</span>
+          <svg class="w-4 h-4 text-ink-500 group-open:rotate-180 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="px-4 pb-4 text-ink-300 leading-relaxed">{{ a }}</div>
+      </details>
+    {% endfor %}
+  </div>
+
+  <h2 class="text-white mt-12">Sources</h2>
+  <p class="text-sm text-ink-500">Full notes including search queries, fetch URLs, and verification status: <a href="{{ github_url }}/blob/main/docs/RESEARCH_NOTES.md" class="text-brand-light">docs/RESEARCH_NOTES.md</a>.</p>
+  <ol class="text-sm text-ink-300 space-y-1 mt-3 list-decimal pl-5">
+    <li><a href="https://agents.md/" rel="noopener" class="text-brand-light hover:text-white">agents.md</a> — canonical AGENTS.md spec site</li>
+    <li><a href="https://developers.openai.com/codex/guides/agents-md" rel="noopener" class="text-brand-light hover:text-white">developers.openai.com/codex/guides/agents-md</a> — Codex AGENTS.md guide (32 KiB cap, advisory enforcement)</li>
+    <li><a href="https://github.blog/ai-and-ml/github-copilot/how-to-write-a-great-agents-md-lessons-from-over-2500-repositories/" rel="noopener" class="text-brand-light hover:text-white">github.blog</a> — analysis of 2,500+ AGENTS.md files</li>
+    <li><a href="https://www.infoq.com/news/2025/08/agents-md/" rel="noopener" class="text-brand-light hover:text-white">infoq.com (Aug 2025)</a> — coverage of the ETH Zurich SWE-bench Lite study</li>
+    <li><a href="https://worker.md/worker-protocol/" rel="noopener" class="text-brand-light hover:text-white">worker.md/worker-protocol</a> — request/response protocol + 5-state status taxonomy</li>
+    <li><a href="https://worker.md/ai-worker-vs-agent/" rel="noopener" class="text-brand-light hover:text-white">worker.md/ai-worker-vs-agent</a> — bounded executor vs autonomous loop</li>
+    <li><a href="https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview" rel="noopener" class="text-brand-light hover:text-white">platform.claude.com — Claude Skills overview</a> — verified SKILL.md format and progressive disclosure</li>
+    <li><a href="https://hummingbot.org/client/global-configs/kill-switch/" rel="noopener" class="text-brand-light hover:text-white">hummingbot.org — kill switch</a> — production trading-bot config patterns</li>
+    <li><a href="https://www.freqtrade.io/en/stable/configuration/" rel="noopener" class="text-brand-light hover:text-white">freqtrade.io — configuration</a> — max_open_trades / stake_amount / stoploss</li>
+    <li><a href="https://arxiv.org/abs/2509.22735" rel="noopener" class="text-brand-light hover:text-white">arXiv:2509.22735</a> — Boddy &amp; Joseph (Sep 2025), regulating LLM agency</li>
+    <li><a href="https://arxiv.org/abs/2601.11369" rel="noopener" class="text-brand-light hover:text-white">arXiv:2601.11369</a> — Cournot multi-agent collusion: prompt-only rules don't bind</li>
+    <li><a href="https://incidentdatabase.ai/" rel="noopener" class="text-brand-light hover:text-white">incidentdatabase.ai</a> — 233 AI incidents in 2024 (+56% YoY)</li>
+  </ol>
+
+  <div class="mt-12 not-prose flex flex-wrap gap-3">
+    <a href="{{ url_for('integrations') }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-semibold px-6 py-3 rounded-lg transition">
+      See verified integrations →
+    </a>
+    <a href="{{ url_for('validate_page') }}" class="inline-flex items-center gap-2 bg-ink-800 hover:bg-ink-700 text-white font-medium px-6 py-3 rounded-lg transition border border-ink-700">
+      Try the validator
+    </a>
+  </div>
+</section>
+{% endblock %}

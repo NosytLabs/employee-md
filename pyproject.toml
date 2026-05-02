@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "employee-md"
+version = "1.0.0"
+description = "Validation tooling for employee.md specification"
+authors = [
+  { name="NosytLabs", email="hi@nosytlabs.com" },
+]
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "pyyaml>=6.0",
+    "jsonschema>=4.0.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/NosytLabs/employee-md"
+"Bug Tracker" = "https://github.com/NosytLabs/employee-md/issues"
+
+[project.optional-dependencies]
+web = [
+    "flask>=3.0",
+    "markdown>=3.6",
+    "pygments>=2.17",
+    "gunicorn>=21.2",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+    "types-PyYAML>=6.0",
+    # Web deps so the test suite (which imports web.app) runs on a clean
+    # CI environment after `pip install -e ".[dev]"`.
+    "flask>=3.0",
+    "markdown>=3.6",
+    "pygments>=2.17",
+    "gunicorn>=21.2",
+]
+
+[project.scripts]
+employee-validate = "tooling.cli:main"
+employee-runtime = "runtime.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tooling*", "runtime*", "web*"]
+exclude = ["tests*", "attached_assets*", "examples*", "docs*"]

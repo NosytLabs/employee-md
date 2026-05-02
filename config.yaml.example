@@ -1,0 +1,22 @@
+# Employee.md Validator Configuration File (YAML)
+# Place this file as config.yaml in your project root
+
+parallel: false
+production: false
+verbose: false
+quiet: false
+
+cache:
+  enabled: true
+  size: 100
+  ttl: 300
+
+logging:
+  level: INFO
+  format: text
+
+metrics:
+  enabled: false
+  format: prometheus
+
+allowed_directories: []

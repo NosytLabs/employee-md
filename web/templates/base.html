@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}employee.md — the open standard for AI agent employment contracts{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}employee.md is an open, schema-validated YAML contract for AI agents: identity, role, scope, permissions, guardrails, budget, lifecycle, and compliance — enforceable at runtime.{% endblock %}" />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="{{ canonical_url or (request.url_root.rstrip('/') + request.path) }}" />
+
+    {# OpenGraph / Twitter cards — GEO/SEO surfaces #}
+    <meta property="og:title" content="{% block og_title %}employee.md — the open standard for AI agent employment contracts{% endblock %}" />
+    <meta property="og:description" content="{% block og_description %}A single YAML file that defines an AI agent's job: role, scope, permissions, guardrails, budget, lifecycle, and compliance — schema-validated and enforceable at runtime.{% endblock %}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ canonical_url or (request.url_root.rstrip('/') + request.path) }}" />
+    <meta property="og:site_name" content="employee.md" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ self.og_title() }}" />
+    <meta name="twitter:description" content="{{ self.og_description() }}" />
+
+    {# JSON-LD: SoftwareSourceCode + WebSite for AI/SEO surfaces #}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "name": "employee.md",
+          "url": "{{ request.url_root.rstrip('/') }}",
+          "description": "Open standard for AI agent employment contracts.",
+          "inLanguage": "en"
+        },
+        {
+          "@type": "SoftwareSourceCode",
+          "name": "employee.md",
+          "codeRepository": "{{ github_url }}",
+          "programmingLanguage": ["YAML", "Python"],
+          "license": "https://opensource.org/licenses/MIT",
+          "version": "{{ version }}",
+          "description": "A schema-validated YAML contract for AI agents: identity, role, scope, permissions, guardrails, economy, lifecycle, compliance.",
+          "url": "{{ request.url_root.rstrip('/') }}",
+          "author": {
+            "@type": "Organization",
+            "name": "NosytLabs",
+            "url": "https://github.com/NosytLabs"
+          }
+        }
+      ]
+    }
+    </script>
+    {% block extra_head %}{% endblock %}
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='tailwind.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('pygments_css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body class="min-h-screen bg-ink-900 text-ink-100 antialiased font-sans flex flex-col">
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-brand focus:text-white focus:px-3 focus:py-2 focus:rounded">Skip to main content</a>
+    <header class="border-b border-ink-800 bg-ink-900/95 backdrop-blur sticky top-0 z-40">
+      <nav class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-4 sm:gap-6 flex-wrap" aria-label="Primary">
+        <a href="{{ url_for('index') }}" class="font-mono font-bold text-base sm:text-lg text-white hover:text-brand-light transition">
+          employee<span class="text-brand">.md</span>
+        </a>
+        <span class="hidden sm:inline-flex text-xs font-mono px-2 py-0.5 rounded bg-ink-800 text-ink-300 border border-ink-700">v{{ version }}</span>
+        <div class="flex-1"></div>
+        <ul class="flex flex-wrap items-center gap-1 sm:gap-2 text-sm">
+          {% set nav = [
+            ('index', 'Home'),
+            ('why', 'Why'),
+            ('spec', 'Spec'),
+            ('examples', 'Examples'),
+            ('validate_page', 'Validate'),
+            ('runtime_page', 'Runtime'),
+            ('integrations', 'Integrations'),
+            ('integration', 'Integration guide'),
+            ('docs', 'Docs'),
+          ] %}
+          {% for endpoint, label in nav %}
+            <li>
+              <a href="{{ url_for(endpoint) }}"
+                 class="px-3 py-1.5 rounded-md transition font-medium
+                        {% if request.endpoint == endpoint %}bg-brand/20 text-brand-light ring-1 ring-brand/40{% else %}text-ink-300 hover:text-white hover:bg-ink-800{% endif %}">
+                {{ label }}
+              </a>
+            </li>
+          {% endfor %}
+          <li>
+            <a href="{{ github_url }}" rel="noopener" class="px-3 py-1.5 rounded-md text-ink-300 hover:text-white hover:bg-ink-800 transition font-medium inline-flex items-center gap-1.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55v-1.94c-3.2.7-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.27-5.24-5.66 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.16 1.17a10.97 10.97 0 0 1 5.74 0c2.2-1.48 3.16-1.17 3.16-1.17.62 1.58.23 2.75.11 3.04.74.8 1.18 1.82 1.18 3.07 0 4.4-2.69 5.36-5.25 5.65.41.36.78 1.06.78 2.13v3.16c0 .31.21.66.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main" class="flex-1">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-t border-ink-800 mt-16">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-sm text-ink-500">
+        <div>
+          <span class="font-mono text-ink-300">employee.md</span> v{{ version }} ·
+          MIT licensed · Maintained by
+          <a href="https://github.com/NosytLabs" rel="noopener" class="text-brand-light hover:text-white transition">NosytLabs</a>
+        </div>
+        <div class="flex gap-4 flex-wrap">
+          <a href="{{ schema_url }}" rel="noopener" class="hover:text-white transition">JSON Schema</a>
+          <a href="{{ github_url }}/blob/main/CHANGELOG.md" rel="noopener" class="hover:text-white transition">Changelog</a>
+          <a href="{{ github_url }}/blob/main/CONTRIBUTING.md" rel="noopener" class="hover:text-white transition">Contributing</a>
+          <a href="{{ github_url }}/issues" rel="noopener" class="hover:text-white transition">Issues</a>
+          <a href="{{ url_for('sitemap_xml') }}" class="hover:text-white transition">Sitemap</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

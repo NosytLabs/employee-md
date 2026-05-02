@@ -1,0 +1,8 @@
+__pycache__
+*.py[cod]
+.git
+.github
+.vscode
+.trae
+env
+venv

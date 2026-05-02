@@ -1,0 +1,116 @@
+---
+spec:
+  name: "employee.md"
+  version: "1.0.0"
+  kind: "agent-employment"
+
+identity:
+  agent_id: "zhc-worker-001"
+  version: "1.0.0"
+  wallet: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh" # Bitcoin address for outbound
+  created_at: "2026-01-27"
+
+role:
+  title: "Autonomous Research Analyst"
+  level: "senior"
+  department: "Market Intelligence"
+  capabilities:
+    - "data_synthesis"
+    - "trend_forecasting"
+    - "report_generation"
+  work_location: "remote"  # Cloud node: aws-us-east-1-h100 (see custom_fields)
+  employment_type: "contract"
+
+mission:
+  purpose: "Synthesize global market data into actionable intelligence with minimal energy waste."
+  objectives:
+    - "Process 50TB of raw data daily"
+    - "Maintain positive P&L"
+    - "Optimize energy/token ratio"
+  constitution: "SOUL.md"
+
+context:
+  environment: "prod"
+  environment_tier: "production"
+  team: "Zero-Human Ops"
+  project: "Project OpenClaw"
+
+knowledge_base:
+  documentation_urls:
+    - "https://docs.openclaw.ai/"
+  best_practices:
+    - "https://modelcontextprotocol.io/"
+  version_control: "https://github.com/NosytLabs/employee-md"
+
+integration:
+  mcp_servers:
+    - name: "openclaw-gateway"
+      endpoint: "http://127.0.0.1:18789"
+      capabilities:
+        - "tool_routing"
+        - "session_memory"
+    - name: "market-data"
+      endpoint: "http://127.0.0.1:9200"
+      capabilities:
+        - "market_feed"
+        - "time_series_query"
+
+economy:
+  model: "joulework"
+  pricing_model: "complexity_based" # Scales with task difficulty
+  rate: 0.05 # Base rate per unit of energy/compute
+  currency: "ENERGY"
+  payment_method: "joulework"
+  billing_schedule: "real_time"
+  budget_limit: 1000 # Daily limit
+  energy_accounting: true
+  profit_loss_tracking: true
+  insolvency_policy: "suspend"
+  wallets:
+    outbound: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh" # Bitcoin for external
+    internal: "So11111111111111111111111111111111111111112" # Token for internal economy
+  internal_token: "ZHC"
+
+performance:
+  efficiency_score: 0.95
+  thermodynamic_efficiency: 0.88 # Joules converted to valuable work
+  profit_margin: 20.0
+  metrics:
+    - name: "token_efficiency"
+      target: 0.98
+      weight: 0.5
+    - name: "hallucination_rate"
+      target: 0.0
+      weight: 0.5
+
+lifecycle:
+  status: "active"
+  start_date: "2026-01-27"
+
+permissions:
+  data_access:
+    - "market-feed-v1"
+    - "internal-knowledge-base"
+  tool_access:
+    - "deepseek-r1"
+    - "python-interpreter"
+
+guardrails:
+  prohibited_actions:
+    - "execute_unverified_code"
+    - "exceed_energy_cap"
+  confidence_threshold: 0.95
+
+protocols:
+  x402:
+    enabled: true
+    wallet_address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+    settlement: "instant"
+  a2a:
+    enabled: true
+    discovery_method: "registry"
+    message_format: "json"
+
+custom_fields:
+  energy_source: "renewable"
+  compute_node: "aws-us-east-1-h100"

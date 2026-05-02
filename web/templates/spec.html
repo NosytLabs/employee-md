@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}Spec reference · employee.md{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-6">
+  <div class="text-xs font-mono text-ink-500 mb-2">REFERENCE</div>
+  <h1 class="text-3xl sm:text-4xl font-bold text-white">{{ spec_title }}</h1>
+  <p class="mt-3 text-ink-300 max-w-3xl">
+    Generated directly from
+    <a href="{{ schema_url }}" rel="noopener" class="text-brand-light hover:text-white font-mono">tooling/schema.json</a>
+    so this page can never drift from the schema. Required top-level sections are marked
+    <span class="inline-flex text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">required</span>.
+    Spec version: <span class="font-mono text-white">{{ spec_version }}</span>.
+  </p>
+</div>
+
+<div class="max-w-6xl mx-auto px-4 sm:px-6 grid lg:grid-cols-[14rem_1fr] gap-8">
+  <aside class="lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto pr-2 hidden lg:block" aria-label="Section index">
+    <div class="text-xs font-mono uppercase tracking-wider text-ink-500 mb-2">Sections</div>
+    <ul class="space-y-1 text-sm">
+      {% for section in sections %}
+        <li>
+          <a href="#{{ section.anchor }}" class="block px-2 py-1 rounded text-ink-300 hover:text-white hover:bg-ink-800 transition font-mono">
+            {{ section.name }}{% if section.required %} <span class="text-rose-400" title="required">*</span>{% endif %}{% if section.experimental %} <span class="text-amber-400" title="experimental">⚑</span>{% endif %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+    <div class="mt-4 pt-3 border-t border-ink-800 text-[11px] text-ink-500 space-y-1">
+      <div><span class="text-rose-400">*</span> required at the top level</div>
+      <div><span class="text-amber-400">⚑</span> experimental — see INTEGRATION.md</div>
+    </div>
+  </aside>
+
+  <div class="space-y-10 pb-16">
+    {% for section in sections %}
+      <section id="{{ section.anchor }}" class="scroll-mt-24">
+        <div class="flex items-baseline gap-3 flex-wrap">
+          <h2 class="text-xl sm:text-2xl font-bold text-white font-mono">{{ section.name }}</h2>
+          <a href="#{{ section.anchor }}" class="text-ink-500 hover:text-brand-light text-sm" aria-label="Anchor link to {{ section.name }}">#</a>
+          {% if section.required %}
+            <span class="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">required</span>
+          {% else %}
+            <span class="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-ink-800 text-ink-300 border border-ink-700">optional</span>
+          {% endif %}
+          {% if section.experimental %}
+            <span class="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30" title="Documented as experimental in INTEGRATION.md — no first-class validator yet.">experimental</span>
+          {% endif %}
+          <span class="text-xs font-mono text-ink-500">type: {{ section.type }}</span>
+          <button type="button"
+                  class="ml-auto text-xs px-2 py-1 rounded border border-ink-700 bg-ink-800 hover:bg-ink-700 text-ink-200 transition spec-copy-btn"
+                  data-copy-section="{{ section.name }}"
+                  aria-label="Copy link to {{ section.name }} section">
+            Copy link
+          </button>
+        </div>
+        {% if section.description %}
+          <p class="mt-2 text-ink-300">{{ section.description }}</p>
+        {% endif %}
+
+        {% if section.fields %}
+          <div class="mt-4 overflow-x-auto rounded-lg border border-ink-700 bg-ink-800/40">
+            <table class="w-full text-sm">
+              <thead class="text-left text-xs uppercase tracking-wider text-ink-500 border-b border-ink-700">
+                <tr>
+                  <th class="px-4 py-2 font-medium">Field</th>
+                  <th class="px-4 py-2 font-medium">Type</th>
+                  <th class="px-4 py-2 font-medium">Required</th>
+                  <th class="px-4 py-2 font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-ink-700">
+                {% for field in section.fields %}
+                <tr class="align-top {% if field.depth > 0 %}bg-ink-900/40{% endif %}">
+                  <td class="px-4 py-2 font-mono text-ink-100 whitespace-nowrap">
+                    {% if field.depth > 0 %}<span class="text-ink-500" style="padding-left: {{ field.depth * 1.25 }}rem">↳ </span>{% endif %}
+                    <button type="button"
+                            class="hover:text-brand-light transition spec-field-copy"
+                            data-copy-path="{{ field.path }}"
+                            title="Copy field path: {{ field.path }}">{{ field.name }}</button>
+                    {% if field.experimental %}<span class="ml-1 text-amber-400 text-xs" title="Experimental — see INTEGRATION.md">⚑</span>{% endif %}
+                  </td>
+                  <td class="px-4 py-2 font-mono text-ink-300 whitespace-nowrap">{{ field.type or '—' }}</td>
+                  <td class="px-4 py-2">
+                    {% if field.required %}
+                      <span class="text-rose-300 text-xs font-mono">yes</span>
+                    {% else %}
+                      <span class="text-ink-500 text-xs font-mono">no</span>
+                    {% endif %}
+                  </td>
+                  <td class="px-4 py-2 text-ink-300">
+                    {% if field.description %}{{ field.description }}{% endif %}
+                    {% if field.constraints %}
+                      <ul class="mt-1 space-y-0.5">
+                        {% for c in field.constraints %}
+                          <li class="text-xs font-mono text-ink-500">{{ c }}</li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="mt-4 text-sm text-ink-500 italic">Free-form section — see the JSON Schema for details.</p>
+        {% endif %}
+      </section>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  function flashCopied(btn, label) {
+    const orig = btn.textContent;
+    btn.textContent = label || 'Copied!';
+    setTimeout(() => { btn.textContent = orig; }, 1200);
+  }
+  document.querySelectorAll('.spec-copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const anchor = btn.getAttribute('data-copy-section');
+      const url = window.location.origin + window.location.pathname + '#' + anchor;
+      try { await navigator.clipboard.writeText(url); flashCopied(btn); } catch (e) {}
+    });
+  });
+  document.querySelectorAll('.spec-field-copy').forEach(btn => {
+    btn.addEventListener('click', async (ev) => {
+      ev.preventDefault();
+      const path = btn.getAttribute('data-copy-path');
+      try { await navigator.clipboard.writeText(path); flashCopied(btn, '✓ ' + path); } catch (e) {}
+    });
+  });
+</script>
+{% endblock %}

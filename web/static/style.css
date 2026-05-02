@@ -1,0 +1,88 @@
+/* Custom layer on top of the prebuilt Tailwind CSS (web/static/tailwind.css). Keep this small. */
+
+html { scroll-behavior: smooth; }
+
+/* Pygments-rendered codehilite blocks (used on /examples/<slug>) */
+.codehilite {
+  background: transparent !important;
+  padding: 1rem 1.25rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.codehilite pre {
+  margin: 0 !important;
+  background: transparent !important;
+  white-space: pre;
+}
+
+/* Quickstart code blocks on /docs */
+.codeblock {
+  position: relative;
+  margin-top: 0.75rem;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid #334155;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.codeblock pre {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: #f1f5f9;
+}
+.codeblock .copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 0.7rem;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #1e293b;
+  color: #cbd5e1;
+  border: 1px solid #334155;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.codeblock .copy-btn:hover { background: #334155; color: #fff; }
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Compact YAML preview shown inside each /examples gallery card. */
+.codehilite-preview .codehilite {
+  padding: 0.75rem 1rem;
+  font-size: 0.7rem;
+  line-height: 1.45;
+  max-height: 11rem;
+  overflow: hidden;
+  position: relative;
+}
+.codehilite-preview .codehilite::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 2.5rem;
+  background: linear-gradient(to bottom, rgba(15, 23, 42, 0), rgba(15, 23, 42, 0.95));
+  pointer-events: none;
+}
+
+.spec-field-copy {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}

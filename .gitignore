@@ -1,0 +1,54 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.so
+.Python
+*.egg-info/
+*.egg
+build/
+dist/
+.eggs/
+
+# --- Virtualenvs ---
+env/
+venv/
+.venv/
+.env
+.envrc
+
+# --- Tooling caches ---
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# --- Logs ---
+logs/
+*.log
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- IDE / editors ---
+.vscode/
+.idea/
+.trae/
+
+# --- Replit local state (kept out of GitHub) ---
+.local/
+.cache/
+.pythonlibs/
+.upm/
+.config/
+
+# --- Agent / scratch ---
+attached_assets/
+
+# --- Built CSS is generated; keep it tracked so the prod deploy doesn't
+# need a Tailwind build step. (Intentionally NOT ignored.) ---
+# web/static/tailwind.css
