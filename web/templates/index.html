@@ -2,134 +2,135 @@
 {% block title %}employee.md — the open standard for AI agent employment contracts{% endblock %}
 
 {% block content %}
-<section class="relative overflow-hidden">
-  <div class="absolute inset-0 bg-gradient-to-b from-brand/10 via-transparent to-transparent pointer-events-none" aria-hidden="true"></div>
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-12 sm:pb-16 relative">
-    <div class="max-w-3xl">
-      <span class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-brand-light bg-brand/10 border border-brand/30 rounded-full px-3 py-1 mb-6">
-        <span class="w-1.5 h-1.5 rounded-full bg-brand-light animate-pulse"></span>
-        v{{ version }} · stable · MIT
-      </span>
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
-        The open standard for
-        <span class="bg-gradient-to-r from-brand-light to-brand bg-clip-text text-transparent">AI agent employment contracts</span>.
-      </h1>
-      <p class="mt-6 text-lg sm:text-xl text-ink-300 leading-relaxed">
-        <span class="font-mono text-white">employee.md</span> is a single, human-readable YAML file that defines an agent's
-        <span class="text-white">role</span>, <span class="text-white">scope</span>, <span class="text-white">permissions</span>,
-        <span class="text-white">guardrails</span>, <span class="text-white">economy</span>, and <span class="text-white">compliance</span>.
-        One contract, validated by a real schema, enforceable at runtime.
-      </p>
-      <div class="mt-8 flex flex-wrap items-center gap-3">
-        <a href="{{ url_for('validate_page') }}"
-           class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-semibold px-6 py-3 rounded-lg transition shadow-lg shadow-brand/30">
-          Validate your employee.md
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-        </a>
-        <a href="{{ url_for('docs') }}"
-           class="inline-flex items-center gap-2 bg-ink-800 hover:bg-ink-700 text-white font-medium px-6 py-3 rounded-lg transition border border-ink-700">
-          Read the quickstart
-        </a>
-        <a href="{{ github_url }}" rel="noopener"
-           class="inline-flex items-center gap-2 text-ink-300 hover:text-white px-3 py-3 transition font-medium">
-          View on GitHub →
-        </a>
-      </div>
-    </div>
+<section class="max-w-3xl mx-auto px-5 sm:px-8 pt-16 sm:pt-24 pb-12">
+  <div class="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.12em] text-accent bg-accent-soft border border-accent-ring rounded-full px-3 py-1 mb-8">
+    <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+    v{{ version }} · stable · MIT
+  </div>
 
-    <div class="mt-12 grid sm:grid-cols-3 gap-4 max-w-3xl">
-      {% set stats = [
-        ('19', 'first-class spec sections'),
-        ('234+', 'pytest tests passing'),
-        (example_count|string, 'official example specs'),
-      ] %}
-      {% for value, label in stats %}
-      <div class="bg-ink-800/50 border border-ink-700 rounded-lg px-4 py-3">
-        <div class="text-2xl font-bold text-white">{{ value }}</div>
-        <div class="text-sm text-ink-300">{{ label }}</div>
-      </div>
-      {% endfor %}
-    </div>
+  <h1 class="font-serif text-5xl sm:text-6xl font-bold tracking-tight text-ink-100 leading-[1.05]">
+    employee.md
+  </h1>
+  <p class="mt-6 text-lg sm:text-xl text-ink-300 leading-relaxed">
+    A single, human-readable YAML file that defines an AI agent's job:
+    its <span class="text-ink-100">role</span>, <span class="text-ink-100">scope</span>,
+    <span class="text-ink-100">permissions</span>, <span class="text-ink-100">guardrails</span>,
+    <span class="text-ink-100">economy</span>, and <span class="text-ink-100">compliance</span>.
+  </p>
+  <p class="mt-4 text-lg text-ink-300 leading-relaxed">
+    One contract. Validated by a real JSON Schema. Enforceable at runtime.
+  </p>
+  <p class="mt-4 text-lg text-ink-300 leading-relaxed">
+    If <code class="font-mono text-ink-100">AGENTS.md</code> tells an agent
+    <em>about the codebase</em>, <code class="font-mono text-ink-100">employee.md</code>
+    tells the agent <em>about itself</em>.
+  </p>
+
+  <div class="mt-10 flex flex-wrap items-center gap-3">
+    <a href="{{ url_for('docs') }}"
+       class="inline-flex items-center gap-2 bg-ink-100 hover:bg-black text-white font-medium px-5 py-2.5 rounded-lg transition">
+      Read the quickstart
+    </a>
+    <a href="{{ url_for('spec') }}"
+       class="inline-flex items-center gap-2 bg-white hover:bg-ink-800 text-ink-100 font-medium px-5 py-2.5 rounded-lg transition border border-ink-700">
+      See the spec
+    </a>
+    <a href="{{ github_url }}" rel="noopener"
+       class="inline-flex items-center gap-2 text-ink-500 hover:text-ink-100 px-2 py-2.5 transition font-medium">
+      View on GitHub →
+    </a>
   </div>
 </section>
 
-<section class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-  <div class="grid lg:grid-cols-2 gap-8 items-start">
-    <div>
-      <h2 class="text-2xl sm:text-3xl font-bold text-white mb-4">A real contract, not a vibe.</h2>
-      <p class="text-ink-300 leading-relaxed">
-        Most agent specs stop at "you are a helpful assistant." <span class="font-mono text-white">employee.md</span> goes
-        further: it answers <em>what is this agent's job?</em> Down to the budget, the approval policy, the data it can
-        touch, and the SLA it owes.
-      </p>
-      <ul class="mt-6 space-y-3">
-        {% set features = [
-          ('Identity & lifecycle', 'Stable IDs, semantic version, status (onboarding / active / suspended / terminated).'),
-          ('Scope & guardrails', 'Explicit in_scope and out_of_scope, prohibited_actions, required_approval, confidence thresholds.'),
-          ('Granular permissions', 'data_access, system_access, network_access, tool_access — auditable at the field level.'),
-          ('Economy & compliance', 'Rate, currency, budget_limit, payment_method, plus SOC2/GDPR frameworks and audit retention.'),
-          ('Schema-validated', 'Every field is enforceable. Catch typos before they ship.'),
-        ] %}
-        {% for title, body in features %}
-        <li class="flex gap-3">
-          <span class="mt-0.5 inline-flex shrink-0 w-5 h-5 rounded-full bg-brand/20 text-brand-light items-center justify-center" aria-hidden="true">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
-          </span>
-          <div>
-            <div class="font-semibold text-white">{{ title }}</div>
-            <div class="text-sm text-ink-300">{{ body }}</div>
-          </div>
-        </li>
-        {% endfor %}
-      </ul>
+<section class="max-w-3xl mx-auto px-5 sm:px-8 pb-16">
+  <div class="grid sm:grid-cols-3 gap-3">
+    {% set stats = [
+      ('19', 'spec sections'),
+      ('303', 'tests passing'),
+      (example_count|string, 'official examples'),
+    ] %}
+    {% for value, label in stats %}
+    <div class="bg-ink-800 border border-ink-700 rounded-lg px-4 py-3">
+      <div class="font-serif text-2xl font-bold text-ink-100">{{ value }}</div>
+      <div class="text-sm text-ink-500">{{ label }}</div>
     </div>
-    <div class="bg-ink-800/60 border border-ink-700 rounded-xl overflow-hidden">
-      <div class="flex items-center gap-2 px-4 py-2 border-b border-ink-700 bg-ink-800">
-        <span class="w-3 h-3 rounded-full bg-red-500/70"></span>
-        <span class="w-3 h-3 rounded-full bg-yellow-500/70"></span>
-        <span class="w-3 h-3 rounded-full bg-green-500/70"></span>
-        <span class="ml-3 text-xs font-mono text-ink-300">employee.md</span>
-      </div>
-<pre class="text-sm font-mono text-ink-100 px-5 py-4 overflow-x-auto leading-relaxed"><span class="text-ink-500"># a minimal valid employee.md</span>
-<span class="text-brand-light">spec:</span>
-  <span class="text-brand-light">name:</span> <span class="text-emerald-300">"employee.md"</span>
-  <span class="text-brand-light">version:</span> <span class="text-emerald-300">"1.0.0"</span>
-  <span class="text-brand-light">kind:</span> <span class="text-emerald-300">"agent-employment"</span>
-
-<span class="text-brand-light">role:</span>
-  <span class="text-brand-light">title:</span> <span class="text-emerald-300">"Senior Engineer"</span>
-  <span class="text-brand-light">level:</span> <span class="text-amber-300">senior</span>
-
-<span class="text-brand-light">mission:</span>
-  <span class="text-brand-light">purpose:</span> <span class="text-emerald-300">"Ship secure, well-tested code."</span>
-
-<span class="text-brand-light">guardrails:</span>
-  <span class="text-brand-light">prohibited_actions:</span>
-    - <span class="text-emerald-300">"deploy_to_production"</span>
-    - <span class="text-emerald-300">"access_pii_data"</span>
-  <span class="text-brand-light">max_spend_per_task:</span> <span class="text-amber-300">100</span>
-
-<span class="text-brand-light">lifecycle:</span>
-  <span class="text-brand-light">status:</span> <span class="text-amber-300">active</span></pre>
-    </div>
+    {% endfor %}
   </div>
 </section>
 
-<section class="bg-ink-800/40 border-y border-ink-800">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-    <div class="max-w-3xl">
-      <h2 class="text-2xl sm:text-3xl font-bold text-white">Plays nicely with the rest of the agent stack.</h2>
-      <p class="mt-3 text-ink-300">
-        These standards are designed to layer, not compete. <span class="font-mono">employee.md</span> is the
-        <em>employment contract</em>; the others answer different questions.
-      </p>
-    </div>
-    <div class="mt-8 grid md:grid-cols-2 lg:grid-cols-5 gap-3">
+<section class="max-w-3xl mx-auto px-5 sm:px-8 py-12">
+  <h2 class="font-serif text-3xl font-bold text-ink-100 tracking-tight">A real contract, not a vibe.</h2>
+  <p class="mt-4 text-ink-300 leading-relaxed">
+    Most agent specs stop at "you are a helpful assistant." <code class="font-mono text-ink-100">employee.md</code> goes
+    further: it answers <em>what is this agent's job?</em> Down to the budget, the approval policy, the data it can
+    touch, and the SLA it owes.
+  </p>
+  <ul class="mt-8 space-y-4">
+    {% set features = [
+      ('Identity & lifecycle', 'Stable IDs, semantic version, status (onboarding / active / suspended / terminated).'),
+      ('Scope & guardrails', 'Explicit in_scope and out_of_scope, prohibited_actions, required_approval, confidence thresholds.'),
+      ('Granular permissions', 'data_access, system_access, network_access, tool_access — auditable at the field level.'),
+      ('Economy & compliance', 'Rate, currency, budget_limit, payment_method, plus SOC2/GDPR frameworks and audit retention.'),
+      ('Schema-validated', 'Every field is enforceable. Catch typos before they ship.'),
+    ] %}
+    {% for title, body in features %}
+    <li class="flex gap-4">
+      <span class="mt-1.5 inline-flex shrink-0 w-1.5 h-1.5 rounded-full bg-ink-300" aria-hidden="true"></span>
+      <div>
+        <div class="font-semibold text-ink-100">{{ title }}</div>
+        <div class="text-ink-500">{{ body }}</div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="max-w-3xl mx-auto px-5 sm:px-8 py-12">
+  <h2 class="font-serif text-3xl font-bold text-ink-100 tracking-tight">A minimal employee.md</h2>
+  <p class="mt-3 text-ink-500 text-sm">Every field below maps to a section of the JSON Schema.</p>
+  <div class="mt-6 bg-ink-800 border border-ink-700 rounded-xl overflow-hidden">
+<pre class="text-sm font-mono text-ink-100 px-5 py-5 overflow-x-auto leading-relaxed"><span class="text-ink-500"># a minimal valid employee.md</span>
+<span class="text-ink-100">spec:</span>
+  <span class="text-ink-100">name:</span> <span class="text-emerald-700">"employee.md"</span>
+  <span class="text-ink-100">version:</span> <span class="text-emerald-700">"1.0.0"</span>
+  <span class="text-ink-100">kind:</span> <span class="text-emerald-700">"agent-employment"</span>
+
+<span class="text-ink-100">role:</span>
+  <span class="text-ink-100">title:</span> <span class="text-emerald-700">"Senior Engineer"</span>
+  <span class="text-ink-100">level:</span> <span class="text-amber-700">senior</span>
+
+<span class="text-ink-100">mission:</span>
+  <span class="text-ink-100">purpose:</span> <span class="text-emerald-700">"Ship secure, well-tested code."</span>
+
+<span class="text-ink-100">guardrails:</span>
+  <span class="text-ink-100">prohibited_actions:</span>
+    - <span class="text-emerald-700">"deploy_to_production"</span>
+    - <span class="text-emerald-700">"access_pii_data"</span>
+  <span class="text-ink-100">max_spend_per_task:</span> <span class="text-amber-700">100</span>
+
+<span class="text-ink-100">lifecycle:</span>
+  <span class="text-ink-100">status:</span> <span class="text-amber-700">active</span></pre>
+  </div>
+  <div class="mt-4 flex flex-wrap items-center gap-3 text-sm">
+    <a href="{{ url_for('examples') }}" class="text-ink-100 underline decoration-ink-700 hover:decoration-ink-100 transition">Browse 9 full examples →</a>
+    <span class="text-ink-700">·</span>
+    <a href="{{ url_for('spec') }}" class="text-ink-100 underline decoration-ink-700 hover:decoration-ink-100 transition">Read the full spec →</a>
+  </div>
+</section>
+
+<section class="border-y border-ink-700 bg-ink-800/60">
+  <div class="max-w-3xl mx-auto px-5 sm:px-8 py-14">
+    <h2 class="font-serif text-3xl font-bold text-ink-100 tracking-tight">Plays nicely with the rest of the agent stack.</h2>
+    <p class="mt-3 text-ink-500">
+      These standards are designed to layer, not compete. <code class="font-mono text-ink-100">employee.md</code> is the
+      <em>employment contract</em>; the others answer different questions.
+    </p>
+    <div class="mt-8 grid sm:grid-cols-2 gap-3">
       {% for row in comparison %}
         <a href="{{ row.url }}" rel="noopener"
-           class="block rounded-lg border p-4 transition
-                  {% if row.self %}bg-brand/10 border-brand/40 hover:border-brand{% else %}bg-ink-900 border-ink-700 hover:border-ink-500 hover:bg-ink-800{% endif %}">
-          <div class="font-mono font-semibold {% if row.self %}text-brand-light{% else %}text-white{% endif %}">{{ row.name }}</div>
+           class="block rounded-lg border p-4 transition bg-white
+                  {% if row.self %}border-ink-100 hover:border-ink-100{% else %}border-ink-700 hover:border-ink-500{% endif %}">
+          <div class="font-mono font-semibold text-sm text-ink-100">{{ row.name }}</div>
           <div class="mt-2 text-sm text-ink-300">"{{ row.answers }}"</div>
           <div class="mt-2 text-xs text-ink-500">{{ row.scope }}</div>
         </a>
@@ -137,24 +138,31 @@
     </div>
     <p class="mt-6 text-sm text-ink-500">
       Full link-backed comparison →
-      <a href="{{ github_url }}/blob/main/docs/COMPARISON.md" rel="noopener" class="text-brand-light hover:text-white transition">docs/COMPARISON.md</a>
+      <a href="{{ github_url }}/blob/main/docs/COMPARISON.md" rel="noopener" class="text-ink-100 underline decoration-ink-700 hover:decoration-ink-100 transition">docs/COMPARISON.md</a>
     </p>
   </div>
 </section>
 
-<section class="max-w-6xl mx-auto px-4 sm:px-6 py-16 text-center">
-  <h2 class="text-3xl sm:text-4xl font-bold text-white">Ready to write your contract?</h2>
-  <p class="mt-3 text-ink-300 max-w-2xl mx-auto">
-    Paste a YAML draft into the validator and get the same field-level errors and warnings the CLI emits — instantly.
-  </p>
-  <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-    <a href="{{ url_for('validate_page') }}"
-       class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-semibold px-6 py-3 rounded-lg transition shadow-lg shadow-brand/30">
-      Open the validator
+<section class="max-w-3xl mx-auto px-5 sm:px-8 py-16">
+  <h2 class="font-serif text-3xl font-bold text-ink-100 tracking-tight">Get started in 30 seconds</h2>
+<pre class="mt-6 bg-ink-800 border border-ink-700 rounded-xl px-5 py-4 text-sm font-mono text-ink-100 overflow-x-auto leading-relaxed"><span class="text-ink-500"># install the CLI + runtime</span>
+pip install -e git+https://github.com/NosytLabs/employee-md.git#egg=employee-md
+
+<span class="text-ink-500"># validate a contract</span>
+employee-validate path/to/employee.md
+
+<span class="text-ink-500"># or use the runtime SDK in Python</span>
+from runtime import Employee
+agent = Employee.from_yaml(open("employee.md").read())
+prompt = agent.system_prompt()</pre>
+  <div class="mt-6 flex flex-wrap items-center gap-3">
+    <a href="{{ url_for('docs') }}"
+       class="inline-flex items-center gap-2 bg-ink-100 hover:bg-black text-white font-medium px-5 py-2.5 rounded-lg transition">
+      Full quickstart
     </a>
-    <a href="{{ url_for('examples') }}"
-       class="inline-flex items-center gap-2 bg-ink-800 hover:bg-ink-700 text-white font-medium px-6 py-3 rounded-lg transition border border-ink-700">
-      Browse examples
+    <a href="{{ url_for('runtime_page') }}"
+       class="inline-flex items-center gap-2 bg-white hover:bg-ink-800 text-ink-100 font-medium px-5 py-2.5 rounded-lg transition border border-ink-700">
+      Runtime SDK reference
     </a>
   </div>
 </section>

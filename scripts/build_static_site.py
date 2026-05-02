@@ -6,8 +6,7 @@ and rewrites root-relative URLs so the site works under a subdirectory
 (default `/employee-md/`, override with the `BASE_PATH` env var, set to
 empty string when serving from a custom-domain root).
 
-The dynamic /api/validate endpoint cannot run on GitHub Pages, so the
-snapshot replaces the /validate page with install-the-CLI instructions.
+The site is fully static — no Python backend is required at runtime.
 The interactive validator stays available on the Replit/Vercel deploy.
 """
 from __future__ import annotations
@@ -25,7 +24,6 @@ from web.app import app, EXAMPLES  # noqa: E402
 
 DIST = ROOT / "dist"
 BASE_PATH = os.environ.get("BASE_PATH", "/employee-md").rstrip("/")
-LIVE_VALIDATOR_URL = os.environ.get("LIVE_VALIDATOR_URL", "")
 CANONICAL_ORIGIN = os.environ.get(
     "CANONICAL_ORIGIN", "https://nosytlabs.github.io"
 ).rstrip("/")
@@ -33,7 +31,7 @@ CANONICAL_ORIGIN = os.environ.get(
 
 def routes() -> list[str]:
     paths = [
-        "/", "/why", "/spec", "/examples", "/validate", "/runtime",
+        "/", "/why", "/spec", "/examples", "/runtime",
         "/integration", "/integrations", "/docs", "/healthz",
         "/robots.txt", "/sitemap.xml", "/pygments.css", "/favicon.ico",
     ]
@@ -70,64 +68,6 @@ def rewrite_urls(html: str) -> str:
     return _URL_ATTR_RE.sub(sub, html)
 
 
-VALIDATOR_SHIM_LIVE_BLOCK = """\
-    <li>
-      <div class="text-white font-semibold">1. Use the hosted validator</div>
-      <p class="text-ink-300 mt-1">Same code, running on a Python server:</p>
-      <a href="__LIVE__"
-         class="inline-block mt-2 bg-brand hover:bg-brand-dark text-white font-semibold px-4 py-2 rounded-lg">
-        Open the live validator &rarr;
-      </a>
-    </li>
-    <li>
-      <div class="text-white font-semibold">2. Run it locally from the CLI</div>
-"""
-
-VALIDATOR_SHIM_CLI_ONLY_BLOCK = """\
-    <li>
-      <div class="text-white font-semibold">Install and run the CLI</div>
-"""
-
-VALIDATOR_SHIM_HEAD = """\
-{% extends "base.html" %}
-{% block title %}Validate · employee.md{% endblock %}
-{% block content %}
-<div class="max-w-3xl mx-auto px-4 sm:px-6 pt-12 pb-20">
-  <div class="text-xs font-mono text-ink-500 mb-2">VALIDATOR</div>
-  <h1 class="text-3xl sm:text-4xl font-bold text-white">Run the validator locally</h1>
-  <p class="mt-4 text-ink-300">
-    The interactive validator needs a Python backend, so it doesn't run on
-    this static GitHub Pages snapshot. Install the CLI to validate any
-    <code>employee.md</code> in seconds:
-  </p>
-  <ol class="mt-6 space-y-6 text-ink-200">
-__BODY__
-<pre class="mt-2 bg-ink-900 border border-ink-700 rounded-lg p-4 text-sm font-mono text-ink-100 overflow-x-auto"><code>pip install -e git+https://github.com/NosytLabs/employee-md.git#egg=employee-md
-employee-validate path/to/employee.md
-employee-validate path/to/employee.md --format json</code></pre>
-    </li>
-  </ol>
-  <p class="mt-8 text-sm text-ink-500">
-    Everything else on this site &mdash; spec reference, examples, integration
-    guide, runtime SDK docs &mdash; works fully on GitHub Pages.
-  </p>
-</div>
-{% endblock %}
-"""
-
-
-def render_static_validator() -> str:
-    """Render the validator shim through Jinja so it inherits the base layout."""
-    from flask import render_template_string
-    if LIVE_VALIDATOR_URL:
-        body_block = VALIDATOR_SHIM_LIVE_BLOCK.replace("__LIVE__", LIVE_VALIDATOR_URL)
-    else:
-        body_block = VALIDATOR_SHIM_CLI_ONLY_BLOCK
-    with app.app_context(), app.test_request_context("/validate"):
-        body = VALIDATOR_SHIM_HEAD.replace("__BODY__", body_block)
-        return render_template_string(body)
-
-
 def main() -> int:
     if DIST.exists():
         shutil.rmtree(DIST)
@@ -142,15 +82,6 @@ def main() -> int:
     failed: list[tuple[str, int]] = []
 
     for route in routes():
-        if route == "/validate":
-            html = rewrite_urls(render_static_validator())
-            out = output_path(route)
-            out.parent.mkdir(parents=True, exist_ok=True)
-            out.write_text(html, encoding="utf-8")
-            snapped += 1
-            print(f"  STATIC  {route}  -> {out.relative_to(ROOT)}")
-            continue
-
         resp = client.get(route)
         if resp.status_code != 200:
             failed.append((route, resp.status_code))

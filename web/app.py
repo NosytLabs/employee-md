@@ -11,19 +11,13 @@ from typing import Any, Dict, List, Optional
 import markdown as md
 import yaml
 from flask import Flask, abort, jsonify, render_template, request
-from werkzeug.exceptions import RequestEntityTooLarge
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import YamlLexer
 
-from tooling import (
-    EmployeeValidationOrchestrator,
-    SecureYAMLParser,
-    YAMLErrorContext,
-)
 from tooling.constants import VERSION
 
-from runtime import Employee, ContractError
+from runtime import Employee
 
 # Allow operators to override the GitHub URL when the canonical repo
 # moves or while it is still unpublished. Default kept for back-compat.
@@ -54,16 +48,9 @@ SCHEMA_PATH = ROOT / "tooling" / "schema.json"
 COMPARISON_PATH = ROOT / "docs" / "COMPARISON.md"
 INTEGRATION_PATH = ROOT / "INTEGRATION.md"
 
-MAX_VALIDATE_BYTES = 256 * 1024
-
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.config["JSON_SORT_KEYS"] = False
-# Global request-body cap (covers JSON envelope + YAML body). The per-field
-# YAML cap is checked separately below; this is a defense-in-depth layer
-# against memory pressure from oversized POSTs hitting `/api/validate`.
-app.config["MAX_CONTENT_LENGTH"] = 256 * 1024
 
-_orchestrator = EmployeeValidationOrchestrator(use_cache=False)
 _yaml_lexer = YamlLexer()
 _html_formatter = HtmlFormatter(cssclass="codehilite", linenos=False, nowrap=False)
 
@@ -291,143 +278,6 @@ def example_detail(slug: str) -> str:
     )
 
 
-@app.route("/validate", methods=["GET"])
-def validate_page() -> str:
-    # `/validate?example=<slug>` lets the example detail page hand off the
-    # exact YAML the user was looking at. Falls back to minimal.md.
-    slug = request.args.get("example", "").strip()
-    initial_yaml = ""
-    if slug and slug in EXAMPLES_BY_SLUG and not EXAMPLES_BY_SLUG[slug]["is_guide"]:
-        initial_yaml = EXAMPLES_BY_SLUG[slug]["raw"]
-    else:
-        minimal_path = EXAMPLES_DIR / "minimal.md"
-        if minimal_path.exists():
-            initial_yaml = minimal_path.read_text(encoding="utf-8")
-    return render_template("validate.html", initial_yaml=initial_yaml)
-
-
-def _err_response(message: str, *, field: str = "input", line: Optional[int] = None):
-    return jsonify(
-        {
-            "valid": False,
-            "error_count": 1,
-            "warning_count": 0,
-            "errors": [
-                {
-                    "field": field,
-                    "message": message,
-                    "line_number": line,
-                    "severity": "error",
-                    "suggestion": None,
-                }
-            ],
-            "warnings": [],
-        }
-    )
-
-
-@app.route("/api/validate", methods=["POST"])
-def api_validate():  # type: ignore[no-untyped-def]
-    payload = request.get_json(silent=True) or {}
-    text = payload.get("yaml", "")
-    if not isinstance(text, str) or not text.strip():
-        return _err_response("Empty YAML input.")
-    if len(text.encode("utf-8")) > MAX_VALIDATE_BYTES:
-        return (
-            _err_response(
-                f"YAML input exceeds the {MAX_VALIDATE_BYTES // 1024} KB limit."
-            ),
-            413,
-        )
-
-    parser = SecureYAMLParser()
-    try:
-        data, _ = parser.parse_string(text)
-    except YAMLErrorContext as e:
-        return _err_response(str(e), field="yaml", line=e.line_number)
-    except yaml.YAMLError as e:
-        line = None
-        mark = getattr(e, "problem_mark", None)
-        if mark is not None:
-            line = mark.line + 1
-        return _err_response(f"YAML parse error: {e}", field="yaml", line=line)
-    except Exception as e:  # pragma: no cover - defensive
-        return _err_response(f"Failed to parse YAML: {e}", field="yaml")
-
-    if not isinstance(data, dict):
-        return _err_response(
-            "Top-level YAML must be a mapping (key/value), not a list or scalar.",
-            field="yaml",
-        )
-
-    # Defense-in-depth: individual validators assume each top-level section
-    # is the right shape (dict / list / scalar). A malicious or sloppy
-    # payload like `{"role": 5}` can otherwise raise a TypeError deep in
-    # the validator stack. /api/validate must NEVER 500 — always JSON.
-    try:
-        result = _orchestrator.validate_data(data)
-    except Exception as e:  # noqa: BLE001 - intentional broad catch
-        return _err_response(
-            f"Validator crashed on this input ({type(e).__name__}: {e}). "
-            "Check that each top-level section is the right shape "
-            "(role/lifecycle/etc. should be mappings).",
-            field="yaml",
-        )
-
-    # When the contract is valid, also compile the LLM-ready system prompt
-    # via the runtime SDK. Treat any compilation failure as non-fatal — the
-    # validator's verdict is the canonical answer.
-    system_prompt: Optional[str] = None
-    if result.is_valid:
-        try:
-            system_prompt = Employee(data).system_prompt()
-        except (ContractError, Exception):  # noqa: BLE001
-            system_prompt = None
-
-    return jsonify(
-        {
-            "valid": result.is_valid,
-            "error_count": result.error_count,
-            "warning_count": result.warning_count,
-            "errors": [
-                {
-                    "field": e.field,
-                    "message": e.message,
-                    "line_number": e.line_number,
-                    "severity": e.severity,
-                    "suggestion": e.suggestion,
-                }
-                for e in result.errors
-            ],
-            "warnings": [
-                {
-                    "field": w.field,
-                    "message": w.message,
-                    "line_number": w.line_number,
-                    "severity": w.severity,
-                    "suggestion": w.suggestion,
-                }
-                for w in result.warnings
-            ],
-            "system_prompt": system_prompt,
-        }
-    )
-
-
-@app.errorhandler(RequestEntityTooLarge)
-def _too_large(_e):  # type: ignore[no-untyped-def]
-    """Return structured JSON for /api/validate even when MAX_CONTENT_LENGTH
-    rejects the request before our handler runs."""
-    if request.path.startswith("/api/"):
-        return (
-            _err_response(
-                f"Request body exceeds the {MAX_VALIDATE_BYTES // 1024} KB limit."
-            ),
-            413,
-        )
-    return ("Request entity too large", 413)
-
-
 @app.route("/why")
 def why() -> str:
     return render_template("why.html")
@@ -525,7 +375,6 @@ def sitemap_xml():  # type: ignore[no-untyped-def]
         ("/examples", "0.8"),
         ("/integrations", "0.8"),
         ("/integration", "0.8"),
-        ("/validate", "0.7"),
         ("/runtime", "0.7"),
         ("/docs", "0.7"),
     ]

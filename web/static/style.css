@@ -1,26 +1,36 @@
-/* Custom layer on top of the prebuilt Tailwind CSS (web/static/tailwind.css). Keep this small. */
+/* Custom layer on top of the prebuilt Tailwind CSS. Light, paper-like
+   theme inspired by worker.md / soul.md. Keep this small. */
 
 html { scroll-behavior: smooth; }
 
-/* Pygments-rendered codehilite blocks (used on /examples/<slug>) */
+body {
+  /* Slightly tighter line-height for prose-heavy site */
+  line-height: 1.65;
+}
+
+/* Pygments-rendered codehilite blocks (used on /examples/<slug>, /docs, /integration) */
 .codehilite {
-  background: transparent !important;
+  background: #fafaf9 !important;
   padding: 1rem 1.25rem;
   font-size: 0.875rem;
   line-height: 1.6;
+  border: 1px solid #e7e5e4;
+  border-radius: 0.5rem;
+  overflow-x: auto;
 }
 .codehilite pre {
   margin: 0 !important;
   background: transparent !important;
   white-space: pre;
+  color: #1c1917;
 }
 
 /* Quickstart code blocks on /docs */
 .codeblock {
   position: relative;
   margin-top: 0.75rem;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid #334155;
+  background: #fafaf9;
+  border: 1px solid #e7e5e4;
   border-radius: 0.5rem;
   overflow: hidden;
 }
@@ -31,7 +41,7 @@ html { scroll-behavior: smooth; }
   font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   font-size: 0.85rem;
   line-height: 1.55;
-  color: #f1f5f9;
+  color: #1c1917;
 }
 .codeblock .copy-btn {
   position: absolute;
@@ -41,15 +51,15 @@ html { scroll-behavior: smooth; }
   font-family: "JetBrains Mono", ui-monospace, monospace;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #1e293b;
-  color: #cbd5e1;
-  border: 1px solid #334155;
+  background: #fff;
+  color: #44403c;
+  border: 1px solid #e7e5e4;
   border-radius: 0.25rem;
   padding: 0.25rem 0.5rem;
   cursor: pointer;
   transition: background 120ms ease, color 120ms ease;
 }
-.codeblock .copy-btn:hover { background: #334155; color: #fff; }
+.codeblock .copy-btn:hover { background: #1c1917; color: #fff; border-color: #1c1917; }
 
 .line-clamp-3 {
   display: -webkit-box;
@@ -72,7 +82,7 @@ html { scroll-behavior: smooth; }
   position: absolute;
   inset: auto 0 0 0;
   height: 2.5rem;
-  background: linear-gradient(to bottom, rgba(15, 23, 42, 0), rgba(15, 23, 42, 0.95));
+  background: linear-gradient(to bottom, rgba(250, 250, 249, 0), rgba(250, 250, 249, 0.95));
   pointer-events: none;
 }
 
@@ -86,3 +96,65 @@ html { scroll-behavior: smooth; }
   cursor: pointer;
   text-align: left;
 }
+
+/* Override the dark-theme `bg-ink-900/...` opacity utilities that
+   templates use for muted backgrounds — we want them to read as
+   subtle paper tints, not overlays on a black page. */
+.bg-ink-900\/50,
+.bg-ink-900\/60,
+.bg-ink-900\/70,
+.bg-ink-900\/80,
+.bg-ink-900\/90,
+.bg-ink-900\/95 { background-color: rgba(255, 255, 255, 0.95) !important; }
+
+.bg-ink-800\/40,
+.bg-ink-800\/50,
+.bg-ink-800\/60,
+.bg-ink-800\/70,
+.bg-ink-800\/80 { background-color: #fafaf9 !important; }
+
+/* Brand-color "fill" utilities used by the old dark theme become text-only
+   accent on light bg. */
+.bg-brand\/5,
+.bg-brand\/10,
+.bg-brand\/15,
+.bg-brand\/20 { background-color: #fafaf9 !important; }
+.border-brand\/20,
+.border-brand\/30,
+.border-brand\/40 { border-color: #e7e5e4 !important; }
+
+/* Typography: prefer serif for ALL h1/h2 by default so legacy templates
+   without explicit font-serif classes still pick up the new vibe. */
+h1, h2 { font-family: "Source Serif 4", "Source Serif Pro", Georgia, Cambria, "Times New Roman", serif; letter-spacing: -0.01em; }
+
+/* Visited link color stability */
+a { text-underline-offset: 3px; }
+
+/* ---- Dark-theme color leftovers → light theme equivalents -------------
+   Many existing templates use text-white / text-ink-200 / red & yellow
+   "traffic light" dots from the old dark hero. Override them in one
+   place rather than touch every template. */
+.text-white { color: #1c1917 !important; }
+.text-ink-200 { color: #1c1917 !important; }
+
+/* The old hero used a gradient bleeding from brand-light → brand on
+   bg-clip-text. Fall back to a solid dark fill so the headline is
+   readable on white. */
+.bg-clip-text.text-transparent { -webkit-text-fill-color: #1c1917 !important; color: #1c1917 !important; background-image: none !important; }
+
+/* "Traffic light" macOS-style dots in the spec preview cards (red /
+   yellow / green) become tiny neutral dots in the new theme. */
+pre + * .bg-red-500\/70,
+.bg-red-500\/70 { background-color: #f87171 !important; }
+.bg-yellow-500\/70 { background-color: #fbbf24 !important; }
+.bg-green-500\/70 { background-color: #4ade80 !important; }
+
+/* The old hover:bg-ink-700 etc. on dark buttons should map to a soft
+   warm grey on hover, not transparent dark. */
+.hover\:bg-ink-700:hover { background-color: #e7e5e4 !important; }
+.hover\:bg-ink-800:hover { background-color: #fafaf9 !important; }
+.hover\:text-white:hover { color: #1c1917 !important; }
+
+/* Pygments-rendered YAML in dark code panels needs paper bg, not dark. */
+.bg-ink-900 { background-color: #fafaf9 !important; }
+.bg-ink-800 { background-color: #fafaf9 !important; }

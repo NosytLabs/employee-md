@@ -25,9 +25,9 @@
   <span class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-brand-light bg-brand/10 border border-brand/30 rounded-full px-3 py-1 mb-5">
     Why employee.md
   </span>
-  <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
+  <h1 class="font-serif text-4xl sm:text-5xl font-bold tracking-tight text-ink-100 leading-[1.1]">
     AI agents need an employment contract,<br/>
-    <span class="bg-gradient-to-r from-brand-light to-brand bg-clip-text text-transparent">not just a system prompt.</span>
+    <span class="text-ink-500">not just a system prompt.</span>
   </h1>
 
   {# Direct-answer block — GEO best practice (40-60 words) #}
@@ -270,11 +270,11 @@
   </ol>
 
   <div class="mt-12 not-prose flex flex-wrap gap-3">
-    <a href="{{ url_for('integrations') }}" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-semibold px-6 py-3 rounded-lg transition">
+    <a href="{{ url_for('integrations') }}" class="inline-flex items-center gap-2 bg-ink-100 hover:bg-black text-white font-medium px-5 py-2.5 rounded-lg transition">
       See verified integrations →
     </a>
-    <a href="{{ url_for('validate_page') }}" class="inline-flex items-center gap-2 bg-ink-800 hover:bg-ink-700 text-white font-medium px-6 py-3 rounded-lg transition border border-ink-700">
-      Try the validator
+    <a href="{{ url_for('docs') }}" class="inline-flex items-center gap-2 bg-white hover:bg-ink-800 text-ink-100 font-medium px-5 py-2.5 rounded-lg transition border border-ink-700">
+      Read the quickstart
     </a>
   </div>
 </section>
