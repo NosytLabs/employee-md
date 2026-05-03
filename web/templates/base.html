@@ -111,5 +111,22 @@
         </div>
       </div>
     </footer>
+
+    {# Shared copy-to-clipboard handler for any [data-copy] button next to a <pre>.
+       Pages with custom copy targets (example_detail, spec) wire their own scripts. #}
+    <script>
+      document.querySelectorAll('[data-copy]').forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+          var pre = btn.parentElement.querySelector('pre code') || btn.parentElement.querySelector('pre');
+          if (!pre) return;
+          try {
+            await navigator.clipboard.writeText(pre.textContent);
+            var orig = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(function () { btn.textContent = orig; }, 1500);
+          } catch (e) { /* noop */ }
+        });
+      });
+    </script>
   </body>
 </html>

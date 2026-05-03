@@ -222,11 +222,12 @@ Run the site locally:
 
 ```bash
 python -m web.app             # dev server on 0.0.0.0:5000
-gunicorn --bind=0.0.0.0:5000 --workers=2 web.app:app   # production
 ```
 
-Dependencies added on top of the core spec: `flask`, `pygments`,
-`markdown`, `gunicorn` (production WSGI).
+Production is **GitHub Pages** — `make build-static` writes `dist/`
+which `.github/workflows/static.yml` deploys on every push to `main`.
+No WSGI server, no app host. Dependencies added on top of the core
+spec for the dev server / static build: `flask`, `pygments`, `markdown`.
 
 Web tests live in `tests/unit/test_web.py` (Flask test-client coverage
 for every page, the experimental-section badges on `/spec`, and the

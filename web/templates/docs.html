@@ -168,21 +168,4 @@ jobs:
     </li>
   </ol>
 </div>
-
-<script>
-  document.querySelectorAll('[data-copy]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const pre = btn.parentElement.querySelector('pre code') || btn.parentElement.querySelector('pre');
-      if (!pre) return;
-      try {
-        await navigator.clipboard.writeText(pre.textContent);
-        const orig = btn.textContent;
-        btn.textContent = 'Copied!';
-        setTimeout(() => { btn.textContent = orig; }, 1500);
-      } catch (e) {
-        console.error('Clipboard write failed', e);
-      }
-    });
-  });
-</script>
 {% endblock %}

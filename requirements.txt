@@ -3,4 +3,3 @@ jsonschema>=4.0.0
 flask
 markdown
 pygments
-gunicorn
