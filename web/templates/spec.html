@@ -81,11 +81,11 @@
                     {% if field.experimental %}<span class="ml-1 text-amber-400 text-xs" title="Experimental — see INTEGRATION.md">⚑</span>{% endif %}
                   </td>
                   <td class="px-4 py-2 font-mono text-ink-300 whitespace-nowrap">{{ field.type or '—' }}</td>
-                  <td class="px-4 py-2">
+                  <td class="px-4 py-2 text-center">
                     {% if field.required %}
-                      <span class="text-rose-300 text-xs font-mono">yes</span>
+                      <span class="text-rose-600 text-base font-mono" title="required" aria-label="required">●</span>
                     {% else %}
-                      <span class="text-ink-500 text-xs font-mono">no</span>
+                      <span class="text-ink-500 text-base font-mono" title="optional" aria-label="optional">○</span>
                     {% endif %}
                   </td>
                   <td class="px-4 py-2 text-ink-300">

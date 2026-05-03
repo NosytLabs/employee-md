@@ -68,21 +68,31 @@ body {
   overflow: hidden;
 }
 
-/* Compact YAML preview shown inside each /examples gallery card. */
+/* Compact YAML preview shown inside each /examples gallery card.
+   Hide horizontal overflow cleanly (no mid-glyph clipping) and fade
+   the bottom so tall snippets don't look chopped. */
+.codehilite-preview { position: relative; }
 .codehilite-preview .codehilite {
   padding: 0.75rem 1rem;
-  font-size: 0.7rem;
-  line-height: 1.45;
+  font-size: 0.72rem;
+  line-height: 1.5;
   max-height: 11rem;
   overflow: hidden;
-  position: relative;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
 }
-.codehilite-preview .codehilite::after {
+.codehilite-preview .codehilite pre {
+  white-space: pre-wrap;       /* wrap long lines instead of horizontal clip */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.codehilite-preview::after {
   content: "";
   position: absolute;
   inset: auto 0 0 0;
-  height: 2.5rem;
-  background: linear-gradient(to bottom, rgba(250, 250, 249, 0), rgba(250, 250, 249, 0.95));
+  height: 3rem;
+  background: linear-gradient(to bottom, rgba(250, 250, 249, 0), rgba(250, 250, 249, 1));
   pointer-events: none;
 }
 

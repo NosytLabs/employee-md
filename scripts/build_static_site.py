@@ -49,22 +49,44 @@ def output_path(route: str) -> Path:
 
 _URL_ATTR_RE = re.compile(r'(?P<attr>\b(?:href|src|action))="(?P<url>/[^"]*)"')
 
+# Subpages snapshot to `<page>/index.html` and GH Pages serves them under
+# `/<page>/` — internal links must include the trailing slash or every click
+# triggers a 301 redirect (bad for SEO + extra latency).
+_NEEDS_TRAILING_SLASH_RE = re.compile(r'^/[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*$')
+
+
+def _ensure_trailing_slash(path: str) -> str:
+    """Add a trailing slash to subpage hrefs (no extension, no fragment)."""
+    if path == "/" or path.endswith("/"):
+        return path
+    last = path.rsplit("/", 1)[-1]
+    if "." in last:  # static file like /static/style.css
+        return path
+    return path + "/"
+
 
 def rewrite_urls(html: str) -> str:
     # Always strip the test-client's localhost origin so canonical/og URLs
     # don't leak into the snapshot.
     html = html.replace("http://localhost", f"{CANONICAL_ORIGIN}{BASE_PATH}")
-    if not BASE_PATH:
-        return html
+
     def sub(m: re.Match[str]) -> str:
         url = m.group("url")
-        # Skip protocol-relative ("//cdn...") and absolute-ish leftovers.
+        attr = m.group("attr")
+        # Skip protocol-relative ("//cdn...").
         if url.startswith("//"):
             return m.group(0)
-        # Don't double-prefix.
-        if url.startswith(BASE_PATH + "/") or url == BASE_PATH:
-            return m.group(0)
-        return f'{m.group("attr")}="{BASE_PATH}{url}"'
+        # Split fragment + query so we don't slash before them.
+        m2 = re.match(r"^([^?#]*)([?#].*)?$", url)
+        path = m2.group(1) if m2 else url
+        tail = m2.group(2) or "" if m2 else ""
+        # Add trailing slash to subpage paths to match GH Pages directory serving.
+        path = _ensure_trailing_slash(path)
+        # Apply BASE_PATH prefix unless already prefixed.
+        if BASE_PATH and not (path.startswith(BASE_PATH + "/") or path == BASE_PATH):
+            path = f"{BASE_PATH}{path}"
+        return f'{attr}="{path}{tail}"'
+
     return _URL_ATTR_RE.sub(sub, html)
 
 

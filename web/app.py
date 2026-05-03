@@ -388,8 +388,12 @@ def sitemap_xml():  # type: ignore[no-untyped-def]
     parts = ['<?xml version="1.0" encoding="UTF-8"?>',
              '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for path, prio in pages:
+        # Trailing slash on subpages so the URL matches what GitHub Pages
+        # actually serves (`dist/<page>/index.html`) — avoids 301 redirects
+        # that would split link equity across two URLs.
+        loc = path if path == "/" else (path if path.endswith("/") else path + "/")
         parts.append(
-            f"<url><loc>{base}{path}</loc><priority>{prio}</priority></url>"
+            f"<url><loc>{base}{loc}</loc><priority>{prio}</priority></url>"
         )
     parts.append("</urlset>")
     body = "\n".join(parts) + "\n"

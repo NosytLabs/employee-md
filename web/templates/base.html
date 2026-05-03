@@ -6,13 +6,15 @@
     <title>{% block title %}employee.md — the open standard for AI agent employment contracts{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}employee.md is an open, schema-validated YAML contract for AI agents: identity, role, scope, permissions, guardrails, budget, lifecycle, and compliance — enforceable at runtime.{% endblock %}" />
     <meta name="theme-color" content="#ffffff" />
-    <link rel="canonical" href="{{ canonical_url or (request.url_root.rstrip('/') + request.path) }}" />
+    {# Trailing-slash on subpages to match GH Pages directory-index serving and avoid 301 redirects. #}
+    {% set _canon = canonical_url or (request.url_root.rstrip('/') + request.path + ('/' if request.path != '/' and not request.path.endswith('/') else '')) %}
+    <link rel="canonical" href="{{ _canon }}" />
 
     {# OpenGraph / Twitter cards #}
     <meta property="og:title" content="{% block og_title %}employee.md — the open standard for AI agent employment contracts{% endblock %}" />
     <meta property="og:description" content="{% block og_description %}A single YAML file that defines an AI agent's job: role, scope, permissions, guardrails, budget, lifecycle, and compliance — schema-validated and enforceable at runtime.{% endblock %}" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="{{ canonical_url or (request.url_root.rstrip('/') + request.path) }}" />
+    <meta property="og:url" content="{{ _canon }}" />
     <meta property="og:site_name" content="employee.md" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{ self.og_title() }}" />
