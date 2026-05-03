@@ -29,7 +29,7 @@ class PerformanceRegressionTests:
         test_file = self.examples_dir / "minimal.md"
 
         start_time = time.perf_counter()
-        result = self.orchestrator.validate_file(str(test_file))
+        self.orchestrator.validate_file(str(test_file))
         end_time = time.perf_counter()
 
         duration_ms = (end_time - start_time) * 1000
@@ -49,7 +49,7 @@ class PerformanceRegressionTests:
         ]
 
         start_time = time.perf_counter()
-        results = self.orchestrator.validate_batch([str(f) for f in test_files])
+        self.orchestrator.validate_batch([str(f) for f in test_files])
         end_time = time.perf_counter()
 
         duration_ms = (end_time - start_time) * 1000

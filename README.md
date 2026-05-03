@@ -256,12 +256,7 @@ See [`INTEGRATION.md`](INTEGRATION.md) for full CrewAI / LangGraph / AutoGen / M
 
 ## Website & hosting
 
-The repo ships with a Flask docs site (`web/`) — spec reference, examples gallery, integration guide, runtime SDK docs, and an interactive validator. Two free hosting paths:
-
-| Path | What you get | Build |
-|---|---|---|
-| **GitHub Pages** | Static docs site at `nosytlabs.github.io/employee-md/`. No live validator (Pages can't run Python) — `/validate` shows install instructions instead. | `.github/workflows/static.yml` runs `scripts/build_static_site.py` on every push to `main`. |
-| **Replit Autoscale** | Full Flask app including `POST /api/validate`. | `.replit` `[deployment]` block (gunicorn). |
+The repo ships with a Flask docs site (`web/`) — spec reference, examples gallery, integration guide, and runtime SDK docs. The site is fully static: `scripts/build_static_site.py` snapshots every route into `dist/`, which `.github/workflows/static.yml` deploys to **GitHub Pages** (`nosytlabs.github.io/employee-md/`) on every push to `main`. Validation is CLI-only — there is no live web validator.
 
 ### Enabling GitHub Pages (one-time)
 

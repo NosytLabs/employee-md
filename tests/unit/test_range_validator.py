@@ -1,6 +1,5 @@
 """Tests for RangeValidator."""
 
-import pytest
 from tooling.validators import RangeValidator
 
 

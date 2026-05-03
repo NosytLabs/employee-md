@@ -4,12 +4,11 @@ import sys
 import time
 from pathlib import Path
 from typing import List, Dict, Callable
-from concurrent.futures import ThreadPoolExecutor
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from tooling.employee_validator import EmployeeValidationOrchestrator
-from tooling.monitoring import MetricsCollector, get_metrics, reset_metrics
+from tooling.monitoring import get_metrics, reset_metrics
 
 
 class BenchmarkRunner:
@@ -36,8 +35,6 @@ class BenchmarkRunner:
         Returns:
             Dictionary with timing results
         """
-        warmup_times = []
-
         for _ in range(warmup_iterations):
             func()
 

@@ -47,7 +47,6 @@ def test_pages_return_200(client, path):
 def test_spec_page_lists_every_schema_section(client):
     """The /spec page must surface every top-level section defined in
     tooling/schema.json so the docs stay in sync with the contract."""
-    import json
     from pathlib import Path
     schema = json.loads(
         Path("tooling/schema.json").read_text(encoding="utf-8")

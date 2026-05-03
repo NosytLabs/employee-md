@@ -1,6 +1,5 @@
 """Tests for FormatValidator."""
 
-import pytest
 from tooling.validators import FormatValidator
 
 

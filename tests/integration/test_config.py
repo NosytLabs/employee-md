@@ -3,7 +3,6 @@
 import os
 import tempfile
 import yaml
-from pathlib import Path
 
 from tooling.config import Config, load_config
 

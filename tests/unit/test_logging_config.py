@@ -1,9 +1,6 @@
 """Tests for logging configuration."""
 
-import pytest
 import logging
-import io
-from contextlib import redirect_stderr, redirect_stdout
 from tooling.logging_config import (
     get_logger,
     ValidatorLogger,

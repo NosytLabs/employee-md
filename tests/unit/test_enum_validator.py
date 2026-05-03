@@ -1,6 +1,5 @@
 """Tests for EnumValidator."""
 
-import pytest
 from tooling.validators import EnumValidator
 
 

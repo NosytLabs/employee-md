@@ -1,6 +1,5 @@
 """Tests for RequiredFieldValidator."""
 
-import pytest
 from tooling.validators import RequiredFieldValidator
 
 

@@ -1,6 +1,5 @@
 """Tests for ValidationCache."""
 
-import pytest
 import time
 from tooling.cache import ValidationCache, CacheEntry, reset_cache
 

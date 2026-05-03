@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-import json
 import os
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import markdown as md
 import yaml
@@ -16,8 +15,9 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import YamlLexer
 
 from tooling.constants import VERSION
-
 from runtime import Employee
+
+from .spec_doc import build_spec_sections, load_schema
 
 # Allow operators to override the GitHub URL when the canonical repo
 # moves or while it is still unpublished. Default kept for back-compat.
@@ -25,6 +25,7 @@ GITHUB_URL = os.environ.get(
     "EMPLOYEE_MD_GITHUB_URL",
     "https://github.com/NosytLabs/employee-md",
 ).rstrip("/")
+
 
 # Derive the raw-content URL from GITHUB_URL when possible so the schema
 # link and the GitHub link don't drift apart.
@@ -39,8 +40,6 @@ SCHEMA_URL = os.environ.get(
     "EMPLOYEE_MD_SCHEMA_URL",
     _derive_raw_url(GITHUB_URL),
 )
-
-from .spec_doc import build_spec_sections, load_schema
 
 ROOT = Path(__file__).resolve().parent.parent
 EXAMPLES_DIR = ROOT / "examples"
@@ -89,13 +88,13 @@ def _load_examples() -> List[Dict[str, Any]]:
             continue
         if not isinstance(data, dict):
             continue
-        role = data.get("role") if isinstance(data.get("role"), dict) else {}
-        identity = (
-            data.get("identity") if isinstance(data.get("identity"), dict) else {}
-        )
-        mission = (
-            data.get("mission") if isinstance(data.get("mission"), dict) else {}
-        )
+        def _section(name: str) -> Dict[str, Any]:
+            v = data.get(name)
+            return v if isinstance(v, dict) else {}
+
+        role = _section("role")
+        identity = _section("identity")
+        mission = _section("mission")
         title = (
             role.get("title")
             or identity.get("display_name")

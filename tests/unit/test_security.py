@@ -1,7 +1,5 @@
 
 import os
-import pytest
-from pathlib import Path
 from tooling.parser import SecureYAMLParser
 
 class TestSecurity:

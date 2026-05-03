@@ -56,3 +56,25 @@ employee-runtime = "runtime.cli:main"
 where = ["."]
 include = ["tooling*", "runtime*", "web*"]
 exclude = ["tests*", "attached_assets*", "examples*", "docs*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+
+[tool.ruff.lint]
+# Select sensible defaults: pycodestyle errors + pyflakes.
+select = ["E", "F", "W"]
+# E501 (line length) is enforced via black/format, not lint.
+ignore = ["E501"]
+
+[[tool.mypy.overrides]]
+module = ["markdown", "markdown.*"]
+ignore_missing_imports = true
+
+[tool.ruff.lint.per-file-ignores]
+# Config tests intentionally assert literal `== True` / `== False` to
+# verify boolean *values*, not just truthiness — suppress E712 there.
+"tests/integration/test_config.py" = ["E711", "E712"]
+# Performance regression scripts may keep `results = ...` calls for
+# clarity even when the value isn't asserted on.
+"tests/performance/*" = ["F841"]

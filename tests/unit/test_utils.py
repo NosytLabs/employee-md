@@ -1,6 +1,5 @@
 """Tests for utility functions."""
 
-import pytest
 import os
 import sys
 from unittest.mock import patch

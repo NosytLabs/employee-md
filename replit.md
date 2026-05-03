@@ -200,20 +200,16 @@ Stack:
   Tailwind utility classes (otherwise new classes will be missing from
   the compiled stylesheet). The input file is `web/static/tailwind.src.css`.
 - Pygments for server-side YAML syntax highlighting on `/examples/<slug>`.
-- The existing `EmployeeValidationOrchestrator` powers `/api/validate` so
-  the website always returns the same answers as the CLI.
 
 Routes:
 
 | Route | What it does |
 |---|---|
 | `/` | Landing page, value props, peer-standards comparison strip. |
-| `/why` | **NEW**: research-grounded explanation of why employee.md exists vs AGENTS.md / worker.md / SKILL.md, with verified failure-mode evidence, peer-reviewed citations (arXiv:2509.22735, arXiv:2601.11369), FAQ JSON-LD. |
+| `/why` | Research-grounded explanation of why employee.md exists vs AGENTS.md / worker.md / SKILL.md, with verified failure-mode evidence, peer-reviewed citations (arXiv:2509.22735, arXiv:2601.11369), FAQ JSON-LD. |
 | `/spec` | Reference page generated from `tooling/schema.json` at request time. |
 | `/examples` | Gallery of every `examples/*.md`, plus the markdown integration guide. |
-| `/examples/<slug>` | Single example with syntax-highlighted YAML + "Open in validator". |
-| `/validate` | Paste-and-validate UI; POSTs to `/api/validate`. When the YAML is valid, also displays the LLM-ready system prompt compiled by `runtime/`. |
-| `/api/validate` | JSON validator endpoint. Returns `{valid, errors, warnings, system_prompt}`. Caps input at 200 KB and never 500s on bad YAML. |
+| `/examples/<slug>` | Single example with syntax-highlighted YAML + Copy YAML button. |
 | `/runtime` | Showcases the `runtime/` SDK with live system-prompt demo from `examples/senior-dev.md`. |
 | `/integrations` | **NEW**: verified recipes for SKILL.md export, CrewAI, LangGraph, AutoGen, MCP, plain Python. Explicit honesty note about removed unverified projects. |
 | `/integration` | **NEW**: full `INTEGRATION.md` (~790 lines) rendered in-app with Pygments syntax highlighting (`codehilite`), sidebar TOC (`toc` extension), heading permalinks, and mobile-safe overflow handling. Replaces the old GitHub bounce-out from `/docs` and the nav. |
@@ -233,8 +229,8 @@ Dependencies added on top of the core spec: `flask`, `pygments`,
 `markdown`, `gunicorn` (production WSGI).
 
 Web tests live in `tests/unit/test_web.py` (Flask test-client coverage
-for static pages, `/api/validate` happy/sad/oversized/non-string/XSS, and
-the experimental-section badges on `/spec`).
+for every page, the experimental-section badges on `/spec`, and the
+nav/sitemap/robots invariants).
 
 Configurable URLs (handy until the GitHub repo and PyPI package are
 published — both currently 404):
@@ -255,16 +251,13 @@ adding a new official example.
 
 ## Deployment
 
-### Two free hosting paths
-
-| Surface | Where | What it serves | Build |
-|---|---|---|---|
-| **Static docs** | GitHub Pages (free) | All marketing/docs/spec/examples/integration pages — everything except the live validator | `.github/workflows/pages.yml` runs on every push to `main`, calls `scripts/build_static_site.py` to snapshot the Flask site to `dist/`, then deploys to the `gh-pages` environment. |
-| **Live validator** | Replit Autoscale (free at low traffic) | The full Flask app including `POST /api/validate` | `.replit` `[deployment]` block, gunicorn one-worker. |
-
-The `/validate` page on the static GitHub Pages snapshot is replaced with
-install-the-CLI instructions plus a deep link to the live validator on the
-Replit deploy. Every other page is fully functional on Pages.
+The site ships as a fully static snapshot to **GitHub Pages**:
+`.github/workflows/static.yml` runs on every push to `main`, calls
+`scripts/build_static_site.py` to snapshot the Flask site to `dist/`,
+then deploys to the `gh-pages` environment at
+`nosytlabs.github.io/employee-md/`. Validation is CLI-only
+(`employee-validate examples/minimal.md`); there is no server-side
+endpoint to host.
 
 To enable GitHub Pages once after the workflow lands:
 **Settings → Pages → Build and deployment → Source: GitHub Actions**.
@@ -272,21 +265,3 @@ The workflow rewrites root-relative URLs to the `/employee-md/`
 subdirectory; if you point a custom domain at the repo, set the workflow
 env var `BASE_PATH=` (empty string) and `CANONICAL_ORIGIN=https://your.domain`.
 
-### Replit Autoscale
-
-`.replit` is configured for **Replit Autoscale**:
-
-```text
-deploymentTarget = "autoscale"
-run = ["gunicorn", "--bind=0.0.0.0:5000",
-       "--workers=1", "--timeout=60", "web.app:app"]
-```
-
-The deployment intentionally runs a **single** gunicorn worker so the whole
-site stays a single Python process (the project goal calls for this; the
-EXAMPLES list is also loaded once at import time and only one worker reads
-it).
-
-Publishing is initiated by the user from the Replit Publishing tool. The
-deployed app is served at the project's `*.replit.app` subdomain (or any
-configured custom domain).

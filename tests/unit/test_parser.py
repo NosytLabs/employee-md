@@ -3,8 +3,6 @@
 import os
 import pytest
 from pathlib import Path
-import tempfile
-import yaml
 
 from tooling.parser import SecureYAMLParser, YAMLErrorContext
 

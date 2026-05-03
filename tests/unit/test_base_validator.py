@@ -1,6 +1,5 @@
 """Tests for BaseValidator and related classes."""
 
-import pytest
 from tooling.validators.base import (
     BaseValidator,
     ValidationError,

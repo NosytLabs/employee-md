@@ -1,6 +1,5 @@
 """Tests for TypeValidator."""
 
-import pytest
 from tooling.validators import TypeValidator
 
 
