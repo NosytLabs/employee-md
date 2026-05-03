@@ -92,7 +92,7 @@ employee-validate employee.md --format json     # JSON output
 employee-validate examples/*.md --parallel      # batch
 ```
 
-That's it. The `examples/` directory has 9 ready-to-copy specs spanning AI assistant, senior dev, security auditor, data analyst, freelancer, product manager, DevOps, trading bot, and more.
+That's it. The `examples/` directory has 10 ready-to-copy specs spanning AI assistant, senior dev, security auditor, data analyst, freelancer, product manager, DevOps, trading bot, and more.
 
 ---
 
@@ -136,8 +136,9 @@ The full machine-readable definition lives in [`tooling/schema.json`](tooling/sc
 | [`examples/data-analyst.md`](examples/data-analyst.md) | Analytics specialist | senior |
 | [`examples/devops-engineer.md`](examples/devops-engineer.md) | Infrastructure | senior |
 | [`examples/product-manager.md`](examples/product-manager.md) | Product strategy | senior |
-| [`examples/technical-writer.md`](examples/technical-writer.md) | Documentation | senior |
+| [`examples/freelancer.md`](examples/freelancer.md) | Independent contractor | — |
 | [`examples/trading-bot.md`](examples/trading-bot.md) | Autonomous trading | — |
+| [`examples/zhc-worker.md`](examples/zhc-worker.md) | JouleWork / always-on agent | — |
 | [`examples/molt-bot-integration.md`](examples/molt-bot-integration.md) | Integration guide | — |
 
 CI exercises every file under `examples/` against the JSON Schema on every push.
