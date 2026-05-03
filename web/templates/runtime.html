@@ -4,10 +4,10 @@
 {% block content %}
 <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-16">
   <div class="text-xs font-mono text-ink-500 mb-2">RUNTIME</div>
-  <h1 class="text-3xl sm:text-4xl font-bold text-white">From contract to running agent</h1>
+  <h1 class="text-3xl sm:text-4xl font-bold text-ink-100">From contract to running agent</h1>
   <p class="mt-3 text-ink-300 max-w-3xl">
     The schema is only useful if your agent actually obeys it.
-    The <span class="font-mono text-white">runtime</span> package is a tiny Python SDK
+    The <span class="font-mono text-ink-100">runtime</span> package is a tiny Python SDK
     that turns a validated <span class="font-mono">employee.md</span> into a
     ready-to-use system prompt, a guardrail checker, a scope checker, and a budget tracker —
     so you don't have to write the same wrapper in every project.
@@ -15,16 +15,16 @@
 
   <div class="mt-10 grid lg:grid-cols-3 gap-6">
     <div class="bg-ink-800/50 border border-ink-700 rounded-xl p-5">
-      <div class="text-brand-light font-mono text-xs uppercase tracking-wider">system_prompt()</div>
-      <h3 class="text-white font-semibold mt-2">LLM-ready prompt</h3>
+      <div class="text-brand font-mono text-xs uppercase tracking-wider">system_prompt()</div>
+      <h3 class="text-ink-100 font-semibold mt-2">LLM-ready prompt</h3>
       <p class="mt-2 text-sm text-ink-300">
         Compose your contract into a system prompt that already includes mission, scope,
         guardrails, and budget. Drop straight into OpenAI / Anthropic / LangChain.
       </p>
     </div>
     <div class="bg-ink-800/50 border border-ink-700 rounded-xl p-5">
-      <div class="text-brand-light font-mono text-xs uppercase tracking-wider">is_action_allowed()</div>
-      <h3 class="text-white font-semibold mt-2">Guardrail check</h3>
+      <div class="text-brand font-mono text-xs uppercase tracking-wider">is_action_allowed()</div>
+      <h3 class="text-ink-100 font-semibold mt-2">Guardrail check</h3>
       <p class="mt-2 text-sm text-ink-300">
         Cheap pre-flight check against <span class="font-mono">guardrails.prohibited_actions</span>.
         Returns <span class="font-mono">False</span> when an action matches a hard guardrail
@@ -32,8 +32,8 @@
       </p>
     </div>
     <div class="bg-ink-800/50 border border-ink-700 rounded-xl p-5">
-      <div class="text-brand-light font-mono text-xs uppercase tracking-wider">budget.try_spend()</div>
-      <h3 class="text-white font-semibold mt-2">Spend tracker</h3>
+      <div class="text-brand font-mono text-xs uppercase tracking-wider">budget.try_spend()</div>
+      <h3 class="text-ink-100 font-semibold mt-2">Spend tracker</h3>
       <p class="mt-2 text-sm text-ink-300">
         Thread-safe budget bound to <span class="font-mono">economy.budget_limit</span>.
         Raises <span class="font-mono">BudgetExceeded</span> when a spend would push past
@@ -42,11 +42,11 @@
     </div>
   </div>
 
-  <h2 class="mt-14 text-2xl font-bold text-white">Six lines to wire it up</h2>
+  <h2 class="mt-14 text-2xl font-bold text-ink-100">Six lines to wire it up</h2>
   <p class="mt-2 text-ink-300">
     Ships in the same package as the validator — no extra dependencies.
     Until <span class="font-mono">employee-md</span> lands on PyPI, install from source via
-    <a href="{{ url_for('docs') }}#step-01" class="text-brand-light hover:text-white transition">step 01 of the quickstart</a>.
+    <a href="{{ url_for('docs') }}#step-01" class="text-brand hover:text-ink-100 transition">step 01 of the quickstart</a>.
   </p>
   <div class="codeblock mt-4">
     <button class="copy-btn" data-copy>Copy</button>
@@ -62,10 +62,10 @@ if emp.is_action_allowed("delete production database"):
   </div>
 
   {% if sample_prompt %}
-  <h2 class="mt-14 text-2xl font-bold text-white">What the SDK compiles your contract into</h2>
+  <h2 class="mt-14 text-2xl font-bold text-ink-100">What the SDK compiles your contract into</h2>
   <p class="mt-2 text-ink-300">
     Live example: this is the system prompt the runtime produces from
-    <a href="{{ url_for('example_detail', slug='senior-dev') }}" class="text-brand-light hover:text-white transition font-mono">examples/senior-dev.md</a>.
+    <a href="{{ url_for('example_detail', slug='senior-dev') }}" class="text-brand hover:text-ink-100 transition font-mono">examples/senior-dev.md</a>.
     Copy and paste straight into your LLM call.
   </p>
   <div class="codeblock mt-4">
@@ -74,7 +74,7 @@ if emp.is_action_allowed("delete production database"):
   </div>
   {% endif %}
 
-  <h2 class="mt-14 text-2xl font-bold text-white">Use it with LangChain in three lines</h2>
+  <h2 class="mt-14 text-2xl font-bold text-ink-100">Use it with LangChain in three lines</h2>
   <div class="codeblock mt-4">
     <button class="copy-btn" data-copy>Copy</button>
 <pre><code>from langchain_openai import ChatOpenAI

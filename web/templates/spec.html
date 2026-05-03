@@ -4,13 +4,13 @@
 {% block content %}
 <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-6">
   <div class="text-xs font-mono text-ink-500 mb-2">REFERENCE</div>
-  <h1 class="text-3xl sm:text-4xl font-bold text-white">{{ spec_title }}</h1>
+  <h1 class="text-3xl sm:text-4xl font-bold text-ink-100">{{ spec_title }}</h1>
   <p class="mt-3 text-ink-300 max-w-3xl">
     Generated directly from
-    <a href="{{ schema_url }}" rel="noopener" class="text-brand-light hover:text-white font-mono">tooling/schema.json</a>
+    <a href="{{ schema_url }}" rel="noopener" class="text-brand hover:text-ink-100 font-mono">tooling/schema.json</a>
     so this page can never drift from the schema. Required top-level sections are marked
     <span class="inline-flex text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">required</span>.
-    Spec version: <span class="font-mono text-white">{{ spec_version }}</span>.
+    Spec version: <span class="font-mono text-ink-100">{{ spec_version }}</span>.
   </p>
 </div>
 
@@ -20,7 +20,7 @@
     <ul class="space-y-1 text-sm">
       {% for section in sections %}
         <li>
-          <a href="#{{ section.anchor }}" class="block px-2 py-1 rounded text-ink-300 hover:text-white hover:bg-ink-800 transition font-mono">
+          <a href="#{{ section.anchor }}" class="block px-2 py-1 rounded text-ink-300 hover:text-ink-100 hover:bg-ink-800 transition font-mono">
             {{ section.name }}{% if section.required %} <span class="text-rose-400" title="required">*</span>{% endif %}{% if section.experimental %} <span class="text-amber-400" title="experimental">⚑</span>{% endif %}
           </a>
         </li>
@@ -36,8 +36,8 @@
     {% for section in sections %}
       <section id="{{ section.anchor }}" class="scroll-mt-24">
         <div class="flex items-baseline gap-3 flex-wrap">
-          <h2 class="text-xl sm:text-2xl font-bold text-white font-mono">{{ section.name }}</h2>
-          <a href="#{{ section.anchor }}" class="text-ink-500 hover:text-brand-light text-sm" aria-label="Anchor link to {{ section.name }}">#</a>
+          <h2 class="text-xl sm:text-2xl font-bold text-ink-100 font-mono">{{ section.name }}</h2>
+          <a href="#{{ section.anchor }}" class="text-ink-500 hover:text-brand text-sm" aria-label="Anchor link to {{ section.name }}">#</a>
           {% if section.required %}
             <span class="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">required</span>
           {% else %}
@@ -71,11 +71,11 @@
               </thead>
               <tbody class="divide-y divide-ink-700">
                 {% for field in section.fields %}
-                <tr class="align-top {% if field.depth > 0 %}bg-ink-900/40{% endif %}">
+                <tr class="align-top {% if field.depth > 0 %}bg-ink-800/40{% endif %}">
                   <td class="px-4 py-2 font-mono text-ink-100 whitespace-nowrap">
                     {% if field.depth > 0 %}<span class="text-ink-500" style="padding-left: {{ field.depth * 1.25 }}rem">↳ </span>{% endif %}
                     <button type="button"
-                            class="hover:text-brand-light transition spec-field-copy"
+                            class="hover:text-brand transition spec-field-copy"
                             data-copy-path="{{ field.path }}"
                             title="Copy field path: {{ field.path }}">{{ field.name }}</button>
                     {% if field.experimental %}<span class="ml-1 text-amber-400 text-xs" title="Experimental — see INTEGRATION.md">⚑</span>{% endif %}

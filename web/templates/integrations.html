@@ -6,10 +6,10 @@
 
 {% block content %}
 <section class="max-w-5xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-8">
-  <span class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-brand-light bg-brand/10 border border-brand/30 rounded-full px-3 py-1 mb-5">
+  <span class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-brand bg-brand/10 border border-brand/30 rounded-full px-3 py-1 mb-5">
     Integrations
   </span>
-  <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
+  <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-ink-100 leading-tight">
     Real adapters for real frameworks.
   </h1>
   <p class="mt-6 text-lg text-ink-300 max-w-3xl leading-relaxed">
@@ -33,8 +33,8 @@
     ] %}
     {% for title, sub, anchor, badge in tiles %}
     <a href="{{ anchor }}" class="bg-ink-800/50 border border-ink-700 rounded-lg p-4 hover:border-brand/60 transition group">
-      <div class="text-xs uppercase tracking-wide text-brand-light font-mono">{{ badge }}</div>
-      <div class="mt-2 font-semibold text-white group-hover:text-brand-light transition">{{ title }}</div>
+      <div class="text-xs uppercase tracking-wide text-brand font-mono">{{ badge }}</div>
+      <div class="mt-2 font-semibold text-ink-100 group-hover:text-brand transition">{{ title }}</div>
       <div class="text-sm text-ink-300">{{ sub }}</div>
     </a>
     {% endfor %}
@@ -42,7 +42,7 @@
 </section>
 
 <section id="skill-md" class="max-w-5xl mx-auto px-4 sm:px-6 py-8 prose prose-invert prose-lg max-w-none">
-  <h2 class="text-white">SKILL.md export — Anthropic Claude Skills</h2>
+  <h2 class="text-ink-100">SKILL.md export — Anthropic Claude Skills</h2>
   <p class="text-ink-300">
     Anthropic Claude Skills package a capability as a folder with a <code>SKILL.md</code> at the root. The frontmatter
     requires <code>name</code> (≤64 chars, kebab-case) and <code>description</code> (≤1024 chars), with optional
@@ -67,11 +67,11 @@ skill_dir.mkdir(parents=True, exist_ok=True)
 (skill_dir / "SKILL.md").write_text(skill_md)
 </code></pre>
   <p class="text-sm text-ink-500">
-    Source: <a href="{{ github_url }}/blob/main/runtime/skill_export.py" class="text-brand-light">runtime/skill_export.py</a> ·
-    Tests: <a href="{{ github_url }}/blob/main/tests/unit/test_skill_export.py" class="text-brand-light">tests/unit/test_skill_export.py</a>
+    Source: <a href="{{ github_url }}/blob/main/runtime/skill_export.py" class="text-brand">runtime/skill_export.py</a> ·
+    Tests: <a href="{{ github_url }}/blob/main/tests/unit/test_skill_export.py" class="text-brand">tests/unit/test_skill_export.py</a>
   </p>
 
-  <h2 id="crewai" class="text-white mt-12">CrewAI — agents.yaml</h2>
+  <h2 id="crewai" class="text-ink-100 mt-12">CrewAI — agents.yaml</h2>
   <p class="text-ink-300">
     CrewAI agents are defined in <code>src/&lt;project&gt;/config/agents.yaml</code> with required fields
     <code>role</code>, <code>goal</code>, <code>backstory</code> and optional <code>llm</code>, <code>tools</code>,
@@ -103,10 +103,10 @@ with open("src/myproject/config/agents.yaml", "w") as f:
     <code>before_kickoff_callbacks</code> hook.
   </p>
   <p class="text-sm text-ink-500">
-    Reference: <a href="https://docs.crewai.com/concepts/agents" rel="noopener" class="text-brand-light">docs.crewai.com/concepts/agents</a>
+    Reference: <a href="https://docs.crewai.com/concepts/agents" rel="noopener" class="text-brand">docs.crewai.com/concepts/agents</a>
   </p>
 
-  <h2 id="langgraph" class="text-white mt-12">LangGraph — state initialization + tool gating</h2>
+  <h2 id="langgraph" class="text-ink-100 mt-12">LangGraph — state initialization + tool gating</h2>
   <p class="text-ink-300">
     LangGraph nodes operate on a typed state object. Initialize the state from your contract and gate tool calls
     against the contract's permissions:
@@ -138,7 +138,7 @@ graph.add_node("system_prompt",
                lambda s: {**s, "messages": [{"role":"system","content": employee.system_prompt()}]})
 </code></pre>
 
-  <h2 id="autogen" class="text-white mt-12">AutoGen — AssistantAgent role config</h2>
+  <h2 id="autogen" class="text-ink-100 mt-12">AutoGen — AssistantAgent role config</h2>
   <p class="text-ink-300">
     Microsoft AutoGen's <code>AssistantAgent</code> takes <code>name</code>, <code>system_message</code>, and
     <code>llm_config</code>. Drive all three from the contract:
@@ -160,7 +160,7 @@ agent = AssistantAgent(
 )
 </code></pre>
 
-  <h2 id="mcp" class="text-white mt-12">Model Context Protocol — server prompt</h2>
+  <h2 id="mcp" class="text-ink-100 mt-12">Model Context Protocol — server prompt</h2>
   <p class="text-ink-300">
     Expose the rendered system prompt as an MCP <code>prompts</code> resource so any MCP-aware client can pick up
     the contract:
@@ -189,7 +189,7 @@ async def get_prompt(name, arguments):
     }
 </code></pre>
 
-  <h2 id="python" class="text-white mt-12">Plain Python — works everywhere</h2>
+  <h2 id="python" class="text-ink-100 mt-12">Plain Python — works everywhere</h2>
   <p class="text-ink-300">
     The runtime SDK has zero framework dependencies. The simplest possible loop:
   </p>
@@ -210,14 +210,14 @@ print(run_action("write_unit_test",      cost=10))  # {'ok': True}
 </code></pre>
   <p class="text-sm text-ink-500">
     The full end-to-end loop (load → render → enforce → loop) is exercised in
-    <a href="{{ github_url }}/blob/main/tests/integration/test_agent_loop.py" class="text-brand-light">tests/integration/test_agent_loop.py</a> —
+    <a href="{{ github_url }}/blob/main/tests/integration/test_agent_loop.py" class="text-brand">tests/integration/test_agent_loop.py</a> —
     that test <em>is</em> the proof that an agent will actually follow the contract.
   </p>
 </section>
 
 <section class="max-w-5xl mx-auto px-4 sm:px-6 py-12">
   <div class="bg-amber-950/20 border border-amber-900/30 rounded-lg p-6">
-    <h3 class="text-white font-semibold text-lg mb-2">A note on integrations we don't list</h3>
+    <h3 class="text-ink-100 font-semibold text-lg mb-2">A note on integrations we don't list</h3>
     <p class="text-ink-300 text-sm leading-relaxed">
       Earlier drafts of this doc named "OpenClaw" and "HermesAgent" as integration targets. When we tried to verify
       those projects against primary sources for v1.0.0, we couldn't find independently confirmable evidence they
@@ -225,7 +225,7 @@ print(run_action("write_unit_test",      cost=10))  # {'ok': True}
       implausible star counts) and the URLs didn't resolve to the canonical projects we'd hoped for. Rather than
       pretend, we removed them from this page. If either project ships a real, public spec we can verify, we'll add it.
       The forward-looking placeholder shapes still live in
-      <a href="{{ github_url }}/blob/main/INTEGRATION.md#experimental--planned-integrations" class="text-brand-light">INTEGRATION.md</a>
+      <a href="{{ github_url }}/blob/main/INTEGRATION.md#experimental--planned-integrations" class="text-brand">INTEGRATION.md</a>
       under "Experimental / Planned" with explicit caveats.
     </p>
   </div>
