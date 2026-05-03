@@ -37,8 +37,18 @@
     </button>
   </div>
 
-  <div class="mt-4 rounded-lg border border-ink-700 bg-ink-800/40 overflow-hidden">
-    <div class="px-4 py-2 border-b border-ink-700 bg-ink-800 text-xs font-mono text-ink-300">{{ item.name }}</div>
+  <div class="mt-4 rounded-lg border border-ink-700 bg-white overflow-hidden shadow-sm">
+    <div class="flex items-center justify-between px-4 py-2 border-b border-ink-700 bg-ink-800 text-xs font-mono text-ink-300">
+      <span class="flex items-center gap-2">
+        <span class="inline-flex gap-1">
+          <span class="w-2 h-2 rounded-full bg-rose-400/70"></span>
+          <span class="w-2 h-2 rounded-full bg-amber-400/70"></span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400/70"></span>
+        </span>
+        examples/{{ item.name }}
+      </span>
+      <span class="text-ink-500">YAML</span>
+    </div>
     <div class="p-0 text-sm overflow-x-auto">
       {{ highlighted | safe }}
     </div>

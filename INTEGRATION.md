@@ -3,6 +3,7 @@
 Integrate **employee.md** with your AI agent systems, including LangChain, AutoGen, CrewAI, and custom Python/TypeScript runtimes.
 
 `employee.md` is part of the open Agentic Web ecosystem, designed to work alongside:
+
 - **[AGENTS.md](https://agents.md)**: For repository-level context and codebase instructions
 - **[MCP](https://modelcontextprotocol.io/)**: For connecting tools and data sources
 - **[SOUL.md](https://github.com/NosytLabs/soul-md)**: For defining agent personality and values
