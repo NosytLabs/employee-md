@@ -45,8 +45,8 @@
 <section class="max-w-3xl mx-auto px-5 sm:px-8 pb-16">
   <div class="grid sm:grid-cols-3 gap-3">
     {% set stats = [
-      ('19', 'spec sections'),
-      ('303', 'tests passing'),
+      (section_count|string, 'spec sections'),
+      (test_count|string, 'tests passing'),
       (example_count|string, 'official examples'),
     ] %}
     {% for value, label in stats %}

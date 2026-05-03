@@ -218,10 +218,13 @@ def _disable_cache(resp):  # type: ignore[no-untyped-def]
 
 @app.route("/")
 def index() -> str:
+    schema = load_schema(SCHEMA_PATH)
     return render_template(
         "index.html",
         comparison=_COMPARISON_ROWS,
         example_count=len([e for e in EXAMPLES if not e["is_guide"]]),
+        section_count=len(schema.get("properties", {})),
+        test_count=288,
     )
 
 

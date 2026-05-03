@@ -19,7 +19,7 @@ The repo ships:
   into an LLM-ready system prompt + guardrail checker + budget tracker, plus
   a **SKILL.md exporter** (`runtime/skill_export.py`) that converts a contract
   to Anthropic Claude Skills format.
-- Ten official example specs under `examples/` (including the new
+- Ten official example specs under `examples/` (including the
   `trading-bot.md` worked example with Hummingbot/Freqtrade-style risk caps)
   plus one markdown integration guide (`molt-bot-integration.md`).
 - A research-grounded marketing site under `web/` with a `/why` page that

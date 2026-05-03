@@ -275,7 +275,7 @@ python scripts/build_static_site.py     # produce dist/ for GH Pages
 make tailwind                           # rebuild CSS if you edit a template
 ```
 
-303 tests; run with `pytest tests/ -v`.
+288 tests; run with `pytest tests/ -v`.
 
 ---
 
