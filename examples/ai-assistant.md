@@ -7,7 +7,7 @@ spec:
 identity:
   agent_id: "assistant-001"
   version: "1.0"
-  wallet: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+  wallet: "0x0000000000000000000000000000000000000000"
   created_at: "2025-01-28"
   updated_at: "2025-01-28"
 
