@@ -105,7 +105,7 @@ spec:           # name + version + kind (REQUIRED)
 identity:       # agent_id, display_name, version, wallet, tags
 role:           # title + level (REQUIRED), capabilities, skills
 mission:        # purpose, objectives, success_criteria, non_goals
-lifecycle:      # status (REQUIRED): active | paused | retired | …
+lifecycle:      # status (REQUIRED): onboarding | active | suspended | terminated
 context:        # project, repo, environment, team, organization
 scope:          # in_scope, out_of_scope, dependencies, constraints
 permissions:    # data_access, system_access, network_access, tool_access
