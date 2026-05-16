@@ -2,31 +2,48 @@
 
 ## Supported Versions
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+| Version | Supported |
+| ------- | --------- |
+| 1.0.x   | ✅ Yes    |
+| < 1.0   | ❌ No     |
 
 ## Reporting a Vulnerability
 
 We take the security of this open standard and its tooling seriously.
 
-If you discover a security vulnerability within the spec logic, validation tooling, or examples, please report it as follows:
+**Please do NOT open a public GitHub issue for security vulnerabilities.**
 
-1.  **Do NOT open a public issue.**
-2.  Email the maintainers at [INSERT EMAIL] or create a draft security advisory in the repository.
-3.  Include details about the vulnerability and steps to reproduce.
+### How to report
 
-We will acknowledge your report within 48 hours and work with you to mitigate the issue.
+1. Email **hi@nosytlabs.com** with subject line `[employee.md] Security Vulnerability`
+2. Or create a [draft security advisory](https://github.com/NosytLabs/employee-md/security/advisories/new) in this repository
+
+Include:
+- A description of the vulnerability
+- Steps to reproduce
+- Affected versions
+- Suggested fix (optional)
+
+We will acknowledge your report within **48 hours** and aim to release a fix within **14 days** for confirmed issues.
+
+## Scope
+
+This policy covers:
+- The JSON Schema validator (`tooling/`)
+- The Python runtime SDK (`runtime/`)
+- The Flask web app (`web/`)
+- The YAML spec itself
 
 ## Validation Security
 
-When using the `validate.py` tool or integrating `employee.md` into your agents:
+When integrating `employee.md` into your agent runtimes:
 
-*   **Sanitize Inputs**: Always validate YAML content before processing it in your agent runtime.
-*   **Limit Resources**: When parsing large spec files, enforce limits on file size and recursion depth to prevent DoS attacks (e.g., "Billion Laughs" attack in YAML).
-*   **Sandboxing**: If using `code_execution` capabilities defined in the spec, ensure they run in isolated environments (Docker, Firecracker, etc.).
+- **Sanitize inputs** — always validate YAML content before processing. The reference validator uses `SecureYAMLParser` which blocks `!!python/object` and `!!python/exec` tags.
+- **Limit file size** — enforce a maximum file size before parsing to prevent resource exhaustion. The validator enforces a 512 KB default limit.
+- **Guard against YAML bombs** — the parser rejects deeply nested structures and alias loops (billion-laughs attack).
+- **Sandbox execution** — if your agent runtime executes code referenced in the spec, run it in an isolated environment (Docker, Firecracker, sandbox VMs).
+- **Don't eval guardrails client-side** — `guardrails.prohibited_actions` must be enforced server-side or in a trusted runtime layer, never in untrusted client code.
 
 ## License
 
-This project is licensed under the MIT License.
+MIT — see [LICENSE](LICENSE).
