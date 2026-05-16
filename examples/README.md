@@ -28,6 +28,7 @@ This directory contains reference implementations of `employee.md` for various A
 |------|----------|---------|
 | **[molt-bot-integration.md](molt-bot-integration.md)** | Molt.bot | Integration with Molt.bot workspaces |
 | **[zhc-worker.md](zhc-worker.md)** | ZHC | JouleWork pricing, energy accounting, P&L tracking |
+| **[maton-automation-agent.md](maton-automation-agent.md)** | Maton | Cross-app automation via Maton API gateway (100+ apps) |
 
 ## 🚀 Quick Start
 
@@ -111,6 +112,9 @@ python -m tooling.cli my-agent.md
 **Flexible Work**
 - `freelancer.md` - Contract-based work
 
+**API Automation**
+- `maton-automation-agent.md` - Cross-app admin automation via Maton
+
 ## 🎯 Feature Highlights by Example
 
 ### minimal.md
@@ -148,6 +152,13 @@ python -m tooling.cli my-agent.md
 - ✅ Crypto payments (x402)
 - ✅ Milestone tracking
 - ✅ Contract terms
+
+### maton-automation-agent.md
+- ✅ Maton API gateway integration (100+ apps)
+- ✅ MCP server config for Google Workspace, HubSpot, Notion, Slack
+- ✅ x402 per-task billing
+- ✅ Human review gates for sensitive operations
+- ✅ Strict guardrails (no external email, no billing edits)
 
 ## 🔧 Customization Tips
 
