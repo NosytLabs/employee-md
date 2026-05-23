@@ -19,7 +19,7 @@ jobs:
         with: { python-version: "3.11" }
       - run: pip install -e .[web]
       - run: python scripts/build_static_site.py
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with: { path: dist }
   deploy:
     needs: build
