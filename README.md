@@ -6,7 +6,7 @@ A single human-readable, machine-parseable YAML file that defines how an AI agen
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](LICENSE)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg?style=flat-square)](pyproject.toml)
-[![Tests](https://img.shields.io/badge/tests-303%20passing-brightgreen.svg?style=flat-square)](tests/)
+[![Tests](https://img.shields.io/badge/tests-288%20passing-brightgreen.svg?style=flat-square)](tests/)
 [![Schema](https://img.shields.io/badge/schema-JSON-orange.svg?style=flat-square)](tooling/schema.json)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 
@@ -261,11 +261,25 @@ The repo ships with a Flask docs site (`web/`) — spec reference, examples gall
 
 ### Enabling GitHub Pages (one-time)
 
-After cloning this repo, go to:
+A repo admin must enable Pages. The static export in `static.yml` cannot create the site until this is on — `actions/deploy-pages` fails with HTTP 404 *Ensure GitHub Pages has been enabled*.
 
-**Settings → Pages → Build and deployment → Source → `GitHub Actions`**
+1. Open **https://github.com/NosytLabs/employee-md/settings/pages** (repo **Settings → Pages**).
+2. Under **Build and deployment → Source**, choose **GitHub Actions** (not “Deploy from a branch”).
+3. This repository is **public**. Pages is already enabled (GitHub Actions) and live at `https://nosytlabs.github.io/employee-md/`.
+4. Re-run the failed workflow: **Actions → Deploy to GitHub Pages →** latest `main` run **→ Re-run failed jobs** (or push an empty commit to `main`). The site URL is `https://nosytlabs.github.io/employee-md/`.
 
-The next push to `main` builds and deploys. (If Source is left as "Deploy from a branch", GitHub will fall back to Jekyll and just render this README — not what you want.)
+(If Source is left as “Deploy from a branch”, GitHub falls back to Jekyll and just renders this README.)
+
+### Custom domain `employee.md`
+
+Do **not** add a `CNAME` file (or Pages custom-domain field) until the name actually resolves. Public DNS for `employee.md` is **NXDOMAIN** (no NS delegation at `.md`). Register/renew at **https://nic.md** (Moldova ccTLD), then:
+
+1. In nic.md **My Domains**, confirm the name is **Active** and set nameservers (GitHub does not host DNS).
+2. At the DNS host, apex `A` records to GitHub Pages IPs `185.199.108.153` `185.199.109.153` `185.199.110.153` `185.199.111.153` (and optional `AAAA` `2606:50c0:8000::153` … `8003::153`), plus `www` `CNAME` to `nosytlabs.github.io`.
+3. Back on **Settings → Pages → Custom domain**, enter `employee.md`, wait for DNS check, enable **Enforce HTTPS**.
+4. Rebuild the snapshot with `BASE_PATH=` (empty) so links are site-root, not `/employee-md/`. Until then, keep the default `/employee-md` prefix for the github.io project URL.
+
+A GitHub Pages **500** on a custom domain is usually unpublished Pages + leftover custom domain / failed HTTPS cert, not the Flask app (there is no production Python host; Vercel has no deployment).
 
 ### Run locally
 
