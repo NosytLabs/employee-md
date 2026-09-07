@@ -34,7 +34,7 @@ def client():
     "path",
     [
         "/", "/spec", "/examples", "/runtime", "/docs",
-        "/integration", "/healthz",
+        "/integrations", "/healthz",
         "/examples/minimal", "/examples/molt-bot-integration",
         "/favicon.ico", "/pygments.css",
     ],
@@ -58,14 +58,20 @@ def test_spec_page_lists_every_schema_section(client):
     assert not missing, f"/spec missing schema sections: {missing}"
 
 
-def test_integration_page_renders_pygments_and_rewrites_repo_links(client):
+def test_integration_redirects_to_integrations(client):
     resp = client.get("/integration")
+    assert resp.status_code == 301
+    assert "/integrations" in (resp.headers.get("Location") or "")
+
+
+def test_integrations_page_includes_full_guide(client):
+    resp = client.get("/integrations")
     assert resp.status_code == 200
     body = resp.get_data(as_text=True)
     assert 'class="codehilite"' in body
     for label in ("Python Integration", "TypeScript Integration",
                   "MCP Integration"):
-        assert label in body, f"sidebar TOC missing {label!r}"
+        assert label in body, f"guide missing {label!r}"
     for broken in ("/integration/examples", "/integration/tooling"):
         assert broken not in body, f"unrewritten repo link leaked: {broken}"
     assert "/examples/zhc-worker" in body
@@ -74,7 +80,7 @@ def test_integration_page_renders_pygments_and_rewrites_repo_links(client):
 def test_docs_page_links_to_in_app_integration(client):
     resp = client.get("/docs")
     body = resp.get_data(as_text=True)
-    assert 'href="/integration"' in body
+    assert 'href="/integrations"' in body
     assert "INTEGRATION.md" not in body
 
 

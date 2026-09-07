@@ -5,11 +5,12 @@ from __future__ import annotations
 import os
 import re
 from pathlib import Path
+from datetime import date
 from typing import Any, Dict, List
 
 import markdown as md
 import yaml
-from flask import Flask, abort, jsonify, render_template, request
+from flask import Flask, abort, jsonify, redirect, render_template, request
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import YamlLexer
@@ -213,6 +214,9 @@ def _disable_cache(resp):  # type: ignore[no-untyped-def]
     resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
     resp.headers["Pragma"] = "no-cache"
     resp.headers["Expires"] = "0"
+    resp.headers["X-Content-Type-Options"] = "nosniff"
+    resp.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    resp.headers["X-Frame-Options"] = "SAMEORIGIN"
     return resp
 
 
@@ -224,7 +228,7 @@ def index() -> str:
         comparison=_COMPARISON_ROWS,
         example_count=len([e for e in EXAMPLES if not e["is_guide"]]),
         section_count=len(schema.get("properties", {})),
-        test_count=288,
+        test_count=289,
     )
 
 
@@ -285,11 +289,6 @@ def why() -> str:
     return render_template("why.html")
 
 
-@app.route("/integrations")
-def integrations() -> str:
-    return render_template("integrations.html")
-
-
 _SOURCE_H1_RE = re.compile(r"^#\s+Integration Guide\s*\n+", flags=re.MULTILINE)
 _SOURCE_TOC_RE = re.compile(
     r"##\s+📚 Table of Contents\b.*?\n---\s*\n", flags=re.DOTALL
@@ -346,13 +345,19 @@ def _render_integration_markdown() -> Dict[str, str]:
 _INTEGRATION_RENDERED: Dict[str, str] = _render_integration_markdown()
 
 
-@app.route("/integration")
-def integration() -> str:
+@app.route("/integrations")
+def integrations() -> str:
     return render_template(
-        "integration.html",
+        "integrations.html",
         html=_INTEGRATION_RENDERED["html"],
         toc=_INTEGRATION_RENDERED["toc"],
     )
+
+
+@app.route("/integration")
+def integration():
+    """Old URL. Canonical is /integrations (hub + full guide)."""
+    return redirect("/integrations/", code=301)
 
 
 @app.route("/robots.txt")
@@ -376,24 +381,19 @@ def sitemap_xml():  # type: ignore[no-untyped-def]
         ("/spec", "0.9"),
         ("/examples", "0.8"),
         ("/integrations", "0.8"),
-        ("/integration", "0.8"),
         ("/runtime", "0.7"),
         ("/docs", "0.7"),
     ]
     for ex in EXAMPLES:
-        if ex.get("is_guide"):
-            continue
-        pages.append((f"/examples/{ex['slug']}", "0.6"))
+        pages.append((f"/examples/{ex['slug']}", "0.5" if ex.get("is_guide") else "0.6"))
 
+    today = date.today().isoformat()
     parts = ['<?xml version="1.0" encoding="UTF-8"?>',
              '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for path, prio in pages:
-        # Trailing slash on subpages so the URL matches what GitHub Pages
-        # actually serves (`dist/<page>/index.html`) — avoids 301 redirects
-        # that would split link equity across two URLs.
         loc = path if path == "/" else (path if path.endswith("/") else path + "/")
         parts.append(
-            f"<url><loc>{base}{loc}</loc><priority>{prio}</priority></url>"
+            f"<url><loc>{base}{loc}</loc><lastmod>{today}</lastmod><priority>{prio}</priority></url>"
         )
     parts.append("</urlset>")
     body = "\n".join(parts) + "\n"
@@ -454,4 +454,4 @@ def create_app() -> Flask:
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host="127.0.0.1", port=5000, debug=False)

@@ -230,4 +230,12 @@ print(run_action("write_unit_test",      cost=10))  # {'ok': True}
     </p>
   </div>
 </section>
+
+<section id="guide" class="max-w-5xl mx-auto px-4 sm:px-6 py-12 border-t border-ink-700">
+  <h2 class="text-2xl font-bold text-ink-100 mb-4">Full integration guide</h2>
+  {% if toc %}
+  <nav class="text-sm text-ink-400 mb-8 prose prose-slate" aria-label="Guide contents">{{ toc|safe }}</nav>
+  {% endif %}
+  <div class="prose prose-slate prose-lg max-w-none">{{ html|safe }}</div>
+</section>
 {% endblock %}

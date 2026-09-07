@@ -105,6 +105,24 @@ def main() -> int:
 
     for route in routes():
         resp = client.get(route)
+        if resp.status_code in (301, 302):
+            loc = resp.headers.get("Location", "/integrations/")
+            # Flask test client Location is absolute (http://localhost/...).
+            if loc.startswith("http://localhost"):
+                loc = loc.split("localhost", 1)[-1]
+                loc = loc[loc.find("/") :] if "/" in loc else "/integrations/"
+            html = (
+                "<!doctype html><meta charset=utf-8>"
+                f'<link rel="canonical" href="{CANONICAL_ORIGIN}{BASE_PATH}/integrations/">'
+                f'<meta http-equiv="refresh" content="0;url={loc}">'
+                f'<p>Moved to <a href="{loc}">{loc}</a>.</p>\n'
+            )
+            out = output_path(route)
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(html, encoding="utf-8")
+            snapped += 1
+            print(f"  REDIR   {route}  -> {out.relative_to(ROOT)}")
+            continue
         if resp.status_code != 200:
             failed.append((route, resp.status_code))
             print(f"  FAIL    {route}  ({resp.status_code})")
