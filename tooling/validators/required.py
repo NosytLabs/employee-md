@@ -14,9 +14,7 @@ class RequiredFieldValidator(BaseValidator):
         # Check required sections
         for section in REQUIRED_SECTIONS:
             if section not in config:
-                self.add_error(
-                    field=section, message=f"Missing required section: '{section}'"
-                )
+                self.add_error(field=section, message=f"Missing required section: '{section}'")
 
         # Check required fields within sections
         for section, fields in REQUIRED_FIELDS.items():
