@@ -34,9 +34,7 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 _SCHEMA_PATH = _REPO_ROOT / "tooling" / "schema.json"
 
 # The complete set of official files that MUST pass strict schema validation.
-# Keep this list in sync with the ``schema-check`` whitelist in
-# ``.github/workflows/validate.yml`` and the ``validate`` target in the
-# ``Makefile``.
+# Keep this list in sync with the ``validate`` target in the ``Makefile``.
 OFFICIAL_FILES: List[str] = [
     "employee.md",
     "examples/minimal.md",
@@ -49,6 +47,7 @@ OFFICIAL_FILES: List[str] = [
     "examples/product-manager.md",
     "examples/zhc-worker.md",
     "examples/trading-bot.md",
+    "examples/maton-automation-agent.md",
 ]
 
 
