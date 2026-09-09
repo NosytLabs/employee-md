@@ -17,6 +17,7 @@ validate:
 	python -m tooling.cli examples/product-manager.md
 	python -m tooling.cli examples/zhc-worker.md
 	python -m tooling.cli examples/trading-bot.md
+	python -m tooling.cli examples/maton-automation-agent.md
 
 # Strict JSON Schema validation. molt-bot-integration.md is a markdown guide
 # with embedded YAML and is intentionally excluded.
