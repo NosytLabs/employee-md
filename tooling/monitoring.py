@@ -85,9 +85,7 @@ class MetricsCollector:
 
             avg_validation_time = 0.0
             if self.total_validations > 0:
-                avg_validation_time = (
-                    self.total_validation_time / self.total_validations
-                )
+                avg_validation_time = self.total_validation_time / self.total_validations
 
             cache_utilization = 0.0
             if self.cache_max_size > 0:
@@ -160,12 +158,8 @@ def format_prometheus_metrics(metrics: MetricsCollector) -> str:
     lines = []
 
     lines.append(f"employee_validator_total_validations {summary['total_validations']}")
-    lines.append(
-        f"employee_validator_successful_validations {summary['successful_validations']}"
-    )
-    lines.append(
-        f"employee_validator_failed_validations {summary['failed_validations']}"
-    )
+    lines.append(f"employee_validator_successful_validations {summary['successful_validations']}")
+    lines.append(f"employee_validator_failed_validations {summary['failed_validations']}")
     lines.append(f"employee_validator_cache_hit_rate {summary['cache_hit_rate']}")
     lines.append(f"employee_validator_cache_hits {summary['cache_hits']}")
     lines.append(f"employee_validator_cache_misses {summary['cache_misses']}")
@@ -200,23 +194,15 @@ def format_statsd_metrics(metrics: MetricsCollector) -> str:
     summary = metrics.get_summary()
     lines = []
 
-    lines.append(
-        f"employee_validator.total_validations:{summary['total_validations']}|c"
-    )
-    lines.append(
-        f"employee_validator.successful_validations:{summary['successful_validations']}|c"
-    )
-    lines.append(
-        f"employee_validator.failed_validations:{summary['failed_validations']}|c"
-    )
+    lines.append(f"employee_validator.total_validations:{summary['total_validations']}|c")
+    lines.append(f"employee_validator.successful_validations:{summary['successful_validations']}|c")
+    lines.append(f"employee_validator.failed_validations:{summary['failed_validations']}|c")
     lines.append(f"employee_validator.cache_hit_rate:{summary['cache_hit_rate']}|c")
     lines.append(f"employee_validator.cache_hits:{summary['cache_hits']}|c")
     lines.append(f"employee_validator.cache_misses:{summary['cache_misses']}|c")
     lines.append(f"employee_validator.cache_size:{summary['cache_size']}|g")
     lines.append(f"employee_validator.cache_max_size:{summary['cache_max_size']}|g")
-    lines.append(
-        f"employee_validator.cache_utilization:{summary['cache_utilization']}|g"
-    )
+    lines.append(f"employee_validator.cache_utilization:{summary['cache_utilization']}|g")
     lines.append(f"employee_validator.cache_evictions:{summary['cache_evictions']}|c")
     lines.append(
         f"employee_validator.avg_validation_time_seconds:{summary['avg_validation_time_seconds']}|c"
@@ -226,8 +212,6 @@ def format_statsd_metrics(metrics: MetricsCollector) -> str:
     )
 
     for validator_name, total_time in summary["individual_validator_times"].items():
-        lines.append(
-            f"employee_validator.validator_time_seconds[{validator_name}]:{total_time}|ms"
-        )
+        lines.append(f"employee_validator.validator_time_seconds[{validator_name}]:{total_time}|ms")
 
     return "\n".join(lines)
