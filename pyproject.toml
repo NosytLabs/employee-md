@@ -34,7 +34,6 @@ web = [
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
-    "black>=23.0.0",
     "ruff>=0.1.0",
     "mypy>=1.0.0",
     "pre-commit>=3.0.0",
@@ -62,7 +61,7 @@ target-version = "py38"
 [tool.ruff.lint]
 # Select sensible defaults: pycodestyle errors + pyflakes.
 select = ["E", "F", "W"]
-# E501 (line length) is enforced via black/format, not lint.
+# E501 (line length) is handled by Ruff's formatter, not lint.
 ignore = ["E501"]
 
 [[tool.mypy.overrides]]
