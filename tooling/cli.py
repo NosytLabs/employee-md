@@ -434,7 +434,11 @@ Examples:
     parser.add_argument(
         "--metrics",
         choices=["prometheus", "statsd"],
-        default=(config.get("metrics.format", None) if config.get("metrics.enabled", False) else None),
+        default=(
+            config.get("metrics.format", None)
+            if config.get("metrics.enabled", False)
+            else None
+        ),
         help="Export validation metrics in specified format",
     )
 
