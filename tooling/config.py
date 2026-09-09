@@ -13,9 +13,7 @@ logger = logging.getLogger(__name__)
 class Config:
     """Configuration manager for employee.md validator."""
 
-    def __init__(
-        self, config_file: Optional[str] = None, env_prefix: str = "EMPLOYEE_MD_"
-    ):
+    def __init__(self, config_file: Optional[str] = None, env_prefix: str = "EMPLOYEE_MD_"):
         """Initialize configuration.
 
         Args:
@@ -226,9 +224,7 @@ class Config:
         return self._config.copy()
 
 
-def load_config(
-    config_file: Optional[str] = None, env_prefix: str = "EMPLOYEE_MD_"
-) -> Config:
+def load_config(config_file: Optional[str] = None, env_prefix: str = "EMPLOYEE_MD_") -> Config:
     """Load configuration.
 
     Args:
