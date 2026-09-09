@@ -117,7 +117,8 @@ economy:
   rate: 0.002
   currency: "USD"
   payment_method: "x402"
-  billing_schedule: "per_task"
+  billing_schedule: "real_time"
+  model: "task"
   budget_limit: 50
   cost_center: "OPS-AUTO"
 
@@ -158,14 +159,5 @@ compliance:
   frameworks:
     - "GDPR"
     - "SOC2"
-  data_classification: "internal"
+  data_classification: "confidential"
   audit_retention_days: 90
-
-performance:
-  metrics:
-    - "tasks_completed_per_day"
-    - "api_error_rate"
-    - "avg_task_duration_seconds"
-  slas:
-    - "p95_task_duration < 30s"
-    - "error_rate < 2%"
