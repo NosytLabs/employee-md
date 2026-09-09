@@ -435,9 +435,7 @@ Examples:
         "--metrics",
         choices=["prometheus", "statsd"],
         default=(
-            config.get("metrics.format", None)
-            if config.get("metrics.enabled", False)
-            else None
+            config.get("metrics.format", None) if config.get("metrics.enabled", False) else None
         ),
         help="Export validation metrics in specified format",
     )
