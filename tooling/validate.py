@@ -27,9 +27,7 @@ class ValidatorEngine:
         self.type_validator = TypeValidator()
         self.parser = SecureYAMLParser()
 
-    def validate(
-        self, config: dict, file_path: Optional[str] = None
-    ) -> ValidationResult:
+    def validate(self, config: dict, file_path: Optional[str] = None) -> ValidationResult:
         """
         Run all validators on config.
 

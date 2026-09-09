@@ -50,9 +50,7 @@ class ValidationCache:
         if isinstance(value, list):
             return tuple(self._normalize_data(item) for item in value)
         if isinstance(value, set):
-            return tuple(
-                sorted((self._normalize_data(item) for item in value), key=str)
-            )
+            return tuple(sorted((self._normalize_data(item) for item in value), key=str))
         if isinstance(value, tuple):
             return tuple(self._normalize_data(item) for item in value)
         return value

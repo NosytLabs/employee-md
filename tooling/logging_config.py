@@ -97,9 +97,7 @@ class ValidatorLogger:
         return f"{message} | {context_str}"
 
 
-def get_logger(
-    name: str = "employee_validator", level: int = logging.INFO
-) -> ValidatorLogger:
+def get_logger(name: str = "employee_validator", level: int = logging.INFO) -> ValidatorLogger:
     """
     Get or create a validator logger instance.
 

@@ -16,9 +16,7 @@ class FormatValidator(BaseValidator):
 
             if "wallet" in identity and identity["wallet"]:
                 if not validate_wallet(identity["wallet"]):
-                    self.add_error(
-                        field="identity.wallet", message="Invalid wallet address format"
-                    )
+                    self.add_error(field="identity.wallet", message="Invalid wallet address format")
 
             if "created_at" in identity and identity["created_at"]:
                 if not validate_iso_date(identity["created_at"]):
