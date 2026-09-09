@@ -64,9 +64,7 @@ class EmployeeValidationOrchestrator:
         """
         start_time = self._metrics.record_validation_start()
         effective_parallel = (
-            self.parallel_validation
-            if run_parallel_validators is None
-            else run_parallel_validators
+            self.parallel_validation if run_parallel_validators is None else run_parallel_validators
         )
         cache_key = None
         if self._cache:
@@ -130,9 +128,7 @@ class EmployeeValidationOrchestrator:
 
         # Run all validators (parallel or sequential)
         use_parallel = (
-            self.parallel_validation
-            if run_parallel_validators is None
-            else run_parallel_validators
+            self.parallel_validation if run_parallel_validators is None else run_parallel_validators
         )
 
         if use_parallel:
@@ -202,8 +198,7 @@ class EmployeeValidationOrchestrator:
         validators = self._create_validators()
         with ThreadPoolExecutor(max_workers=len(validators)) as executor:
             future_to_validator = {
-                executor.submit(run_validator, validator): validator
-                for validator in validators
+                executor.submit(run_validator, validator): validator for validator in validators
             }
 
             for future in as_completed(future_to_validator):
