@@ -1,0 +1,37 @@
+name: Public documentation layout
+
+on:
+  pull_request:
+    paths: ['web/**', 'scripts/check_public_layout.py', '.github/workflows/public-docs-layout.yml']
+  push:
+    branches: [main]
+    paths: ['web/**', 'scripts/check_public_layout.py', '.github/workflows/public-docs-layout.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  layout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install isolated presentation-test dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/docs-venv"
+          "$RUNNER_TEMP/docs-venv/bin/python" -m pip install -e '.[web]' playwright==1.57.0
+          "$RUNNER_TEMP/docs-venv/bin/python" -m playwright install --with-deps chromium
+      - name: Verify actual Flask template layout without external requests
+        run: |
+          mkdir -p /tmp/employee-docs-layout
+          git rev-parse HEAD > /tmp/employee-docs-layout/revision.txt
+          "$RUNNER_TEMP/docs-venv/bin/python" scripts/check_public_layout.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-documentation-layout
+          path: /tmp/employee-docs-layout
+          retention-days: 7
+          if-no-files-found: ignore
