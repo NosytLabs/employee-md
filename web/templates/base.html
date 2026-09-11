@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}employee.md — the open standard for AI agent employment contracts{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}employee.md is an open, schema-validated YAML contract for AI agents: identity, role, scope, permissions, guardrails, budget, lifecycle, and compliance — enforceable at runtime.{% endblock %}" />
+    <meta name="description" content="{% block meta_description %}employee.md is an open, schema-validated YAML contract for AI agents: identity, role, scope, permissions, guardrails, budget, lifecycle, and compliance. Runtime enforcement requires explicit integration.{% endblock %}" />
     <meta name="theme-color" content="#ffffff" />
     {# Trailing-slash on subpages to match GH Pages directory-index serving and avoid 301 redirects. #}
     {% set _canon = canonical_url or (request.url_root.rstrip('/') + request.path + ('/' if request.path != '/' and not request.path.endswith('/') else '')) %}
@@ -12,7 +12,7 @@
 
     {# OpenGraph / Twitter cards #}
     <meta property="og:title" content="{% block og_title %}employee.md — the open standard for AI agent employment contracts{% endblock %}" />
-    <meta property="og:description" content="{% block og_description %}A single YAML file that defines an AI agent's job: role, scope, permissions, guardrails, budget, lifecycle, and compliance — schema-validated and enforceable at runtime.{% endblock %}" />
+    <meta property="og:description" content="{% block og_description %}A single YAML file that defines an AI agent's job: role, scope, permissions, guardrails, budget, lifecycle, and compliance. Schema validation checks structure; runtime enforcement requires explicit integration.{% endblock %}" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="{{ _canon }}" />
     <meta property="og:site_name" content="employee.md" />
@@ -60,7 +60,7 @@
     <link rel="stylesheet" href="{{ url_for('pygments_css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   </head>
-  <body class="min-h-screen bg-white text-ink-300 antialiased font-sans flex flex-col">
+  <body class="min-h-screen bg-white text-ink-300 antialiased font-sans flex flex-col {% block page_class %}{% endblock %}">
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-ink-100 focus:text-white focus:px-3 focus:py-2 focus:rounded">Skip to main content</a>
     <header class="border-b border-ink-700 bg-white/90 backdrop-blur sticky top-0 z-40">
       <nav class="max-w-5xl mx-auto px-5 sm:px-8 py-4 flex items-center gap-6 flex-wrap" aria-label="Primary">
@@ -97,7 +97,7 @@
       </nav>
     </header>
 
-    <main id="main" class="flex-1">
+    <main id="main" tabindex="-1" class="flex-1">
       {% block content %}{% endblock %}
     </main>
 
