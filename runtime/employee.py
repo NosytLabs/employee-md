@@ -11,14 +11,15 @@ actually needs at execution time:
     >>> emp.budget.try_spend(0.05)
     True
 
-This is intentionally tiny (~200 LOC). It is not a sandbox and it is not
-a replacement for proper guardrails — it is the thin wrapper every team
+This is not a sandbox and it is not a replacement for proper guardrails
+— it is the thin wrapper every team
 otherwise has to re-implement on top of the YAML schema.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from math import isfinite
 from pathlib import Path
 from threading import Lock
 from typing import Any, Dict, List, Optional, Union
@@ -57,18 +58,32 @@ class ScopeDecision:
 class BudgetTracker:
     """Thread-safe spend tracker bound to `economy.budget_limit`.
 
-    The tracker is best-effort: it enforces the limit *if* one is declared in
-    the contract. If `economy.budget_limit` is missing or non-numeric, every
-    `try_spend` returns True and `remaining` returns `None`.
+    None means no configured cap. Every explicit limit and spend must be a
+    finite, non-negative int or float (not a boolean). Invalid configuration
+    raises ValueError instead of silently disabling the budget. This helper
+    uses floating-point accounting in one process, not a persistent ledger.
     """
 
     def __init__(self, limit: Optional[float], currency: str = "USD") -> None:
         self._limit: Optional[float] = (
-            float(limit) if isinstance(limit, (int, float)) and limit >= 0 else None
+            None if limit is None else self._finite_amount(limit, "Budget limit")
         )
         self._spent: float = 0.0
         self._lock = Lock()
         self.currency = currency
+
+    @staticmethod
+    def _finite_amount(value: Any, label: str) -> float:
+        # bool is a subclass of int, but not a monetary quantity.
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise ValueError(f"{label} must be a finite, non-negative number.")
+        try:
+            number = float(value)
+        except (ValueError, OverflowError) as exc:
+            raise ValueError(f"{label} must be a finite, non-negative number.") from exc
+        if not isfinite(number) or number < 0:
+            raise ValueError(f"{label} must be a finite, non-negative number.")
+        return number
 
     @property
     def limit(self) -> Optional[float]:
@@ -89,15 +104,18 @@ class BudgetTracker:
         """Atomically reserve `amount`. Raises BudgetExceeded if it would
         push past the configured limit.
 
-        Returns True on success. If no limit is configured, always returns
-        True (the tracker is informational only).
+        Returns True on success. Invalid amounts or a non-finite accumulated
+        total raise ValueError without changing the recorded spend, including
+        when no cap is configured.
         """
-        if amount < 0:
-            raise ValueError("Cannot spend a negative amount.")
+        amount = self._finite_amount(amount, "Spend")
         with self._lock:
-            if self._limit is not None and self._spent + amount > self._limit:
+            total = self._spent + amount
+            if not isfinite(total):
+                raise ValueError("Accumulated spend must remain finite.")
+            if self._limit is not None and total > self._limit:
                 raise BudgetExceeded(amount, self._spent, self._limit)
-            self._spent += amount
+            self._spent = total
             return True
 
     def reset(self) -> None:
@@ -234,8 +252,10 @@ class Employee:
 
         Returns False if any prohibited entry is a substring of `action`,
         OR if `action` is a substring of a prohibited entry. This is a
-        deliberately permissive check so phrases like "delete the prod
-        database" still trip a guardrail of "delete production database".
+        literal comparison, not synonym matching or token normalization.
+        Different wording or separators may not match. This method does not
+        check lifecycle, scope or permissions; the executor must check those
+        separately and should pass canonical action identifiers.
         """
         haystack = (action or "").strip().lower()
         if not haystack:
