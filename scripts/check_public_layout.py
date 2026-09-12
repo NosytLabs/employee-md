@@ -38,7 +38,7 @@ def main() -> None:
     (OUTPUT / 'sources.sha256').write_text('\n'.join(sources) + '\n', encoding='utf-8')
 
     results = []
-    with app.test_client() as client, sync_playwright() as p:
+    with sync_playwright() as p:
         def serve_local(route):
             request = route.request
             url = urlsplit(request.url)
@@ -46,12 +46,14 @@ def main() -> None:
                 route.abort()
                 return
             path = url.path + ('?' + url.query if url.query else '')
-            response = client.open(path, method=request.method, base_url=ORIGIN)
+            # Do not retain Flask's request context across Playwright greenlets.
+            # Each call pushes and tears down its own context before returning.
+            response = app.test_client().open(path, method=request.method, base_url=ORIGIN)
             route.fulfill(status=response.status_code, body=response.get_data(),
                           content_type=response.content_type)
 
         for path, name in PAGES:
-            response = client.get(path, base_url=ORIGIN)
+            response = app.test_client().get(path, base_url=ORIGIN)
             assert response.status_code == 200, path
             (OUTPUT / f'rendered-{name}.html').write_text(response.get_data(as_text=True), encoding='utf-8')
 
