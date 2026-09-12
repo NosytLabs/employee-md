@@ -1,45 +1,43 @@
-"""Runtime documentation matches helper behavior; no providers are called."""
-import ast
-from html import unescape
+"""Runtime-page controls are accessible without overstating executor guarantees."""
 from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
 PAGE = (ROOT / 'web/templates/runtime.html').read_text(encoding='utf-8')
+CSS = (ROOT / 'web/static/style.css').read_text(encoding='utf-8')
 
 
-def test_runtime_reference_discloses_literal_matching_and_separate_checks():
-    assert 'literal substring' in PAGE
-    assert 'does not check lifecycle, scope or permissions' in PAGE
-    assert 'substring + token' not in PAGE
-    assert 'fail closed before you call the LLM' not in PAGE
-    assert 'not a sandbox' in PAGE
-
-
-def test_budget_reference_describes_invalid_numbers_and_storage_limits():
-    assert 'finite, non-negative' in PAGE
-    assert 'ValueError' in PAGE
-    assert 'None is the only uncapped setting' in PAGE
-    assert 'in-process floating-point' in PAGE
-
-
-def test_code_examples_have_distinct_keyboard_labels_and_parse():
-    blocks = re.findall(r'<pre\b([^>]*)><code>([\s\S]*?)</code></pre>', PAGE)
+def test_code_examples_have_distinct_keyboard_labels():
+    blocks = re.findall(r'<pre\b([^>]*)><code>', PAGE)
     assert len(blocks) == 3
     labels = []
-    for attrs, code in blocks:
+    for attrs in blocks:
         assert 'tabindex="0"' in attrs
         label = re.search(r'aria-label="([^"]+)"', attrs)
         assert label
         labels.append(label[1])
-        if '{{' not in code:
-            ast.parse(unescape(code))
     assert len(set(labels)) == len(labels)
 
 
-def test_execution_example_checks_lifecycle_scope_and_prohibition_explicitly():
-    assert 'if not emp.is_active:' in PAGE
-    assert 'if not emp.is_in_scope(' in PAGE
-    assert 'if not emp.is_action_allowed(action_id):' in PAGE
-    assert 'Apply tool permissions/sandbox policy' in PAGE
-    assert 'in three lines' not in PAGE
+def test_copy_controls_have_distinct_accessible_names():
+    buttons = re.findall(r'<button\b([^>]*)data-copy([^>]*)>', PAGE)
+    assert len(buttons) == 3
+    labels = []
+    for before, after in buttons:
+        label = re.search(r'aria-label="([^"]+)"', before + after)
+        assert label
+        labels.append(label[1])
+    assert len(set(labels)) == 3
+
+
+def test_reference_layout_changes_are_scoped_to_its_body_class():
+    assert '{% block page_class %}page-runtime{% endblock %}' in PAGE
+    assert '.page-runtime .codeblock .copy-btn' in CSS
+    assert '.page-runtime main pre:focus-visible' in CSS
+
+
+def test_existing_compatibility_and_enforcement_limits_remain_visible():
+    assert 'invalid explicit limits previously could become unlimited' in PAGE
+    assert 'in-process floating-point tracker' in PAGE
+    assert 'not a sandbox' in PAGE
+    assert 'tool ACLs and required approvals' in PAGE

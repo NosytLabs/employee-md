@@ -6,13 +6,12 @@
 {% block content %}
 <div class="max-w-5xl mx-auto px-5 sm:px-8 pt-10 pb-16">
   <div class="text-xs font-mono text-ink-500 mb-2">RUNTIME</div>
-  <h1 class="text-3xl sm:text-4xl font-bold text-ink-100">From contract to running agent</h1>
+  <h1 class="text-3xl sm:text-4xl font-bold text-ink-100">From contract to runtime checks</h1>
   <p class="mt-3 text-ink-300 max-w-3xl">
-    The schema is only useful if your agent actually obeys it.
-    The <span class="font-mono text-ink-100">runtime</span> package is a small Python SDK
-    that turns a validated <span class="font-mono">employee.md</span> into a
-    system prompt, a guardrail checker, a scope checker, and a budget tracker.
-    Your executor must apply these checks; generating a prompt alone does not enforce a contract.
+    The <span class="font-mono text-ink-100">runtime</span> package provides Python helpers for
+    turning a validated <span class="font-mono">employee.md</span> into a system prompt,
+    checking action descriptions and scope, and recording budget reservations.
+    Your executor must invoke the relevant checks before acting; generating a prompt does not enforce policy.
   </p>
 
   <div class="mt-10 grid lg:grid-cols-3 gap-6">
@@ -20,63 +19,76 @@
       <div class="text-brand font-mono text-xs uppercase tracking-wider">system_prompt()</div>
       <h3 class="text-ink-100 font-semibold mt-2">Prompt composition</h3>
       <p class="mt-2 text-sm text-ink-300">
-        Compose the contract's mission, scope, guardrails, and budget into plain text.
-        Pass it through your configured model client's supported system-message interface.
+        Compose the available mission, scope, guardrail and budget fields into text for your model's
+        system message. Treat that text as instructions, not as an access-control boundary.
       </p>
     </div>
     <div class="bg-ink-800/50 border border-ink-700 rounded-xl p-5">
       <div class="text-brand font-mono text-xs uppercase tracking-wider">is_action_allowed()</div>
-      <h3 class="text-ink-100 font-semibold mt-2">Guardrail check</h3>
+      <h3 class="text-ink-100 font-semibold mt-2">Prohibited-phrase check</h3>
       <p class="mt-2 text-sm text-ink-300">
-        Case-insensitive literal substring matching against
-        <span class="font-mono">guardrails.prohibited_actions</span> in either direction.
-        A nonempty, non-matching action returns True. It does not check lifecycle, scope or permissions.
-        Use canonical action IDs and enforce authorization in the executor.
+        Case-insensitive substring matching against <span class="font-mono">guardrails.prohibited_actions</span>.
+        Nonmatching actions are allowed by this helper. Check lifecycle status, scope, tool permissions
+        and required approvals separately; this is not semantic policy enforcement.
       </p>
     </div>
     <div class="bg-ink-800/50 border border-ink-700 rounded-xl p-5">
       <div class="text-brand font-mono text-xs uppercase tracking-wider">budget.try_spend()</div>
       <h3 class="text-ink-100 font-semibold mt-2">Spend tracker</h3>
       <p class="mt-2 text-sm text-ink-300">
-        Thread-safe budget bound to <span class="font-mono">economy.budget_limit</span>.
-        Raises <span class="font-mono">BudgetExceeded</span> when a spend would push past
-        the configured cap. Limits and spends must be finite, non-negative numbers;
-        booleans and invalid values raise ValueError. None is the only uncapped setting.
+        Thread-safe reservations bound to <span class="font-mono">economy.budget_limit</span>.
+        A valid reservation exceeding the cap raises <span class="font-mono">BudgetExceeded</span>
+        without changing recorded spend.
       </p>
     </div>
   </div>
 
-  <h2 class="mt-14 text-2xl font-bold text-ink-100">Check policy before execution</h2>
+  <h2 class="mt-14 text-2xl font-bold text-ink-100">Budget inputs and limits</h2>
+  <p class="mt-3 text-ink-300 max-w-3xl">
+    Limits and reservation amounts must be finite, nonnegative Python integers or floats.
+    Booleans, numeric strings, NaN, infinity, negative amounts and overflowing totals are rejected with
+    <span class="font-mono">ValueError</span>. Rejected reservations leave the previous spend unchanged.
+    Only <span class="font-mono">None</span> means no cap; an explicit zero means no spending.
+  </p>
+  <p class="mt-3 text-ink-300 max-w-3xl">
+    Compatibility note: invalid explicit limits previously could become unlimited. They now fail visibly
+    rather than disabling the budget. This in-process floating-point tracker is not a payment ledger,
+    currency converter or persistent account balance. Reserve before executing a billable action.
+  </p>
+
+  <h2 class="mt-14 text-2xl font-bold text-ink-100">Wire checks into your executor</h2>
   <p class="mt-2 text-ink-300">
-    The runtime ships with the validator. Use the repository-backed install in
-    <a href="{{ url_for('docs') }}#step-01" class="text-brand hover:text-ink-100 transition">step 01 of the quickstart</a>.
+    The runtime ships in the same source package as the validator.
+    Follow <a href="{{ url_for('docs') }}#step-01" class="text-brand hover:text-ink-100 transition">the quickstart</a>
+    to install it. The example below illustrates explicit preflight checks; it does not execute a tool.
   </p>
   <div class="codeblock mt-4">
     <button class="copy-btn" data-copy aria-label="Copy executor checks">Copy</button>
 <pre tabindex="0" aria-label="Explicit executor checks"><code>from runtime import Employee
 
 emp = Employee.from_file("employee.md")
-system_prompt = emp.system_prompt()
+action = "review code"
 
-action_id = "write_unit_tests"  # use executor-owned identifiers
 if not emp.is_active:
-    raise PermissionError("The employee is not active")
-if not emp.is_in_scope("Write unit tests").in_scope:
-    raise PermissionError("The task is outside the declared scope")
-if not emp.is_action_allowed(action_id):
-    raise PermissionError("The action is explicitly prohibited")
-emp.budget.try_spend(0.05)  # can raise BudgetExceeded or ValueError
-# Apply tool permissions/sandbox policy before performing any action.
-# Generating a system prompt does not replace these checks.
+    raise PermissionError("Agent is not active")
+if not emp.is_in_scope(action).in_scope:
+    raise PermissionError("Action is outside the declared scope")
+if not emp.is_action_allowed(action):
+    raise PermissionError("Action matches a prohibited phrase")
+
+# Also enforce your tool ACLs and required approvals here.
+emp.budget.try_spend(0.05)  # may raise BudgetExceeded or ValueError
+system_prompt = emp.system_prompt()
+# Your executor decides whether and how to call the tool or model.
 </code></pre>
   </div>
 
   {% if sample_prompt %}
-  <h2 class="mt-14 text-2xl font-bold text-ink-100">What the SDK compiles your contract into</h2>
+  <h2 class="mt-14 text-2xl font-bold text-ink-100">Generated prompt example</h2>
   <p class="mt-2 text-ink-300">
-    This example is generated by the runtime from
-    <a href="{{ url_for('example_detail', slug='senior-dev') }}" class="text-brand hover:text-ink-100 transition font-mono">examples/senior-dev.md</a>.
-    The text expresses the contract; executor-side checks remain necessary.
+    This example is generated from
+    <a href="{{ url_for('example_detail', slug='senior-dev') }}" class="text-brand hover:text-ink-100 transition font-mono">examples/senior-dev.md</a>
+    when the documentation is built. It is not evidence that a model followed those instructions.
   </p>
   <div class="codeblock mt-4">
     <button class="copy-btn" data-copy aria-label="Copy generated system prompt">Copy</button>
@@ -84,14 +96,11 @@ emp.budget.try_spend(0.05)  # can raise BudgetExceeded or ValueError
   </div>
   {% endif %}
 
-  <h2 class="mt-14 text-2xl font-bold text-ink-100">Compose a LangChain prompt</h2>
-  <p class="mt-2 text-ink-300">Install the separate LangChain packages and explicitly configure a
-    provider-supported model. This example composes a chain; it does not execute a request or enforce the contract.</p>
+  <h2 class="mt-14 text-2xl font-bold text-ink-100">Use the prompt with LangChain</h2>
+  <p class="mt-2 text-ink-300">Install and configure your model integration separately. This composition example does not invoke a model or enforce tool permissions.</p>
   <div class="codeblock mt-4">
     <button class="copy-btn" data-copy aria-label="Copy LangChain example">Copy</button>
-<pre tabindex="0" aria-label="LangChain prompt composition"><code>import os
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
+<pre tabindex="0" aria-label="LangChain prompt composition"><code>from langchain_core.prompts import ChatPromptTemplate
 from runtime import Employee
 
 emp = Employee.from_file("employee.md")
@@ -99,20 +108,16 @@ prompt = ChatPromptTemplate.from_messages([
     ("system", emp.system_prompt()),
     ("user", "{task}"),
 ])
-model = emp.to_langchain_kwargs()["model"] or os.environ["MODEL_NAME"]
-llm = ChatOpenAI(model=model)
-chain = prompt | llm</code></pre>
+# Compose with your configured model after executor policy checks.</code></pre>
   </div>
 
   <div class="mt-14 rounded-xl border border-ink-700 bg-ink-800 p-5">
-    <div class="text-ink-100 font-semibold">Scope and limitations</div>
+    <div class="text-ink-100 font-semibold">Honest scope</div>
     <p class="mt-2 text-sm text-ink-300">
-      The runtime is a <strong>thin wrapper</strong>, not a sandbox. <span class="font-mono">is_action_allowed</span>
-      is a literal substring check, not a real policy engine. It does not normalize synonyms or separators.
-      <span class="font-mono">is_in_scope</span> has a separate heuristic token matcher.
-      <span class="font-mono">budget</span> uses in-process floating-point accounting and resets when the process restarts;
-      it is not an exact-decimal, persistent or cross-process ledger. Use executor-side authorization,
-      sandboxing and durable accounting where those guarantees are required.
+      The runtime is a <strong>thin wrapper</strong>, not a sandbox. The action helper matches substrings;
+      the separate scope helper uses phrase/token heuristics. Neither understands arbitrary intent.
+      Budget records reset with a new tracker or process restart. Use independently enforced tool ACLs,
+      approvals, sandboxing and a persistent accounting system where those guarantees are required.
     </p>
   </div>
 </div>

@@ -11,8 +11,8 @@ actually needs at execution time:
     >>> emp.budget.try_spend(0.05)
     True
 
-This is not a sandbox and it is not a replacement for proper guardrails
-— it is the thin wrapper every team
+This is intentionally tiny (~200 LOC). It is not a sandbox and it is not
+a replacement for proper guardrails — it is the thin wrapper every team
 otherwise has to re-implement on top of the YAML schema.
 """
 
@@ -58,31 +58,31 @@ class ScopeDecision:
 class BudgetTracker:
     """Thread-safe spend tracker bound to `economy.budget_limit`.
 
-    None means no configured cap. Every explicit limit and spend must be a
-    finite, non-negative int or float (not a boolean). Invalid configuration
-    raises ValueError instead of silently disabling the budget. This helper
-    uses floating-point accounting in one process, not a persistent ledger.
+    Only a missing limit (None) means unlimited. Explicit limits and spend
+    amounts must be finite, nonnegative int/float values; booleans are not
+    amounts. Invalid values raise ValueError without changing the tracker.
+    Callers must invoke this tracker before executing a billable action.
     """
 
     def __init__(self, limit: Optional[float], currency: str = "USD") -> None:
         self._limit: Optional[float] = (
-            None if limit is None else self._finite_amount(limit, "Budget limit")
+            None if limit is None else self._number(limit, "Budget limit")
         )
         self._spent: float = 0.0
         self._lock = Lock()
         self.currency = currency
 
     @staticmethod
-    def _finite_amount(value: Any, label: str) -> float:
-        # bool is a subclass of int, but not a monetary quantity.
+    def _number(value: Any, label: str) -> float:
+        message = f"{label} must be a finite, nonnegative number."
         if isinstance(value, bool) or not isinstance(value, (int, float)):
-            raise ValueError(f"{label} must be a finite, non-negative number.")
+            raise ValueError(message)
         try:
             number = float(value)
-        except (ValueError, OverflowError) as exc:
-            raise ValueError(f"{label} must be a finite, non-negative number.") from exc
+        except (OverflowError, ValueError) as exc:
+            raise ValueError(message) from exc
         if not isfinite(number) or number < 0:
-            raise ValueError(f"{label} must be a finite, non-negative number.")
+            raise ValueError(message)
         return number
 
     @property
@@ -101,20 +101,20 @@ class BudgetTracker:
             return max(0.0, self._limit - self._spent)
 
     def try_spend(self, amount: float) -> bool:
-        """Atomically reserve `amount`. Raises BudgetExceeded if it would
-        push past the configured limit.
+        """Atomically reserve a finite nonnegative `amount`.
 
-        Returns True on success. Invalid amounts or a non-finite accumulated
-        total raise ValueError without changing the recorded spend, including
-        when no cap is configured.
+        Raises ValueError for invalid amounts or non-finite accumulated spend,
+        and BudgetExceeded for a valid reservation exceeding the configured
+        cap. Rejection never changes the recorded spend. None disables the
+        cap, not numeric validation. Returns True on a successful reservation.
         """
-        amount = self._finite_amount(amount, "Spend")
+        reservation = self._number(amount, "Spend amount")
         with self._lock:
-            total = self._spent + amount
+            total = self._spent + reservation
+            if self._limit is not None and total > self._limit:
+                raise BudgetExceeded(reservation, self._spent, self._limit)
             if not isfinite(total):
                 raise ValueError("Accumulated spend must remain finite.")
-            if self._limit is not None and total > self._limit:
-                raise BudgetExceeded(amount, self._spent, self._limit)
             self._spent = total
             return True
 
@@ -252,10 +252,8 @@ class Employee:
 
         Returns False if any prohibited entry is a substring of `action`,
         OR if `action` is a substring of a prohibited entry. This is a
-        literal comparison, not synonym matching or token normalization.
-        Different wording or separators may not match. This method does not
-        check lifecycle, scope or permissions; the executor must check those
-        separately and should pass canonical action identifiers.
+        deliberately permissive check so phrases like "delete the prod
+        database" still trip a guardrail of "delete production database".
         """
         haystack = (action or "").strip().lower()
         if not haystack:
