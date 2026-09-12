@@ -245,6 +245,7 @@ class Employee:
     def prohibited_actions(self) -> List[str]:
         guardrails = self._data.get("guardrails") or {}
         return _as_list(guardrails.get("prohibited_actions"))
+
     def is_action_allowed(self, action: str) -> bool:
         """Case-insensitive substring check of `action` against the
         configured `guardrails.prohibited_actions` list.
@@ -349,7 +350,7 @@ class Employee:
         ai = d.get("ai_settings") or {}
         economy = d.get("economy") or {}
 
-        lines: List[str] = [];
+        lines: List[str] = []
         lines.append(f"You are {self.display_name}, a {role.get('title', 'agent')}.")
         if role.get("level"):
             lines.append(f"Level: {role['level']}.")
