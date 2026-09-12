@@ -1,34 +1,37 @@
 {% extends "base.html" %}
 {% block title %}Runtime · employee.md{% endblock %}
 
+{% block page_class %}page-runtime{% endblock %}
+
 {% block content %}
-<div class="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-16">
+<div class="max-w-5xl mx-auto px-5 sm:px-8 pt-10 pb-16">
   <div class="text-xs font-mono text-ink-500 mb-2">RUNTIME</div>
   <h1 class="text-3xl sm:text-4xl font-bold text-ink-100">From contract to running agent</h1>
   <p class="mt-3 text-ink-300 max-w-3xl">
     The schema is only useful if your agent actually obeys it.
-    The <span class="font-mono text-ink-100">runtime</span> package is a tiny Python SDK
+    The <span class="font-mono text-ink-100">runtime</span> package is a small Python SDK
     that turns a validated <span class="font-mono">employee.md</span> into a
-    ready-to-use system prompt, a guardrail checker, a scope checker, and a budget tracker —
-    so you don't have to write the same wrapper in every project.
+    system prompt, a guardrail checker, a scope checker, and a budget tracker.
+    Your executor must apply these checks; generating a prompt alone does not enforce a contract.
   </p>
 
   <div class="mt-10 grid lg:grid-cols-3 gap-6">
     <div class="bg-ink-800/50 border border-ink-700 rounded-xl p-5">
       <div class="text-brand font-mono text-xs uppercase tracking-wider">system_prompt()</div>
-      <h3 class="text-ink-100 font-semibold mt-2">LLM-ready prompt</h3>
+      <h3 class="text-ink-100 font-semibold mt-2">Prompt composition</h3>
       <p class="mt-2 text-sm text-ink-300">
-        Compose your contract into a system prompt that already includes mission, scope,
-        guardrails, and budget. Drop straight into OpenAI / Anthropic / LangChain.
+        Compose the contract's mission, scope, guardrails, and budget into plain text.
+        Pass it through your configured model client's supported system-message interface.
       </p>
     </div>
     <div class="bg-ink-800/50 border border-ink-700 rounded-xl p-5">
       <div class="text-brand font-mono text-xs uppercase tracking-wider">is_action_allowed()</div>
       <h3 class="text-ink-100 font-semibold mt-2">Guardrail check</h3>
       <p class="mt-2 text-sm text-ink-300">
-        Cheap pre-flight check against <span class="font-mono">guardrails.prohibited_actions</span>.
-        Returns <span class="font-mono">False</span> when an action matches a hard guardrail
-        — fail closed before you call the LLM.
+        Case-insensitive literal substring matching against
+        <span class="font-mono">guardrails.prohibited_actions</span> in either direction.
+        A nonempty, non-matching action returns True. It does not check lifecycle, scope or permissions.
+        Use canonical action IDs and enforce authorization in the executor.
       </p>
     </div>
     <div class="bg-ink-800/50 border border-ink-700 rounded-xl p-5">
@@ -37,47 +40,57 @@
       <p class="mt-2 text-sm text-ink-300">
         Thread-safe budget bound to <span class="font-mono">economy.budget_limit</span>.
         Raises <span class="font-mono">BudgetExceeded</span> when a spend would push past
-        the configured cap.
+        the configured cap. Limits and spends must be finite, non-negative numbers;
+        booleans and invalid values raise ValueError. None is the only uncapped setting.
       </p>
     </div>
   </div>
 
-  <h2 class="mt-14 text-2xl font-bold text-ink-100">Six lines to wire it up</h2>
+  <h2 class="mt-14 text-2xl font-bold text-ink-100">Check policy before execution</h2>
   <p class="mt-2 text-ink-300">
-    Ships in the same package as the validator — no extra dependencies.
-    Until <span class="font-mono">employee-md</span> lands on PyPI, install from source via
+    The runtime ships with the validator. Use the repository-backed install in
     <a href="{{ url_for('docs') }}#step-01" class="text-brand hover:text-ink-100 transition">step 01 of the quickstart</a>.
   </p>
   <div class="codeblock mt-4">
-    <button class="copy-btn" data-copy>Copy</button>
-<pre><code>from runtime import Employee
+    <button class="copy-btn" data-copy aria-label="Copy executor checks">Copy</button>
+<pre tabindex="0" aria-label="Explicit executor checks"><code>from runtime import Employee
 
 emp = Employee.from_file("employee.md")
 system_prompt = emp.system_prompt()
 
-if emp.is_action_allowed("delete production database"):
-    emp.budget.try_spend(0.05)   # raises BudgetExceeded if over cap
-    # ... call your LLM with system_prompt as the system message
+action_id = "write_unit_tests"  # use executor-owned identifiers
+if not emp.is_active:
+    raise PermissionError("The employee is not active")
+if not emp.is_in_scope("Write unit tests").in_scope:
+    raise PermissionError("The task is outside the declared scope")
+if not emp.is_action_allowed(action_id):
+    raise PermissionError("The action is explicitly prohibited")
+emp.budget.try_spend(0.05)  # can raise BudgetExceeded or ValueError
+# Apply tool permissions/sandbox policy before performing any action.
+# Generating a system prompt does not replace these checks.
 </code></pre>
   </div>
 
   {% if sample_prompt %}
   <h2 class="mt-14 text-2xl font-bold text-ink-100">What the SDK compiles your contract into</h2>
   <p class="mt-2 text-ink-300">
-    Live example: this is the system prompt the runtime produces from
+    This example is generated by the runtime from
     <a href="{{ url_for('example_detail', slug='senior-dev') }}" class="text-brand hover:text-ink-100 transition font-mono">examples/senior-dev.md</a>.
-    Copy and paste straight into your LLM call.
+    The text expresses the contract; executor-side checks remain necessary.
   </p>
   <div class="codeblock mt-4">
-    <button class="copy-btn" data-copy>Copy</button>
-<pre><code>{{ sample_prompt }}</code></pre>
+    <button class="copy-btn" data-copy aria-label="Copy generated system prompt">Copy</button>
+<pre tabindex="0" aria-label="Generated example system prompt"><code>{{ sample_prompt }}</code></pre>
   </div>
   {% endif %}
 
-  <h2 class="mt-14 text-2xl font-bold text-ink-100">Use it with LangChain in three lines</h2>
+  <h2 class="mt-14 text-2xl font-bold text-ink-100">Compose a LangChain prompt</h2>
+  <p class="mt-2 text-ink-300">Install the separate LangChain packages and explicitly configure a
+    provider-supported model. This example composes a chain; it does not execute a request or enforce the contract.</p>
   <div class="codeblock mt-4">
-    <button class="copy-btn" data-copy>Copy</button>
-<pre><code>from langchain_openai import ChatOpenAI
+    <button class="copy-btn" data-copy aria-label="Copy LangChain example">Copy</button>
+<pre tabindex="0" aria-label="LangChain prompt composition"><code>import os
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from runtime import Employee
 
@@ -86,17 +99,20 @@ prompt = ChatPromptTemplate.from_messages([
     ("system", emp.system_prompt()),
     ("user", "{task}"),
 ])
-llm = ChatOpenAI(model=emp.to_langchain_kwargs()["model"] or "gpt-4o")
+model = emp.to_langchain_kwargs()["model"] or os.environ["MODEL_NAME"]
+llm = ChatOpenAI(model=model)
 chain = prompt | llm</code></pre>
   </div>
 
-  <div class="mt-14 rounded-xl border border-amber-500/40 bg-amber-500/10 p-5">
-    <div class="text-amber-300 font-semibold">Honest scope</div>
-    <p class="mt-2 text-sm text-ink-200">
+  <div class="mt-14 rounded-xl border border-ink-700 bg-ink-800 p-5">
+    <div class="text-ink-100 font-semibold">Scope and limitations</div>
+    <p class="mt-2 text-sm text-ink-300">
       The runtime is a <strong>thin wrapper</strong>, not a sandbox. <span class="font-mono">is_action_allowed</span>
-      is a substring + token check, not a real policy engine. <span class="font-mono">budget</span> is in-process
-      and resets when your process restarts. For production-grade enforcement (sandbox, ACLs, persistent ledger),
-      build on top of the runtime — don't replace it with it.
+      is a literal substring check, not a real policy engine. It does not normalize synonyms or separators.
+      <span class="font-mono">is_in_scope</span> has a separate heuristic token matcher.
+      <span class="font-mono">budget</span> uses in-process floating-point accounting and resets when the process restarts;
+      it is not an exact-decimal, persistent or cross-process ledger. Use executor-side authorization,
+      sandboxing and durable accounting where those guarantees are required.
     </p>
   </div>
 </div>
