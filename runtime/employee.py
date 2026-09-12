@@ -19,6 +19,7 @@ otherwise has to re-implement on top of the YAML schema.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from math import isfinite
 from pathlib import Path
 from threading import Lock
 from typing import Any, Dict, List, Optional, Union
@@ -57,18 +58,32 @@ class ScopeDecision:
 class BudgetTracker:
     """Thread-safe spend tracker bound to `economy.budget_limit`.
 
-    The tracker is best-effort: it enforces the limit *if* one is declared in
-    the contract. If `economy.budget_limit` is missing or non-numeric, every
-    `try_spend` returns True and `remaining` returns `None`.
+    Only a missing limit (None) means unlimited. Explicit limits and spend
+    amounts must be finite, nonnegative int/float values; booleans are not
+    amounts. Invalid values raise ValueError without changing the tracker.
+    Callers must invoke this tracker before executing a billable action.
     """
 
     def __init__(self, limit: Optional[float], currency: str = "USD") -> None:
         self._limit: Optional[float] = (
-            float(limit) if isinstance(limit, (int, float)) and limit >= 0 else None
+            None if limit is None else self._number(limit, "Budget limit")
         )
         self._spent: float = 0.0
         self._lock = Lock()
         self.currency = currency
+
+    @staticmethod
+    def _number(value: Any, label: str) -> float:
+        message = f"{label} must be a finite, nonnegative number."
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise ValueError(message)
+        try:
+            number = float(value)
+        except (OverflowError, ValueError) as exc:
+            raise ValueError(message) from exc
+        if not isfinite(number) or number < 0:
+            raise ValueError(message)
+        return number
 
     @property
     def limit(self) -> Optional[float]:
@@ -86,18 +101,21 @@ class BudgetTracker:
             return max(0.0, self._limit - self._spent)
 
     def try_spend(self, amount: float) -> bool:
-        """Atomically reserve `amount`. Raises BudgetExceeded if it would
-        push past the configured limit.
+        """Atomically reserve a finite nonnegative `amount`.
 
-        Returns True on success. If no limit is configured, always returns
-        True (the tracker is informational only).
+        Raises ValueError for invalid amounts or non-finite accumulated spend,
+        and BudgetExceeded for a valid reservation exceeding the configured
+        cap. Rejection never changes the recorded spend. None disables the
+        cap, not numeric validation. Returns True on a successful reservation.
         """
-        if amount < 0:
-            raise ValueError("Cannot spend a negative amount.")
+        reservation = self._number(amount, "Spend amount")
         with self._lock:
-            if self._limit is not None and self._spent + amount > self._limit:
-                raise BudgetExceeded(amount, self._spent, self._limit)
-            self._spent += amount
+            total = self._spent + reservation
+            if self._limit is not None and total > self._limit:
+                raise BudgetExceeded(reservation, self._spent, self._limit)
+            if not isfinite(total):
+                raise ValueError("Accumulated spend must remain finite.")
+            self._spent = total
             return True
 
     def reset(self) -> None:
@@ -227,7 +245,6 @@ class Employee:
     def prohibited_actions(self) -> List[str]:
         guardrails = self._data.get("guardrails") or {}
         return _as_list(guardrails.get("prohibited_actions"))
-
     def is_action_allowed(self, action: str) -> bool:
         """Case-insensitive substring check of `action` against the
         configured `guardrails.prohibited_actions` list.
@@ -332,7 +349,7 @@ class Employee:
         ai = d.get("ai_settings") or {}
         economy = d.get("economy") or {}
 
-        lines: List[str] = []
+        lines: List[str] = [];
         lines.append(f"You are {self.display_name}, a {role.get('title', 'agent')}.")
         if role.get("level"):
             lines.append(f"Level: {role['level']}.")
