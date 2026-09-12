@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Runtime · employee.md{% endblock %}
 
+{% block page_class %}page-runtime{% endblock %}
+
 {% block content %}
 <div class="max-w-5xl mx-auto px-5 sm:px-8 pt-10 pb-16">
   <div class="text-xs font-mono text-ink-500 mb-2">RUNTIME</div>
@@ -61,8 +63,8 @@
     to install it. The example below illustrates explicit preflight checks; it does not execute a tool.
   </p>
   <div class="codeblock mt-4">
-    <button class="copy-btn" data-copy>Copy</button>
-<pre tabindex="0"><code>from runtime import Employee
+    <button class="copy-btn" data-copy aria-label="Copy executor checks">Copy</button>
+<pre tabindex="0" aria-label="Explicit executor checks"><code>from runtime import Employee
 
 emp = Employee.from_file("employee.md")
 action = "review code"
@@ -89,16 +91,16 @@ system_prompt = emp.system_prompt()
     when the documentation is built. It is not evidence that a model followed those instructions.
   </p>
   <div class="codeblock mt-4">
-    <button class="copy-btn" data-copy>Copy</button>
-<pre tabindex="0"><code>{{ sample_prompt }}</code></pre>
+    <button class="copy-btn" data-copy aria-label="Copy generated system prompt">Copy</button>
+<pre tabindex="0" aria-label="Generated example system prompt"><code>{{ sample_prompt }}</code></pre>
   </div>
   {% endif %}
 
   <h2 class="mt-14 text-2xl font-bold text-ink-100">Use the prompt with LangChain</h2>
   <p class="mt-2 text-ink-300">Install and configure your model integration separately. This composition example does not invoke a model or enforce tool permissions.</p>
   <div class="codeblock mt-4">
-    <button class="copy-btn" data-copy>Copy</button>
-<pre tabindex="0"><code>from langchain_core.prompts import ChatPromptTemplate
+    <button class="copy-btn" data-copy aria-label="Copy LangChain example">Copy</button>
+<pre tabindex="0" aria-label="LangChain prompt composition"><code>from langchain_core.prompts import ChatPromptTemplate
 from runtime import Employee
 
 emp = Employee.from_file("employee.md")

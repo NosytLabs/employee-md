@@ -164,3 +164,24 @@ a { text-underline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+/* Runtime reference: keep its content aligned with the shared site grid.
+   Copy controls occupy their own row rather than covering the first code line. */
+.page-runtime main, .page-runtime main .codeblock { min-width: 0; }
+.page-runtime main p, .page-runtime main li { overflow-wrap: anywhere; }
+.page-runtime .codeblock .copy-btn {
+  position: static;
+  display: block;
+  min-height: 44px;
+  min-width: 44px;
+  margin: .5rem .5rem .25rem auto;
+  padding: .5rem .75rem;
+}
+.page-runtime .codeblock pre { padding-top: .5rem; }
+.page-runtime main pre:focus-visible { outline-offset: -3px; }
+.page-runtime header nav ul a { display: inline-flex; align-items: center; min-height: 44px; }
+@media (max-width: 40rem) {
+  .page-runtime header { position: static; }
+  .page-runtime header nav { row-gap: .5rem; }
+  .page-runtime header nav ul { width: 100%; column-gap: 1rem; row-gap: 0; }
+}
