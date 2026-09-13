@@ -1,0 +1,179 @@
+name: Reviewed branch reconciliation
+on:
+  workflow_call:
+    inputs:
+      repository_id:
+        type: string
+        required: true
+      export_source:
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: reviewed-reconciliation-${{ github.repository }}
+  cancel-in-progress: false
+jobs:
+  audit:
+    if: github.actor == 'NosytLabs' && github.ref == 'refs/heads/maintenance/reconcile-20260913'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Inventory and verify integration without changing main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_ID: ${{ inputs.repository_id }}
+          EXPORT_SOURCE: ${{ inputs.export_source }}
+        run: |
+          mkdir -p evidence
+          cat > /tmp/reconcile.py <<'PY'
+          import json, os, re, subprocess, sys
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError
+          from urllib.parse import quote
+
+          HELPER = 'maintenance/reconcile-20260913'
+          def reserved(name):
+              return name.lower() in {'main','master','dev','develop','development','prod','production','staging','stage','gh-pages','pages'} or name.lower().startswith(('release/','backup/','archive/','maintenance/'))
+          def deletable(name, expected, actual, protected, open_use, integrated):
+              return bool(re.fullmatch('[0-9a-f]{40}', expected or '') and expected == actual and not reserved(name) and not protected and not open_use and integrated)
+          sha='a'*40
+          assert deletable('fix/example',sha,sha,False,False,True)
+          assert deletable('codex/status-docs',sha,sha,False,False,True)
+          for name in ('main','master','production','gh-pages','release/v1','backup/pre-cleanup',HELPER):
+              assert not deletable(name,sha,sha,False,False,True)
+          for args in [(sha,'b'*40,False,False,True),(sha,sha,True,False,True),(sha,sha,False,True,True),(sha,sha,False,False,False),('', '',False,False,True)]:
+              assert not deletable('fix/example',*args)
+
+          repo=os.environ['GITHUB_REPOSITORY']
+          assert repo.startswith('NosytLabs/') and os.environ['GITHUB_REF_NAME']==HELPER
+          root='https://api.github.com/repos/'+repo
+          headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+          def api(path='', missing=False):
+              try:
+                  with urlopen(Request(root+path,headers=headers),timeout=30) as response:
+                      return json.load(response)
+              except HTTPError as error:
+                  if missing and error.code==404: return None
+                  raise RuntimeError(f'GitHub GET {path}: HTTP {error.code}') from None
+          def pages(path):
+              result=[]
+              for page in range(1,101):
+                  batch=api(path+('&' if '?' in path else '?')+'per_page=100&page='+str(page))
+                  assert isinstance(batch,list)
+                  result.extend(batch)
+                  if len(batch)<100: return result
+              raise RuntimeError('Pagination safety bound reached')
+          def write(name,data):
+              Path('evidence/'+name).write_text(json.dumps(data,indent=2)+'\n')
+          def identity():
+              meta=api()
+              assert meta['id']==int(os.environ['EXPECTED_ID']) and meta['default_branch']=='main' and not meta['archived']
+              return api('/git/ref/heads/main')['object']['sha']
+          def integrated(tip, name, pulls, main):
+              compare=api('/compare/'+tip+'...'+main)
+              if compare['status'] in ('ahead','identical'): return {'kind':'ancestor','main':main}
+              for pull in pulls:
+                  if pull.get('merged_at') and pull['head']['ref']==name and pull['head']['sha']==tip and (pull['head'].get('repo') or {}).get('full_name')==repo and pull['base']['ref']=='main':
+                      merge=pull.get('merge_commit_sha')
+                      if merge and api('/compare/'+merge+'...'+main)['status'] in ('ahead','identical'):
+                          return {'kind':'merged-pull-request','number':pull['number'],'merge_sha':merge,'main':main}
+              return None
+          def in_open_use(name,pulls):
+              return any(p['state']=='open' and (p['base']['ref']==name or (p['head']['ref']==name and (p['head'].get('repo') or {}).get('full_name')==repo)) for p in pulls)
+          def git(*args):
+              env=dict(os.environ,GIT_TERMINAL_PROMPT='0',GIT_ASKPASS='/tmp/reconcile-askpass')
+              result=subprocess.run(['git','-c','credential.helper=','-c','core.hooksPath=/dev/null',*args],env=env,capture_output=True,text=True,timeout=120)
+              if result.returncode: raise RuntimeError('Git operation failed: '+result.stderr[-1200:])
+              return result.stdout
+          def setup_git():
+              Path('/tmp/reconcile-askpass').write_text('#!/bin/sh\ncase "$1" in *Username*) printf "%s\\n" x-access-token;; *) printf "%s\\n" "$GH_TOKEN";; esac\n')
+              Path('/tmp/reconcile-askpass').chmod(0o700)
+              git('init','-q')
+              git('remote','add','origin','https://github.com/'+repo+'.git')
+          mode=sys.argv[1]
+          main=identity()
+          if mode=='plan':
+              branches=pages('/branches')
+              pulls=pages('/pulls?state=all')
+              records=[]
+              for branch in branches:
+                  name=branch['name']; tip=branch['commit']['sha']
+                  opened=in_open_use(name,pulls)
+                  proof=None if reserved(name) or branch['protected'] or opened else integrated(tip,name,pulls,main)
+                  records.append({'branch':name,'sha':tip,'protected':branch['protected'],'open_pr_use':opened,'proof':proof,'delete':deletable(name,tip,tip,branch['protected'],opened,bool(proof))})
+              tree=api('/git/trees/'+main+'?recursive=1')
+              logs=[{'path':t['path'],'bytes':t.get('size',0)} for t in tree.get('tree',[]) if t['type']=='blob' and (t['path'].endswith(('.log','.tmp','.bak','.orig','.rej')) or any(p in t['path'].split('/') for p in ('test-results','playwright-report','coverage')))]
+              write('plan.json',{'repository':repo,'main_sha':main,'branches':records,'open_prs':[{'number':p['number'],'head':p['head']['ref'],'head_sha':p['head']['sha'],'base':p['base']['ref'],'draft':p.get('draft',False)} for p in pulls if p['state']=='open'],'tracked_log_candidates':logs,'tree_truncated':tree.get('truncated',False),'policy_tests':'passed','history_rewritten':False})
+              print(json.dumps({'repository':repo,'branch_count':len(branches),'safe_deletions':sum(r['delete'] for r in records),'tracked_log_candidates':len(logs)}))
+          elif mode=='apply':
+              plan=json.loads(Path('evidence/plan.json').read_text())
+              assert plan['repository']==repo and main==plan['main_sha'], 'Main advanced: review a new plan'
+              setup_git(); results=[]
+              try:
+                  for item in plan['branches']:
+                      if not item['delete']: results.append({**item,'result':'kept'}); continue
+                      assert identity()==main, 'Main advanced: stop'
+                      name=item['branch']; tip=item['sha']
+                      branch=api('/branches/'+quote(name,safe=''),missing=True)
+                      if branch is None: results.append({**item,'result':'already absent'}); continue
+                      pulls=pages('/pulls?state=all')
+                      proof=integrated(tip,name,pulls,main)
+                      if not deletable(name,tip,branch['commit']['sha'],branch['protected'],in_open_use(name,pulls),bool(proof)):
+                          results.append({**item,'result':'kept after recheck'}); continue
+                      # A lease makes a concurrent branch-tip change fail, rather than deleting new work.
+                      ref='refs/heads/'+name
+                      git('push','--force-with-lease='+ref+':'+tip,'origin',':'+ref)
+                      assert api('/git/ref/heads/'+quote(name,safe=''),missing=True) is None
+                      results.append({**item,'result':'deleted'})
+              finally:
+                  write('result.json',{'repository':repo,'main_sha':main,'results':results,'history_rewritten':False})
+              if os.getenv('EXPORT_SOURCE')=='true':
+                  assert repo in ('NosytLabs/skillstate-proxy','NosytLabs/aseprite-mcp')
+                  git('fetch','--depth=1','origin',main)
+                  # Source is retained only inside its own repository's access-controlled artifact.
+                  names=git('ls-tree','--name-only',main).splitlines()
+                  allowed=[n for n in names if n in ('src','test','tests','scripts','docs','aseprite_mcp','.github','pyproject.toml','uv.lock','requirements.txt','Dockerfile','README.md','STATUS.md','package.json','package-lock.json','tsconfig.json','vitest.config.ts','.gitignore','server.py','main.py','LICENSE')]
+                  git('archive','--format=tar','-o',str(Path('evidence/source.tar').resolve()),main,'--',*allowed)
+                  write('source.json',{'repository':repo,'commit':main,'paths':allowed})
+              print(json.dumps({'repository':repo,'deleted':sum(r['result']=='deleted' for r in results),'retained':sum(r['result'].startswith('kept') for r in results)}))
+          elif mode=='self-clean':
+              setup_git()
+              ref='refs/heads/'+HELPER
+              git('push','--force-with-lease='+ref+':'+os.environ['GITHUB_SHA'],'origin',':'+ref)
+              assert api('/git/ref/heads/'+HELPER,missing=True) is None
+              print('Removed unchanged temporary caller branch; main and worker source were not changed')
+          PY
+          python /tmp/reconcile.py plan
+      - name: Preserve recovery references before deletion
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reconciliation-plan
+          path: evidence/plan.json
+          retention-days: 30
+          if-no-files-found: error
+      - name: Remove only verified integrated refs using exact-tip leases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_ID: ${{ inputs.repository_id }}
+          EXPORT_SOURCE: ${{ inputs.export_source }}
+        run: python /tmp/reconcile.py apply
+      - name: Preserve final report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reconciliation-results
+          path: evidence/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Remove the temporary caller after successful reconciliation
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_ID: ${{ inputs.repository_id }}
+        run: |
+          rm -rf .git
+          python /tmp/reconcile.py self-clean
