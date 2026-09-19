@@ -25,7 +25,7 @@ jobs:
           set -euo pipefail
           mkdir -p evidence
           python - <<'PY'
-          import base64, json, os
+          import base64, difflib, json, os
           from pathlib import Path
           from urllib.request import Request, urlopen
           from urllib.error import HTTPError
@@ -73,7 +73,7 @@ jobs:
               else:
                   runs = data.get('workflow_runs', [])
                   run = runs[0] if runs else None
-                  jobs = paged('/actions/runs/' + str(run['id']) + '/jobs') if False else []
+                  jobs = []
                   if run and run.get('conclusion') in ('failure', 'timed_out'):
                       jobs = paged('/actions/runs/' + str(run['id']) + '/jobs', 'jobs')
                   row['latest_main_run'] = summarize_run(run, jobs)
@@ -87,8 +87,59 @@ jobs:
                   report['files'][path] = {'sha': data['sha'], 'content': base64.b64decode(data['content']).decode('utf-8')}
               elif isinstance(data, dict) and data.get('http_error') not in (None, 404):
                   report['files'][path] = data
+          main_tree = api('/git/trees/' + main + '?recursive=1')
+          report['main_tree_truncated'] = main_tree.get('truncated', False)
+          report['branch_diffs'] = {}
+          blob_cache = {}
+          def text_blob(sha, path):
+              if not sha:
+                  return ''
+              if path.endswith(('lock.json', '.lock', '.pem', '.key')) or Path(path).name in ('.env', 'credentials.json'):
+                  return None
+              if sha not in blob_cache:
+                  data = api('/git/blobs/' + sha)
+                  content = None
+                  if data.get('encoding') == 'base64' and data.get('size', 0) <= 80000:
+                      try:
+                          content = base64.b64decode(data['content']).decode('utf-8')
+                      except UnicodeDecodeError:
+                          pass
+                  blob_cache[sha] = content
+              return blob_cache[sha]
+          def compare_trees(base, head):
+              if base.get('truncated') or head.get('truncated'):
+                  raise ValueError('Cannot compare truncated trees')
+              left = {e['path']: e for e in base['tree'] if e['type'] != 'tree'}
+              right = {e['path']: e for e in head['tree'] if e['type'] != 'tree'}
+              changes = []
+              for path in sorted(left.keys() | right.keys()):
+                  before, after = left.get(path, {}), right.get(path, {})
+                  if (before.get('sha'), before.get('mode')) != (after.get('sha'), after.get('mode')):
+                      changes.append({'path':path, 'base_sha':before.get('sha'), 'head_sha':after.get('sha'), 'base_mode':before.get('mode'), 'head_mode':after.get('mode')})
+              return changes
+          for branch in report['branches']:
+              if branch['name'] in ('main', 'maintenance/reconcile-20260913'):
+                  continue
+              head_tree = api('/git/trees/' + branch['sha'] + '?recursive=1')
+              if 'http_error' in main_tree or 'http_error' in head_tree:
+                  report['branch_diffs'][branch['name']] = {'error': 'Unable to retrieve complete source trees'}
+                  continue
+              try:
+                  changes = compare_trees(main_tree, head_tree)
+              except ValueError as error:
+                  report['branch_diffs'][branch['name']] = {'error': str(error)}
+                  continue
+              row = {'head_sha': branch['sha'], 'base_sha': main, 'changes': changes}
+              comparison = api('/compare/' + branch['sha'] + '...' + main)
+              row['head_is_ancestor_of_main'] = comparison.get('status') in ('ahead', 'identical')
+              for item in changes[:80]:
+                  before = text_blob(item['base_sha'], item['path'])
+                  after = text_blob(item['head_sha'], item['path'])
+                  if before is not None and after is not None:
+                      item['diff'] = ''.join(difflib.unified_diff(before.splitlines(True), after.splitlines(True), fromfile='main/' + item['path'], tofile=branch['name'] + '/' + item['path']))
+              report['branch_diffs'][branch['name']] = row
           Path('evidence/audit.json').write_text(json.dumps(report, indent=2) + '\n')
-          summary = {k: v for k, v in report.items() if k != 'files'}
+          summary = {k: v for k, v in report.items() if k not in ('files', 'branch_diffs')}
           print(json.dumps(summary, indent=2))
           PY
       - name: Retain inspection evidence in this repository
