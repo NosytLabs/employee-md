@@ -1,0 +1,100 @@
+name: Read-only repository health inspection
+on:
+  workflow_call:
+    inputs:
+      repository_id:
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+  pages: read
+  pull-requests: read
+jobs:
+  inspect:
+    if: github.actor == 'NosytLabs' && github.ref == 'refs/heads/maintenance/reconcile-20260913'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Inspect every workflow and retain exact source evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_ID: ${{ inputs.repository_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python - <<'PY'
+          import base64, json, os
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError
+          from urllib.parse import quote
+          repo = os.environ['GITHUB_REPOSITORY']
+          root = 'https://api.github.com/repos/' + repo
+          headers = {'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'}
+          def api(path=''):
+              try:
+                  with urlopen(Request(root + path, headers=headers), timeout=30) as response:
+                      return json.load(response)
+              except HTTPError as error:
+                  return {'http_error': error.code}
+          def paged(path, key=None):
+              result = []
+              for page in range(1, 101):
+                  data = api(path + ('&' if '?' in path else '?') + 'per_page=100&page=' + str(page))
+                  if isinstance(data, dict) and 'http_error' in data:
+                      raise RuntimeError('Inventory request failed: ' + path + ' HTTP ' + str(data['http_error']))
+                  batch = data[key] if key else data
+                  result.extend(batch)
+                  if len(batch) < 100:
+                      return result
+              raise RuntimeError('Pagination safety bound reached')
+          def summarize_run(run, jobs):
+              if run is None:
+                  return {'conclusion': 'no-runs'}
+              result = {k: run.get(k) for k in ('id', 'status', 'conclusion', 'head_sha', 'html_url', 'updated_at')}
+              result['failed_jobs'] = [{'name': j.get('name'), 'steps': [s.get('name') for s in j.get('steps', []) if s.get('conclusion') in ('failure','timed_out')]} for j in jobs if j.get('conclusion') in ('failure','timed_out')]
+              return result
+          meta = api()
+          if meta.get('id') != int(os.environ['EXPECTED_ID']) or meta.get('full_name') != repo or not repo.startswith('NosytLabs/') or meta.get('default_branch') != 'main' or meta.get('archived'):
+              raise RuntimeError('Repository identity/default branch/archive guard failed')
+          main = api('/git/ref/heads/main')['object']['sha']
+          report = {'repository': repo, 'main_sha': main, 'private': meta['private'], 'homepage': meta.get('homepage'), 'has_pages': meta.get('has_pages'), 'workflows': [], 'branches': [], 'open_prs': [], 'files': {}}
+          for branch in paged('/branches'):
+              report['branches'].append({'name': branch['name'], 'sha': branch['commit']['sha'], 'protected': branch['protected']})
+          for pr in paged('/pulls?state=open'):
+              report['open_prs'].append({k: pr.get(k) for k in ('number','title','draft','html_url')})
+          for workflow in paged('/actions/workflows', 'workflows'):
+              row = {k: workflow.get(k) for k in ('id', 'name', 'path', 'state')}
+              data = api('/actions/workflows/' + str(workflow['id']) + '/runs?branch=main&per_page=1')
+              if 'http_error' in data:
+                  row['latest_main_run'] = data
+              else:
+                  runs = data.get('workflow_runs', [])
+                  run = runs[0] if runs else None
+                  jobs = paged('/actions/runs/' + str(run['id']) + '/jobs') if False else []
+                  if run and run.get('conclusion') in ('failure', 'timed_out'):
+                      jobs = paged('/actions/runs/' + str(run['id']) + '/jobs', 'jobs')
+                  row['latest_main_run'] = summarize_run(run, jobs)
+              report['workflows'].append(row)
+          settings = api('/pages')
+          report['pages'] = ({k: settings.get(k) for k in ('status','build_type','cname','html_url','source','https_enforced')} if 'http_error' not in settings else settings)
+          paths = sorted(set(['README.md','AGENTS.md','package.json','pyproject.toml','CNAME','vercel.json','astro.config.mjs','vite.config.ts'] + [w['path'] for w in report['workflows'] if w.get('path','').startswith('.github/workflows/')]))
+          for path in paths:
+              data = api('/contents/' + quote(path, safe='/') + '?ref=' + main)
+              if isinstance(data, dict) and data.get('type') == 'file' and data.get('encoding') == 'base64' and data.get('size', 0) <= 150000:
+                  report['files'][path] = {'sha': data['sha'], 'content': base64.b64decode(data['content']).decode('utf-8')}
+              elif isinstance(data, dict) and data.get('http_error') not in (None, 404):
+                  report['files'][path] = data
+          Path('evidence/audit.json').write_text(json.dumps(report, indent=2) + '\n')
+          summary = {k: v for k, v in report.items() if k != 'files'}
+          print(json.dumps(summary, indent=2))
+          PY
+      - name: Retain inspection evidence in this repository
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: repository-health-inspection
+          path: evidence/audit.json
+          retention-days: 7
+          if-no-files-found: error
