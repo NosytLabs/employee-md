@@ -1,0 +1,66 @@
+name: Read-only branch tree review
+on:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  review:
+    if: github.actor == 'NosytLabs' && github.ref == 'refs/heads/maintenance/reconcile-20260913'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Compare branch tips to main, not just their merge base
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          def git(*args, binary=False):
+              p=subprocess.run(['git',*args],capture_output=True,check=True,timeout=120)
+              return p.stdout if binary else p.stdout.decode('utf-8')
+          prefix='refs/remotes/origin/'
+          main=git('rev-parse',prefix+'main').strip()
+          main_tree=git('rev-parse',main+'^{tree}').strip()
+          report={'repository':os.environ['GITHUB_REPOSITORY'],'main':main,'main_tree':main_tree,'branches':[],'blobs':{}}
+          for line in git('for-each-ref','--format=%(objectname) %(refname)',prefix).splitlines():
+              tip,ref=line.split(' ',1); name=ref.removeprefix(prefix)
+              if name in ('HEAD','main','maintenance/reconcile-20260913'):continue
+              ancestor=subprocess.run(['git','merge-base','--is-ancestor',tip,main]).returncode
+              if ancestor not in (0,1):raise RuntimeError('Ancestry check failed')
+              branch={'name':name,'tip':tip,'tree':git('rev-parse',tip+'^{tree}').strip(),'ancestor':ancestor==0,'files':[]}
+              entries=git('diff','--name-status','--no-renames','-z',main,tip,binary=True).decode('utf-8').split('\0')
+              for i in range(0,len(entries)-1,2):
+                  status,path=entries[i:i+2]; entry={'status':status,'path':path}
+                  for label,revision in [('main',main),('branch',tip)]:
+                      p=subprocess.run(['git','rev-parse',revision+':'+path],capture_output=True)
+                      if p.returncode:entry[label]=None;continue
+                      sha=p.stdout.decode().strip(); entry[label]=sha
+                      if sha in report['blobs']:continue
+                      size=int(git('cat-file','-s',sha)); value={'size':size}
+                      if size>180000:value['omitted']='larger than 180000 bytes'
+                      elif Path(path).name=='.env' or Path(path).suffix in ('.pem','.key'):value['omitted']='credential-like path'
+                      else:
+                          raw=git('cat-file','blob',sha,binary=True)
+                          try:
+                              text=raw.decode('utf-8')
+                              if '\0' in text:raise UnicodeError('binary')
+                              value['text']=text
+                          except UnicodeError:value['omitted']='binary'
+                      report['blobs'][sha]=value
+                  branch['files'].append(entry)
+              report['branches'].append(branch)
+          out=Path('evidence/branch-review.json');out.parent.mkdir(parents=True,exist_ok=True)
+          out.write_text(json.dumps(report,indent=2)+'\n')
+          print(json.dumps({'main':main,'branches':[{'name':b['name'],'tip':b['tip'],'ancestor':b['ancestor'],'different_files':len(b['files'])} for b in report['branches']]},indent=2))
+          PY
+      - name: Retain review evidence in the calling repository
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: branch-tree-review
+          path: evidence/branch-review.json
+          retention-days: 7
+          if-no-files-found: error
