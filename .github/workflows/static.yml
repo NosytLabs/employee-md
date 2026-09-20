@@ -1,7 +1,6 @@
 name: Deploy to GitHub Pages
+# Cost containment: the published site stays online; future deploys are manual.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -13,17 +12,23 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v7
         with: { python-version: "3.11" }
-      - run: pip install -e .[web]
+      - run: pip install -e '.[web]'
       - run: python scripts/build_static_site.py
       - uses: actions/upload-pages-artifact@v5
-        with: { path: dist }
+        with:
+          path: dist
+          retention-days: 1
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
