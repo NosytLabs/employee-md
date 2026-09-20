@@ -13,7 +13,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   stop:
-    if: github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'ops: apply requested Actions cost containment'
+    if: >-
+      github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'ops: apply requested Actions cost containment'
     uses: NosytLabs/employee-md/.github/workflows/actions-cost-control-worker.yml@70d83a756e7d04481dc46e2560832e82ad7c335d
     with:
       expected_repository: NosytLabs/employee-md
