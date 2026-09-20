@@ -1,0 +1,84 @@
+name: Retire explicitly reviewed integrated refs
+on:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  retire:
+    if: github.actor == 'NosytLabs' && github.ref == 'refs/heads/maintenance/reconcile-20260913'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      - name: Prove exact reviewed ref is integrated and unused
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          cat > /tmp/retire.py <<'PY'
+          import json, os, subprocess, sys
+          from pathlib import Path
+          from urllib.request import Request,urlopen
+          from urllib.parse import quote
+          from urllib.error import HTTPError
+          targets={
+              'NosytLabs/oma-ai':(1272887082,'master','c8f07caa205656f305104534f819812fe4d74b0f'),
+              'NosytLabs/fogofwar':(1355304587,'maintenance/audit-2026-09-09','e8585c734d60516bd3082270b075932f44f1c3e0')
+          }
+          repo=os.environ['GITHUB_REPOSITORY'];expected_id,name,tip=targets[repo]
+          assert os.environ['GITHUB_REF_NAME']=='maintenance/reconcile-20260913'
+          root='https://api.github.com/repos/'+repo
+          headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+          def api(path=''):
+              try:
+                  with urlopen(Request(root+path,headers=headers),timeout=30) as response:return json.load(response)
+              except HTTPError as e:
+                  if e.code==404:return None
+                  raise
+          meta=api();assert meta['id']==expected_id and meta['default_branch']=='main' and not meta['archived']
+          main=api('/git/ref/heads/main')['object']['sha']
+          branch=api('/branches/'+quote(name,safe=''))
+          if branch is not None:
+              assert branch['commit']['sha']==tip and not branch['protected'], 'Ref advanced or protected'
+              for page in range(1,101):
+                  pulls=api('/pulls?state=open&per_page=100&page='+str(page))
+                  assert isinstance(pulls,list)
+                  assert not any(p['base']['ref']==name or (p['head']['ref']==name and (p['head'].get('repo') or {}).get('full_name')==repo) for p in pulls), 'Ref still used by a PR'
+                  if len(pulls)<100:break
+              else:raise RuntimeError('Pagination bound')
+              assert api('/compare/'+tip+'...'+main)['status'] in ('ahead','identical'), 'Unique history remains'
+          record={'repository':repo,'main':main,'branch':name,'sha':tip,'already_absent':branch is None}
+          Path('evidence').mkdir(exist_ok=True)
+          if sys.argv[1]=='plan':Path('evidence/retirement.json').write_text(json.dumps(record,indent=2)+'\n')
+          else:
+              assert record==json.loads(Path('evidence/retirement.json').read_text()), 'State changed since plan'
+              if branch is not None:
+                  ref='refs/heads/'+name
+                  subprocess.run(['git','push','--force-with-lease='+ref+':'+tip,'origin',':'+ref],check=True,timeout=120)
+                  assert api('/git/ref/heads/'+quote(name,safe='')) is None
+              print('Verified reviewed ref is absent; main unchanged')
+          PY
+          python3 /tmp/retire.py plan
+      - name: Retain recovery reference before removal
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: reviewed-ref-recovery
+          path: evidence/retirement.json
+          retention-days: 30
+          if-no-files-found: error
+      - name: Recheck and remove only the exact integrated tip
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 /tmp/retire.py apply
+      - name: Remove this unchanged temporary caller
+        shell: bash
+        run: |
+          set -euo pipefail
+          ref=refs/heads/maintenance/reconcile-20260913
+          git push --force-with-lease="${ref}:${GITHUB_SHA}" origin ":${ref}"
+          test -z "$(git ls-remote origin "${ref}")"
