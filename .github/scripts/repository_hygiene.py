@@ -1,0 +1,281 @@
+"""Owner-requested, bounded cleanup. Preserve active deployments and unmerged work."""
+import base64
+import json
+import os
+import re
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+from datetime import datetime, timedelta, timezone
+
+IGNORE_COMMAND = ('case "${VERCEL_GIT_PREVIOUS_SHA:-}" in ""|*[!0-9a-fA-F]*) exit 1;; esac; '
+                  'if git diff --quiet "$VERCEL_GIT_PREVIOUS_SHA" HEAD -- . '
+                  "':(exclude).github/**'; then exit 0; else exit 1; fi")
+BAD = frozenset({'failure', 'cancelled', 'timed_out', 'startup_failure', 'action_required'})
+HELPER = '.github/workflows/repository-hygiene-20260920-v2.yml'
+OLD_HELPER = '.github/workflows/actions-cost-stop-20260920.yml'
+
+
+def timestamp(value: str) -> datetime:
+    result = datetime.fromisoformat(value.replace('Z', '+00:00'))
+    if result.tzinfo is None:
+        raise ValueError('A timezone is required')
+    return result
+
+
+def log_targets(items: list, now: datetime) -> list:
+    eligible = [r for r in items if r['status'] == 'completed'
+                and r.get('path', '').startswith('.github/workflows/')
+                and not any(s in r['path'] for s in ('cost-', 'hygiene', 'reconcile', 'cleanup'))]
+    latest = {}
+    for r in eligible:
+        kind = 'failure' if r['conclusion'] in BAD else r['conclusion']
+        key = (r['workflow_id'], r['head_branch'], kind)
+        rank = (timestamp(r['created_at']), int(r['id']))
+        latest[key] = max(latest.get(key, rank), rank)
+    result = []
+    for r in eligible:
+        kind = 'failure' if r['conclusion'] in BAD else r['conclusion']
+        if kind not in ('failure', 'success'):
+            continue
+        age = 7 if kind == 'failure' else 30
+        rank = (timestamp(r['created_at']), int(r['id']))
+        key = (r['workflow_id'], r['head_branch'], kind)
+        if rank != latest[key] and rank[0] < now - timedelta(days=age):
+            result.append(r['id'])
+    return result
+
+
+def deployment_safe(item: dict, statuses: list, now: datetime) -> bool:
+    if not statuses or timestamp(item['created_at']) >= now - timedelta(days=7):
+        return False
+    states = [s['state'] for s in statuses]
+    return (states[0] in ('failure', 'error', 'inactive') and 'success' not in states
+            and any(s in ('failure', 'error') for s in states))
+
+
+def branch_safe(name: str, protected: bool, sha: str, default: str,
+                open_heads: set, compare: dict) -> bool:
+    reserved = {default, 'main', 'master', 'develop', 'development', 'staging', 'production', 'gh-pages'}
+    return (not protected and name not in reserved and not name.startswith(('release/', 'releases/'))
+            and name not in open_heads and compare.get('ahead_by') == 0
+            and compare.get('merge_base_commit', {}).get('sha') == sha)
+
+
+def api_path_safe(path: str) -> bool:
+    return (bool(re.fullmatch(r'[A-Za-z0-9_./%?=&-]*', path)) and not path.startswith('/')
+            and not any(part in ('.', '..') for part in urllib.parse.unquote(path.split('?', 1)[0]).split('/')))
+
+
+class ApiError(RuntimeError):
+    def __init__(self, method, path, status):
+        self.status = status
+        super().__init__(f'{method} {path}: HTTP {status}')
+
+
+class API:
+    def __init__(self, repo, token):
+        if not re.fullmatch(r'NosytLabs/[A-Za-z0-9_.-]+', repo):
+            raise ValueError('Repository is outside owner-approved scope')
+        self.repo, self.token = repo, token
+        self.start = time.monotonic()
+        self.writes = 0
+
+    def call(self, method, path='', body=None):
+        if not api_path_safe(path):
+            raise ValueError('Unsafe repository-relative API path')
+        if time.monotonic() - self.start > 360 or self.writes >= 500:
+            raise RuntimeError('Bounded execution limit reached; remaining items were not changed')
+        headers = {'Authorization': 'Bearer ' + self.token, 'Accept': 'application/vnd.github+json',
+                   'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'NosytLabs-Requested-Hygiene'}
+        data = None if body is None else json.dumps(body).encode()
+        if data is not None:
+            headers['Content-Type'] = 'application/json'
+        if method != 'GET':
+            self.writes += 1
+            time.sleep(0.3)
+        req = urllib.request.Request(f'https://api.github.com/repos/{self.repo}' + ('/' + path if path else ''),
+                                     data=data, headers=headers, method=method)
+        try:
+            with urllib.request.urlopen(req, timeout=20) as response:
+                content = response.read()
+                return json.loads(content) if content else None
+        except urllib.error.HTTPError as exc:
+            raise ApiError(method, path, exc.code) from None
+        except urllib.error.URLError:
+            raise RuntimeError(f'{method} {path}: network error') from None
+
+    def all(self, path, key=None):
+        result = []
+        for page in range(1, 51):
+            sep = '&' if '?' in path else '?'
+            data = self.call('GET', f'{path}{sep}per_page=100&page={page}')
+            batch = data if key is None else data[key]
+            result.extend(batch)
+            if len(batch) < 100:
+                return result
+        raise RuntimeError('Pagination limit reached; incomplete inventory is not safe for cleanup')
+
+
+def main():
+    repo = os.environ['GITHUB_REPOSITORY']
+    if repo != os.environ['EXPECTED_REPOSITORY'] or os.environ['GITHUB_EVENT_NAME'] not in ('push', 'workflow_dispatch'):
+        raise ValueError('Invocation scope mismatch')
+    api = API(repo, os.environ['GH_TOKEN'])
+    now = datetime.now(timezone.utc)
+    report = {'repository': repo, 'at': now.isoformat(), 'deleted_log_ids': [], 'logs_already_absent': [],
+              'deleted_deployment_ids': [], 'deleted_branches': [], 'remaining_branches': [],
+              'patches': [], 'errors': []}
+    own_run = int(os.environ['GITHUB_RUN_ID'])
+    own = api.call('GET', f'actions/runs/{own_run}')['workflow_id']
+    api.call('PUT', f'actions/workflows/{own}/disable')
+    metadata = api.call('GET')
+    default = metadata['default_branch']
+    report['homepage'] = metadata.get('homepage')
+    report['default_branch'] = default
+
+    def attempt(label, fn):
+        try:
+            return fn()
+        except Exception as exc:
+            report['errors'].append(f'{label}: {type(exc).__name__}: {exc}')
+            return None
+
+    def file_info(path):
+        return api.call('GET', 'contents/' + path + '?ref=' + urllib.parse.quote(default, safe=''))
+
+    def put_file(path, info, content, message):
+        result = api.call('PUT', 'contents/' + path, {'branch': default, 'sha': info['sha'],
+                        'message': message + ' [skip ci]', 'content': base64.b64encode(content.encode()).decode()})
+        report['patches'].append({'path': path, 'commit': result['commit']['sha']})
+        verify = file_info(path)
+        if base64.b64decode(verify['content']).decode() != content:
+            raise RuntimeError('Committed content readback mismatch')
+
+    def patch_vercel():
+        if repo not in ('NosytLabs/theydidntask.com', 'NosytLabs/Lilyofthevalleycottage.com'):
+            return
+        try:
+            info = file_info('vercel.json')
+        except ApiError as exc:
+            if exc.status == 404:
+                report['errors'].append('No vercel.json: configuration unchanged')
+                return
+            raise
+        original = json.loads(base64.b64decode(info['content']))
+        if original.get('ignoreCommand') not in (None, '', IGNORE_COMMAND):
+            report['errors'].append('Existing custom Vercel ignore command requires review; preserved')
+            return
+        updated = {**original, 'ignoreCommand': IGNORE_COMMAND}
+        if updated != original:
+            put_file('vercel.json', info, json.dumps(updated, indent=2) + '\n',
+                     'fix(deploy): skip workflow-only changes since last successful deployment')
+
+    attempt('Vercel workflow-only build guard', patch_vercel)
+    workflows = api.all('actions/workflows', 'workflows')
+    report['workflows'] = [{k: w[k] for k in ('id', 'name', 'path', 'state')} for w in workflows]
+    runs = api.all('actions/runs', 'workflow_runs')
+    report['run_count'] = len(runs)
+    latest = {}
+    for run in sorted(runs, key=lambda r: r['created_at'], reverse=True):
+        if run['head_branch'] != default or run['id'] == own_run or any(x in run['path'] for x in ('cost-', 'hygiene')):
+            continue
+        key = (run['workflow_id'], run['head_branch'])
+        if key not in latest:
+            latest[key] = {k: run[k] for k in ('id', 'name', 'path', 'status', 'conclusion', 'head_branch', 'head_sha', 'created_at', 'html_url')}
+    report['latest_runs'] = list(latest.values())
+
+    def cleanup_deployments():
+        deployments = api.all('deployments')
+        report['deployment_count'] = len(deployments)
+        newest_env = {}
+        for dep in sorted(deployments, key=lambda x: x['created_at'], reverse=True):
+            newest_env.setdefault(dep['environment'], dep['id'])
+        report['recent_deployments'] = []
+        for dep in deployments:
+            statuses = api.all(f"deployments/{dep['id']}/statuses")
+            if dep['id'] == newest_env[dep['environment']]:
+                report['recent_deployments'].append({'id': dep['id'], 'environment': dep['environment'],
+                    'state': statuses[0]['state'] if statuses else None,
+                    'url': statuses[0].get('environment_url') if statuses else None, 'sha': dep['sha']})
+                continue
+            if not deployment_safe(dep, statuses, now):
+                continue
+            current = api.all(f"deployments/{dep['id']}/statuses")
+            if not deployment_safe(dep, current, now):
+                continue
+            if current[0]['state'] != 'inactive':
+                api.call('POST', f"deployments/{dep['id']}/statuses", {'state': 'inactive', 'auto_inactive': False,
+                                  'description': 'Owner-requested cleanup of an old failed deployment'})
+            api.call('DELETE', f"deployments/{dep['id']}")
+            report['deleted_deployment_ids'].append(dep['id'])
+
+    attempt('deployment cleanup', cleanup_deployments)
+
+    def cleanup_branches():
+        base_sha = api.call('GET', 'branches/' + urllib.parse.quote(default, safe=''))['commit']['sha']
+        prs = api.all('pulls?state=open')
+        report['open_pr_numbers'] = [p['number'] for p in prs]
+        open_heads = {p['head']['ref'] for p in prs}
+        branches = api.all('branches')
+        report['branch_count_before'] = len(branches)
+        for b in branches:
+            if b['name'] == default:
+                continue
+            sha, name = b['commit']['sha'], b['name']
+            compare = api.call('GET', f'compare/{base_sha}...{sha}')
+            row = {'name': name, 'sha': sha, 'ahead': compare['ahead_by'], 'behind': compare['behind_by'],
+                   'changed_files': [f['filename'] for f in compare.get('files', [])][:50]}
+            if branch_safe(name, b['protected'], sha, default, open_heads, compare):
+                current = api.call('GET', 'branches/' + urllib.parse.quote(name, safe=''))
+                live_prs = api.all('pulls?state=open&head=' + urllib.parse.quote('NosytLabs:' + name, safe=''))
+                if current['commit']['sha'] == sha and not current['protected'] and not live_prs:
+                    api.call('DELETE', 'git/refs/heads/' + urllib.parse.quote(name, safe=''))
+                    report['deleted_branches'].append(row)
+                    continue
+            report['remaining_branches'].append(row)
+        report['branches_after'] = [b['name'] for b in api.all('branches')]
+
+    attempt('branch cleanup', cleanup_branches)
+    targets = log_targets(runs, now)
+    report['log_cleanup_candidates'] = len(targets)
+    for run_id in targets:
+        try:
+            api.call('DELETE', f'actions/runs/{run_id}/logs')
+            report['deleted_log_ids'].append(run_id)
+        except ApiError as exc:
+            if exc.status in (404, 410):
+                report['logs_already_absent'].append(run_id)
+            else:
+                report['errors'].append(str(exc))
+                break
+        except RuntimeError as exc:
+            report['errors'].append(str(exc))
+            break
+
+    # Workflow-file administration uses the connected repository tool, not GITHUB_TOKEN.
+    report['helper_files_for_native_cleanup'] = []
+    for path in (OLD_HELPER, HELPER):
+        try:
+            info = file_info(path)
+            text = base64.b64decode(info['content']).decode()
+            if 'expected_repository: ' + repo in text and 'NosytLabs/employee-md/.github/workflows/' in text:
+                report['helper_files_for_native_cleanup'].append({'path': path, 'sha': info['sha']})
+        except ApiError as exc:
+            if exc.status != 404:
+                report['errors'].append(str(exc))
+        except RuntimeError as exc:
+            report['errors'].append(str(exc))
+            break
+    report['ok'] = not report['errors']
+    report['writes'] = api.writes
+    print('HYGIENE_RESULT=' + json.dumps(report, separators=(',', ':')), flush=True)
+    with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f:
+        f.write('# Repository hygiene receipt\n\n```json\n' + json.dumps(report, indent=2) + '\n```\n')
+    if not report['ok']:
+        raise SystemExit('Some items could not be completed; see receipt. No automatic retry.')
+
+
+if __name__ == '__main__':
+    main()
