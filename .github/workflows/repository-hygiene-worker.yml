@@ -87,6 +87,12 @@ jobs:
           HELPER = '.github/workflows/repository-hygiene-20260920.yml'
           OLD_HELPER = '.github/workflows/actions-cost-stop-20260920.yml'
 
+          def api_path_safe(path: str) -> bool:
+              import re
+              from urllib.parse import unquote
+              return (bool(re.fullmatch(r'[A-Za-z0-9_./%?=&-]*', path)) and not path.startswith('/')
+                      and not any(part in ('.', '..') for part in unquote(path.split('?', 1)[0]).split('/')))
+
           class ApiError(RuntimeError):
               def __init__(self, method, path, status):
                   self.status = status
@@ -101,7 +107,7 @@ jobs:
                   self.writes = 0
 
               def call(self, method, path='', body=None):
-                  if not re.fullmatch(r'[A-Za-z0-9_./%?=&-]*', path) or '..' in path or path.startswith('/'):
+                  if not api_path_safe(path):
                       raise ValueError('Unsafe repository-relative API path')
                   if time.monotonic() - self.start > 360 or self.writes >= 500:
                       raise RuntimeError('Bounded execution limit reached; remaining items were not changed')
