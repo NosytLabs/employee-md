@@ -84,7 +84,7 @@ jobs:
           import urllib.request
           from datetime import datetime, timezone
 
-          HELPER = '.github/workflows/repository-hygiene-20260920.yml'
+          HELPER = '.github/workflows/repository-hygiene-20260920-v2.yml'
           OLD_HELPER = '.github/workflows/actions-cost-stop-20260920.yml'
 
           def api_path_safe(path: str) -> bool:
@@ -119,7 +119,7 @@ jobs:
                   if method != 'GET':
                       self.writes += 1
                       time.sleep(0.3)
-                  req = urllib.request.Request(f'https://api.github.com/repos/{self.repo}/' + path,
+                  req = urllib.request.Request(f'https://api.github.com/repos/{self.repo}' + ('/' + path if path else ''),
                                                data=data, headers=headers, method=method)
                   try:
                       with urllib.request.urlopen(req, timeout=20) as response:
