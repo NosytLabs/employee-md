@@ -148,17 +148,20 @@ class TestMetricsCollector:
         assert summary["successful_validations"] == 2
         assert summary["failed_validations"] == 1
 
-    def test_get_summary_avg_validation_time(self):
+    def test_get_summary_avg_validation_time(self, monkeypatch):
         """Test average validation time calculation."""
         collector = MetricsCollector()
 
-        collector.record_validation_end(time.time() - 0.1, success=True)
-        collector.record_validation_end(time.time() - 0.2, success=True)
+        # Control elapsed time: wall-clock subtraction around a decimal boundary
+        # can round below 0.15 even when the average is correct.
+        monkeypatch.setattr("tooling.monitoring.time.time", lambda: 10.0)
+        collector.record_validation_end(9.9, success=True)
+        collector.record_validation_end(9.8, success=True)
 
         summary = collector.get_summary()
 
         avg_time = summary["avg_validation_time_seconds"]
-        assert 0.15 <= avg_time <= 0.25
+        assert avg_time == pytest.approx(0.15)
 
     def test_get_summary_cache_hit_rate(self):
         """Test cache hit rate calculation."""
