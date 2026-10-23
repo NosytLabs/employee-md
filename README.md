@@ -202,7 +202,7 @@ make tailwind
 
 ## Documentation site
 
-The Flask documentation app lives in `web/`. `scripts/build_static_site.py` snapshots it into `dist/`, and `.github/workflows/static.yml` publishes the static site to GitHub Pages.
+The Flask documentation app lives in `web/`. `scripts/build_static_site.py` snapshots it into `dist/`, and `.github/workflows/static.yml` provides the manual GitHub Pages publishing path. The workflow is currently disabled; enable and dispatch it explicitly when publishing a verified revision.
 
 Live docs: **https://nosytlabs.github.io/employee-md/**
 
