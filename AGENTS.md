@@ -10,7 +10,6 @@ The goal is to define a standard for how AI agents are defined, managed, and aud
 ### Directory Structure
 
 - `employee.md`: The reference specification file.
-- `PROMPT.md`: A prompt for generating valid `employee.md` files.
 - `tooling/`: Python source code for the validator and CLI.
 - `tests/`: Unit and integration tests.
 - `examples/`: Example `employee.md` files for various roles.
